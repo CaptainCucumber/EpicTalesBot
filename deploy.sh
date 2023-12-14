@@ -3,6 +3,9 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+# Read environment variables from config.env
+source config.env
+
 # Define variables
 STACK_NAME="MargaritaPetrovnaBotStack"
 S3_BUCKET="margarita-petrovna-deployment"
@@ -74,6 +77,8 @@ deploy_cloudformation() {
         --parameter-overrides \
             LambdaFunctionS3Bucket=$S3_BUCKET \
             LambdaFunctionS3Key=$LAMBDA_FUNCTION_ZIP \
+            TelegramTokenParameter=$TELEGRAM_TOKEN \
+            OpenAiApiKeyParameter=$OPENAI_API_KEY \
         --debug
 }
 

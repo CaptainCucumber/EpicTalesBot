@@ -8,6 +8,14 @@ Parameters:
     Type: String
     Description: The S3 key of the Lambda function code ZIP file.
 
+  TelegramTokenParameter:
+    Type: String
+    Description: Telegram bot key to send messages back to the group
+
+  OpenAiApiKeyParameter:
+    Type: String
+    Description: OpenAI API key for requests to ChatGPT. 
+
 Resources:
   MessageQueue:
     Type: AWS::SQS::Queue
@@ -89,6 +97,10 @@ Resources:
   MargaritaPetrovnaBotFunction:
     Type: AWS::Lambda::Function
     Properties:
+      Environment:
+        Variables:
+          TELEGRAM_TOKEN: !Ref TelegramTokenParameter
+          OPENAI_API_KEY: !Ref OpenAiApiKeyParameter
       Handler: bot_handler.lambda_handler
       Runtime: python3.10
       Code:
