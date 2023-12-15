@@ -85,6 +85,9 @@ def summarize(url):
         logger.error(f"Error in generating summary: {e}")
         return "Sorry, I couldn't generate the summary."
 
+def transcribe(uri):
+    pass
+
 def send_message(chat_id, text):
     # Sends a message back
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
@@ -105,17 +108,31 @@ def lambda_handler(event, context):
         message_body = json.loads(record['body'])
         
         # Extract chat_id and text from the message
-        chat_id = message_body.get('message', {}).get('chat', {}).get('id', '')
-        text = message_body.get('message', {}).get('text', '')
+        message = message_body['message']
+        chat_id = message['chat']['id']
+        text = message['text']
 
-        # Look for a URL in the message
-        url_pattern = r'https?://[^\s]+'
-        url = re.findall(url_pattern, text)
-        if url:
-            # If a URL is found, summarize the article
-            summary = summarize(url[0])
-            send_message(chat_id, summary)
+        if not text.startswith('/'):
+            send_message(chat_id, Config.get_generic_error())
+
+        command = message['text'].split()[0].lower()
+        if command == '/summary':
+            # Look for a URL in the message
+            url_pattern = r'https?://[^\s]+'
+            url = re.findall(url_pattern, text)
+            if url:
+                # If a URL is found, summarize the article
+                summary = summarize(url[0])
+                send_message(chat_id, summary)
+            else:
+                send_message(chat_id, Config.get_generic_error())
+        elif command == '/transcribe':
+            if 'reply_to_message' in message and 'voice' in message['reply_to_message']:
+                file_id = message['reply_to_message']['voice']['file_id']
+                transcript = transcribe(file_id)
+                send_message(chat_id, transcribe)
         else:
+            # Unknown command
             send_message(chat_id, Config.get_generic_error())
 
     return {'statusCode': 200}
