@@ -51,7 +51,7 @@ def summarize(url):
     The output must be adapted to Telegram message
     """
 
-    logger.warn(prompt)
+    logger.info(prompt)
 
     try:
         response = openai.chat.completions.create(
@@ -95,6 +95,8 @@ def send_message(chat_id, text):
     requests.post(url, json=payload)
 
 def lambda_handler(event, context):
+    logger.info(event)
+
     if len(event['Records']) > 1:
         logger.error(f"Expected only one record but received {len(event['Records'])}")
 
@@ -114,6 +116,6 @@ def lambda_handler(event, context):
             summary = summarize(url[0])
             send_message(chat_id, summary)
         else:
-            send_message(chat_id, "Please send a valid URL.")
+            send_message(chat_id, Config.get_generic_error())
 
     return {'statusCode': 200}
