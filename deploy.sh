@@ -6,6 +6,8 @@ set -e
 # Read environment variables from config.env
 source config.env
 
+VERSION=$(date +%s)  # Creates a unique version based on the current timestamp
+
 # Define variables
 STACK_NAME="MargaritaPetrovnaBotStack"
 S3_BUCKET="margarita-petrovna-deployment"
@@ -13,9 +15,10 @@ REGION="us-west-2"
 TEMPLATE_FILE="template.yaml"
 PACKAGED_TEMPLATE="packaged-template.yaml"
 LAMBDA_FUNCTION_DIR="bot/"
-LAMBDA_FUNCTION_ZIP="bot.zip"
+LAMBDA_FUNCTION_ZIP_VERSIONED="bot-$VERSION.zip"
 VIRTUAL_ENV_DIR="deployment_dependencies"
 DEPLOYMENT_DIR="deployment_package"
+
 
 setup_virtual_env() {
     echo "Setting up virtual environment..."
@@ -38,7 +41,7 @@ prepare_deployment_package() {
 create_deployment_package() {
     echo "Creating deployment package..."
     cd $DEPLOYMENT_DIR
-    zip -r ../$LAMBDA_FUNCTION_ZIP .
+    zip -r ../$LAMBDA_FUNCTION_ZIP_VERSIONED .
     cd ..
     # Deactivate virtual environment only if it's active
     if [[ -n "$VIRTUAL_ENV" ]]; then
@@ -56,7 +59,7 @@ upload_to_s3() {
     fi
 
     echo "Uploading Lambda function to S3..."
-    aws s3 cp $LAMBDA_FUNCTION_ZIP s3://$S3_BUCKET/$LAMBDA_FUNCTION_ZIP
+    aws s3 cp $LAMBDA_FUNCTION_ZIP_VERSIONED s3://$S3_BUCKET/$LAMBDA_FUNCTION_ZIP_VERSIONED
 }
 
 package_cloudformation() {
@@ -76,7 +79,7 @@ deploy_cloudformation() {
         --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
         --parameter-overrides \
             LambdaFunctionS3Bucket=$S3_BUCKET \
-            LambdaFunctionS3Key=$LAMBDA_FUNCTION_ZIP \
+            LambdaFunctionS3Key=$LAMBDA_FUNCTION_ZIP_VERSIONED \
             TelegramTokenParameter=$TELEGRAM_TOKEN \
             OpenAiApiKeyParameter=$OPENAI_API_KEY \
         --debug
@@ -84,7 +87,7 @@ deploy_cloudformation() {
 
 cleanup() {
     echo "Cleaning up..."
-    rm $LAMBDA_FUNCTION_ZIP
+    rm $LAMBDA_FUNCTION_ZIP_VERSIONED
     rm -rf $DEPLOYMENT_DIR
     rm $PACKAGED_TEMPLATE
     # Clean up virtual environment directory if it exists
