@@ -1,7 +1,4 @@
 .venv
 .vscode
-deployment_package
-deployment_dependencies
-bot.zip
-packaged-template.yaml
 config.env
+**/__pycache__

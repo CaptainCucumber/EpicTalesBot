@@ -11,8 +11,8 @@ class Config:
         return os.environ.get('TELEGRAM_TOKEN', 'default_telegram_token')
 
     @staticmethod
-    def get_open_api_key():
-        return os.environ.get('OPENAI_API_KEY', 'default_oepn_api_key')
+    def get_google_service_file():
+        return os.environ.get('GOOGLE_SERVICE_FILE', 'default_service_file')
 
     @staticmethod
     def get_generic_error():
