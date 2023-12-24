@@ -1,4 +1,5 @@
 import logging
+from logging.handlers import RotatingFileHandler
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, filters
 import requests
@@ -12,6 +13,10 @@ GOOGLE_SERVICE_FILE = Config.get_google_service_file()
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+file_handler = RotatingFileHandler('application.log', maxBytes=1024*1024*20, backupCount=10)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(file_handler)
 
 # Initialize Google Cloud Speech-to-Text client
 credentials = service_account.Credentials.from_service_account_file(GOOGLE_SERVICE_FILE) # Update with your credentials path
@@ -43,6 +48,12 @@ async def transcribe_voice(voice_data):
 async def handle_messages(update: Update, context: CallbackContext) -> None:
     message = update.message
 
+    # If it's a group message and the group is not whitelisted, leave the group
+    if message.chat.id not in WHITELISTED_GROUPS:
+        await context.bot.leave_chat(message.chat.id)
+        logger.warning(f"Leaving non-whitelisted group with chat ID {message.chat.id}, message type: {message.chat.type} and message: {message.text}")
+        return
+
     # Check if the bot is mentioned and if the message is a reply
     if message.reply_to_message and f'@{context.bot.username}' in message.text:
 
@@ -58,21 +69,10 @@ async def handle_messages(update: Update, context: CallbackContext) -> None:
             transcription = await transcribe_voice(voice_data)
             await message.reply_text(f"{user_name} сказал '{transcription}'")
 
-async def validate_access(update: Update, context: CallbackContext) -> None:
-    message = update.message
-
-    # If it's a group message and the group is not whitelisted, leave the group
-    if message.chat.id not in WHITELISTED_GROUPS:
-        await context.bot.leave_chat(message.chat.id)
-        logger.warning(f"Leaving non-whitelisted group with chat ID {message.chat.id}, message type: {message.chat.type} and message: {message.text}")
-        return
-
 def main() -> None:
     application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
 
-    # Handlers are checked in order they are added
-    application.add_handler(MessageHandler(filters.ALL, validate_access))
-    application.add_handler(MessageHandler(filters.TEXT & filters.ChatType.GROUPS, handle_messages))
+    application.add_handler(MessageHandler(filters.ALL, handle_messages))
 
     application.run_polling()
     
