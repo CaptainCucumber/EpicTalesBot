@@ -1,14 +1,15 @@
 import logging
+import os
 from logging.handlers import RotatingFileHandler
+
+import requests
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, filters
-import requests
-from google.cloud import speech
-from google.oauth2 import service_account
-from config import Config, WHITELISTED_GROUPS
+
+from bot.config import Config
+from bot.stt import STT
 
 TELEGRAM_BOT_TOKEN = Config.get_telegram_token()
-GOOGLE_SERVICE_FILE = Config.get_google_service_file()
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -18,9 +19,11 @@ file_handler = RotatingFileHandler('application.log', maxBytes=1024*1024*20, bac
 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 logger.addHandler(file_handler)
 
-# Initialize Google Cloud Speech-to-Text client
-credentials = service_account.Credentials.from_service_account_file(GOOGLE_SERVICE_FILE) # Update with your credentials path
-client = speech.SpeechClient(credentials=credentials)
+
+config = Config(os.environ)
+
+# Speech-to-Text
+stt = STT(config)
 
 async def download_voice(voice_file_id, context):
     # Get the file path from Telegram
@@ -30,26 +33,11 @@ async def download_voice(voice_file_id, context):
     response = requests.get(file_path)
     return response.content
 
-async def transcribe_voice(voice_data):
-    audio = speech.RecognitionAudio(content=voice_data)
-    config = speech.RecognitionConfig(
-        encoding=speech.RecognitionConfig.AudioEncoding.OGG_OPUS,
-        sample_rate_hertz=48000,
-        language_code="ru-RU",
-        enable_word_confidence=True  # Enable word confidence
-    )
-
-    response = client.recognize(config=config, audio=audio)
-
-    # Concatenate all the transcriptions
-    transcription = ' '.join([result.alternatives[0].transcript for result in response.results])
-    return transcription
-
 async def handle_messages(update: Update, context: CallbackContext) -> None:
     message = update.message
 
     # If it's a group message and the group is not whitelisted, leave the group
-    if message.chat.id not in WHITELISTED_GROUPS:
+    if message.chat.id not in Config.WHITELISTED_GROUPS:
         await context.bot.leave_chat(message.chat.id)
         logger.warning(f"Leaving non-whitelisted group with chat ID {message.chat.id}, message type: {message.chat.type} and message: {message.text}")
         return
@@ -66,8 +54,9 @@ async def handle_messages(update: Update, context: CallbackContext) -> None:
         # Handle voice messages
         if replied_message.voice:
             voice_data = await download_voice(replied_message.voice.file_id, context)
-            transcription = await transcribe_voice(voice_data)
+            transcription = await stt.transcribe_voice(voice_data)
             await message.reply_text(f"{user_name} сказал '{transcription}'")
+
 
 def main() -> None:
     application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
