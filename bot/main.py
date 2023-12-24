@@ -4,7 +4,7 @@ from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, fi
 import requests
 from google.cloud import speech
 from google.oauth2 import service_account
-from config import Config
+from config import Config, WHITELISTED_GROUPS
 
 TELEGRAM_BOT_TOKEN = Config.get_telegram_token()
 GOOGLE_SERVICE_FILE = Config.get_google_service_file()
@@ -46,7 +46,6 @@ async def handle_messages(update: Update, context: CallbackContext) -> None:
     # Check if the bot is mentioned and if the message is a reply
     if message.reply_to_message and f'@{context.bot.username}' in message.text:
 
-        logging.warning("Processing new messaage with my name in it")
         replied_message = message.reply_to_message
 
         # Extract the username or first name of the user who sent the replied message
@@ -59,13 +58,21 @@ async def handle_messages(update: Update, context: CallbackContext) -> None:
             transcription = await transcribe_voice(voice_data)
             await message.reply_text(f"{user_name} сказал '{transcription}'")
 
+async def validate_access(update: Update, context: CallbackContext) -> None:
+    message = update.message
+
+    # If it's a group message and the group is not whitelisted, leave the group
+    if message.chat.id not in WHITELISTED_GROUPS:
+        await context.bot.leave_chat(message.chat.id)
+        logger.warning(f"Leaving non-whitelisted group with chat ID {message.chat.id}, message type: {message.chat.type} and message: {message.text}")
+        return
 
 def main() -> None:
     application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
 
-    # Register the message handler
-    message_handler = MessageHandler(filters.TEXT & filters.ChatType.GROUPS, handle_messages)
-    application.add_handler(message_handler)
+    # Handlers are checked in order they are added
+    application.add_handler(MessageHandler(filters.ALL, validate_access))
+    application.add_handler(MessageHandler(filters.TEXT & filters.ChatType.GROUPS, handle_messages))
 
     application.run_polling()
     
