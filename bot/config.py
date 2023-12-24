@@ -1,14 +1,14 @@
 import os
 
 
-WHITELISTED_GROUPS = [-4084203084, -809833778, -1002093229047]
-
 class Config:
-    @staticmethod
-    def get_telegram_token():
-        return os.environ.get('TELEGRAM_TOKEN', 'default_telegram_token')
+    WHITELISTED_GROUPS = [-4084203084, -809833778, -1002093229047]
 
-    @staticmethod
-    def get_google_service_file():
-        return os.environ.get('GOOGLE_SERVICE_FILE', 'default_service_file')
+    def __init__(self, env: os.environ):
+        self._env = env
 
+    def get_telegram_token(self):
+        return self._env['TELEGRAM_TOKEN']
+
+    def get_google_service_file(self):
+        return self._env['GOOGLE_SERVICE_FILE']
