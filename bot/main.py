@@ -1,15 +1,16 @@
 import logging
 import os
 from logging.handlers import RotatingFileHandler
+import re
 
 import requests
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, filters
 
-from bot.config import Config
-from bot.stt import STT
+from article_gpt import ArticleGPT
+from config import Config
+from stt import STT
 
-TELEGRAM_BOT_TOKEN = Config.get_telegram_token()
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -24,10 +25,11 @@ config = Config(os.environ)
 
 # Speech-to-Text
 stt = STT(config)
+article_gpt = ArticleGPT(config)
 
 async def download_voice(voice_file_id, context):
     # Get the file path from Telegram
-    file = await context.bot.get_file(voice_file_id)
+    file = context.bot.get_file(voice_file_id)
     file_path = file.file_path
 
     response = requests.get(file_path)
@@ -53,13 +55,22 @@ async def handle_messages(update: Update, context: CallbackContext) -> None:
 
         # Handle voice messages
         if replied_message.voice:
-            voice_data = await download_voice(replied_message.voice.file_id, context)
-            transcription = await stt.transcribe_voice(voice_data)
+            file = await context.bot.get_file(replied_message.voice.file_id)
+            file_url = file.file_path
+
+            transcription = await stt.transcribe_voice(file_url)
             await message.reply_text(f"{user_name} сказал '{transcription}'")
+        elif replied_message.text:
+            url_pattern = r'https?://[^\s]+'
+            url = re.findall(url_pattern, replied_message.text)
+            if url:
+                text = replied_message.text
+                summary = article_gpt.summarize(text)
+                await message.reply_to_message.reply_text(summary)
 
 
 def main() -> None:
-    application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+    application = ApplicationBuilder().token(config.get_telegram_token()).build()
 
     application.add_handler(MessageHandler(filters.ALL, handle_messages))
 
