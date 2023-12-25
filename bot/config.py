@@ -12,3 +12,6 @@ class Config:
 
     def get_google_service_file(self):
         return self._env['GOOGLE_SERVICE_FILE']
+    
+    def get_open_ai_key(self):
+        return self._env['OPENAI_KEY']

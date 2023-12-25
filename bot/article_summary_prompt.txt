@@ -1,0 +1,13 @@
+I need you to summarize the following article. Please provide a concise summary in under 100 words, 
+suitable for a general audience but with an executive summary style, focusing on key data points and
+numbers. After the summary, list three key highlights or bullet points, each accompanied by a relevant 
+emoji. If you're unable to summarize the article, please explain why and provide an error message.
+
+Please format the response as follows:
+[Short summary here]
+
+[Emoji] [Highlight]
+[Emoji] [Highlight]
+[Emoji] [Highlight]
+
+Article:

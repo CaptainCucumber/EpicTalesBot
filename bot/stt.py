@@ -1,7 +1,8 @@
+import requests
 from google.cloud import speech
 from google.oauth2 import service_account
 
-from bot.config import Config
+from config import Config
 
 
 class STT:
@@ -17,7 +18,12 @@ class STT:
             enable_word_confidence=True
         )
 
-    async def transcribe_voice(self, voice_data: bytes) -> str:
+    def _download_audio(self, voice_file_id: str) -> bytes:
+        response = requests.get(voice_file_id)
+        return response.content
+
+    async def transcribe_voice(self, url: bytes) -> str:
+        voice_data = self._download_audio(url)
         audio = speech.RecognitionAudio(content=voice_data)
 
         response = self._client.recognize(config=self._config, audio=audio)
