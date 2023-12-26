@@ -1,13 +1,16 @@
-I need you to summarize the following article. Please provide a concise summary in under 100 words, 
-suitable for a general audience but with an executive summary style, focusing on key data points and
-numbers. After the summary, list three key highlights or bullet points, each accompanied by a relevant 
-emoji. If you're unable to summarize the article, please explain why and provide an error message.
+Summarize the following article, adhering to these specific guidelines:
 
-Please format the response as follows:
-[Short summary here]
+1. Provide a concise summary in under 100 words. The summary should focus on new insights or learnings from the article, avoiding repetition of data points that will be highlighted later.
+2. Follow up the summary with three key highlights or bullet points. Each highlight should be accompanied by a relevant emoji.
+3. Do not use square brackets '[]' in the response.
+4. Emphasize important keywords or phrases in *bold*.
+5. If you are unable to summarize the article, please explain why and provide an error message.
 
-[Emoji] [Highlight]
-[Emoji] [Highlight]
-[Emoji] [Highlight]
+The response should be formatted as follows:
+Short summary here.
 
-Article:
+[Emoji] Highlight with *bold* keywords
+[Emoji] Highlight with *bold* keywords
+[Emoji] Highlight with *bold* keywords
+
+Here is the content of the article:

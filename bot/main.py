@@ -78,6 +78,9 @@ async def handle_voice_message(context: CallbackContext, message: Message) -> No
     transcription = await stt.transcribe_voice(file_url)
     await message.reply_text(transcription)
 
+def escape_markdown(text):
+    escape_chars = '[]()~`>#+-=|{}.!'
+    return ''.join(['\\' + char if char in escape_chars else char for char in text])
 
 async def handle_text_message(context: CallbackContext, message: Message) -> None:
     url_pattern = r'https?://[^\s]+'
@@ -85,7 +88,8 @@ async def handle_text_message(context: CallbackContext, message: Message) -> Non
 
     if urls:
         summary = article_gpt.summarize(urls[0])
-        await message.reply_text(summary)
+        escaped_text = escape_markdown(summary)
+        await message.reply_text(escaped_text, parse_mode='MarkdownV2')
 
 
 def main() -> None:
