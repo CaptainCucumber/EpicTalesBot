@@ -84,8 +84,7 @@ async def handle_text_message(context: CallbackContext, message: Message) -> Non
     urls = re.findall(url_pattern, message.text)
 
     if urls:
-        text = message.text
-        summary = article_gpt.summarize(text)
+        summary = article_gpt.summarize(urls[0])
         await message.reply_text(summary)
 
 
