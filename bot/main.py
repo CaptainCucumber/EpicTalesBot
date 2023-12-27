@@ -71,16 +71,19 @@ async def process_messages(context: CallbackContext, message: Message) -> None:
         await handle_text_message(context, replied_message)
 
 
+def escape_markdown(text):
+    escape_chars = '[]()~`>#+-=|{}.!'
+    return ''.join(['\\' + char if char in escape_chars else char for char in text])
+
+
 async def handle_voice_message(context: CallbackContext, message: Message) -> None:
     file = await context.bot.get_file(message.voice.file_id)
     file_url = file.file_path
 
     transcription = await stt.transcribe_voice(file_url)
-    await message.reply_text(transcription)
+    escaped_text = escape_markdown(f"_{transcription}_")
+    await message.reply_text(escaped_text, parse_mode='MarkdownV2')
 
-def escape_markdown(text):
-    escape_chars = '[]()~`>#+-=|{}.!'
-    return ''.join(['\\' + char if char in escape_chars else char for char in text])
 
 async def handle_text_message(context: CallbackContext, message: Message) -> None:
     url_pattern = r'https?://[^\s]+'
