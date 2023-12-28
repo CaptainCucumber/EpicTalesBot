@@ -1,16 +1,31 @@
-import requests
-import openai
-from pydub import AudioSegment
 import io
+import os
+import tempfile
+
+import openai
+import requests
 import whisper
 from config import Config
-import tempfile
-import os
+from pydub import AudioSegment
+
 
 class STT:
+    _STT_CONTEXTUALIZATION_PROMPT = "contextualization_prompt.txt"
+
     def __init__(self, config: Config) -> None:
         openai.api_key = config.get_open_ai_key()
-        self.whisper_model = whisper.load_model("base")  # Load Whisper model
+        self.whisper_model = whisper.load_model("base")
+        self._prompt_content = None
+
+    def _gpt_prompt(self) -> str:
+        if self._prompt_content is None:
+            file_dir = os.path.dirname(os.path.abspath(__file__))
+            file_path = os.path.join(file_dir, self._STT_CONTEXTUALIZATION_PROMPT)
+        
+            with open(file_path, 'r', encoding='utf-8') as file:
+                self._prompt_content = file.read()
+
+        return self._prompt_content
 
     def _download_audio(self, voice_file_id: str) -> bytes:
         response = requests.get(voice_file_id)
@@ -25,6 +40,30 @@ class STT:
         wav_audio_stream.seek(0)
 
         return wav_audio_stream
+
+    def _contextualize_text(self, voice_text: str) -> str:
+        response = openai.chat.completions.create(
+            messages=[
+                { 
+                    "role": "system",
+                    "content": "You are a helpful assistant."
+                },
+                {
+                    "role": "user",
+                    "content": self._gpt_prompt() + voice_text
+                },
+                
+            ],
+            max_tokens=800,  # Adjust based on the length of your input
+            temperature=0.5,
+            top_p=1.0,
+            model="gpt-4-1106-preview"    
+        )
+
+        first_choice = response.choices[0]
+        message = first_choice.message
+
+        return message.content 
 
     async def transcribe_voice(self, url: str) -> str:
         voice_data = self._download_audio(url)
@@ -45,4 +84,6 @@ class STT:
         # Clean up: delete the temporary file
         os.remove(temp_file_path)
 
-        return voice_text
+
+        context = self._contextualize_text(voice_text)
+        return context
