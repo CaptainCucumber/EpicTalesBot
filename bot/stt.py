@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 class STT:
     _STT_CONTEXTUALIZATION_PROMPT = "contextualization_prompt.txt"
+    _MAX_VOICE_AUDIO_LENGTH = 60
 
     def __init__(self, config: Config) -> None:
         openai.api_key = config.get_open_ai_key()
@@ -33,17 +34,17 @@ class STT:
         response = requests.get(voice_file_id)
         return response.content
 
-    def _convert_oga_to_wav(self, oga_audio_data: bytes) -> io.BytesIO:
+    def _convert_oga_to_wav(self, oga_audio_data: bytes) -> tuple[io.BytesIO, bool]:
         oga_audio_stream = io.BytesIO(oga_audio_data)
         audio = AudioSegment.from_ogg(oga_audio_stream)
 
         logger.info(f"Audio duration: {audio.duration_seconds} seconds")
 
         wav_audio_stream = io.BytesIO()
-        audio.export(wav_audio_stream, format="wav")
+        audio[:self._MAX_VOICE_AUDIO_LENGTH * 1000].export(wav_audio_stream, format="wav")
         wav_audio_stream.seek(0)
 
-        return wav_audio_stream
+        return wav_audio_stream, audio.duration_seconds > self._MAX_VOICE_AUDIO_LENGTH
 
     def _contextualize_text(self, voice_text: str) -> str:
         response = openai.chat.completions.create(
@@ -73,7 +74,7 @@ class STT:
         voice_data = self._download_audio(url)
 
         # Convert OGA to WAV
-        wav_audio_stream = self._convert_oga_to_wav(voice_data)
+        wav_audio_stream, reduced = self._convert_oga_to_wav(voice_data)
 
         # Save the WAV audio to a temporary file
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
@@ -88,6 +89,8 @@ class STT:
         # Clean up: delete the temporary file
         os.remove(temp_file_path)
 
-
         context = self._contextualize_text(voice_text)
+        if reduced:
+            context = context + "\n\n__*Only first 60 seconds transcript visible.*__"
+        
         return context
