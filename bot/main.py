@@ -1,6 +1,5 @@
 import logging
 import os
-from logging.handlers import RotatingFileHandler
 import re
 
 import requests
@@ -12,14 +11,10 @@ from config import Config
 from stt import STT
 
 
-# Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+# Set up centralized logging configuration at the start of the application. Call it once only!
+from log_config import setup_logging
+setup_logging()
 logger = logging.getLogger(__name__)
-
-file_handler = RotatingFileHandler('application.log', maxBytes=1024*1024*20, backupCount=10)
-file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-logger.addHandler(file_handler)
-
 
 config = Config(os.environ)
 
@@ -77,6 +72,8 @@ def escape_markdown(text):
 
 
 async def handle_voice_message(context: CallbackContext, message: Message) -> None:
+    logger.info(f'New voice message from chat ID {message.chat.id} and user ID {message.from_user.id}({message.from_user.name})')
+
     file = await context.bot.get_file(message.voice.file_id)
     file_url = file.file_path
 
@@ -86,6 +83,7 @@ async def handle_voice_message(context: CallbackContext, message: Message) -> No
 
 
 async def handle_text_message(context: CallbackContext, message: Message) -> None:
+    logger.info(f'New text message from chat ID {message.chat.id} and user ID {message.from_user.id}({message.from_user.name})')
     url_pattern = r'https?://[^\s]+'
     urls = re.findall(url_pattern, message.text)
 

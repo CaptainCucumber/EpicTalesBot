@@ -28,6 +28,7 @@ class ArticleGPT:
 
     # Return None if an error occurred
     def _download_webpage(self, url: str) -> str:
+        logger.info(f"Downloading article content: {url}")
         try:
             response = requests.get(url, headers = {'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=30)
             if response.status_code == 200:
@@ -72,6 +73,7 @@ class ArticleGPT:
             summary = self._gpt_it(title, text)
             return summary
         
+        logger.error(f'Cannot process URL {url}, content is empty')
         return "Sorry, I couldn't generate the summary."
         
 

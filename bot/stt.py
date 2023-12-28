@@ -1,4 +1,5 @@
 import io
+import logging
 import os
 import tempfile
 
@@ -8,6 +9,7 @@ import whisper
 from config import Config
 from pydub import AudioSegment
 
+logger = logging.getLogger(__name__)
 
 class STT:
     _STT_CONTEXTUALIZATION_PROMPT = "contextualization_prompt.txt"
@@ -34,6 +36,8 @@ class STT:
     def _convert_oga_to_wav(self, oga_audio_data: bytes) -> io.BytesIO:
         oga_audio_stream = io.BytesIO(oga_audio_data)
         audio = AudioSegment.from_ogg(oga_audio_stream)
+
+        logger.info(f"Audio duration: {audio.duration_seconds} seconds")
 
         wav_audio_stream = io.BytesIO()
         audio.export(wav_audio_stream, format="wav")
