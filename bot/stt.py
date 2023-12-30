@@ -17,7 +17,7 @@ class STT:
 
     def __init__(self, config: Config) -> None:
         openai.api_key = config.get_open_ai_key()
-        self.whisper_model = whisper.load_model("base")
+        self.whisper_model = whisper.load_model("small")
         self._prompt_content = None
 
     def _gpt_prompt(self) -> str:
@@ -46,30 +46,6 @@ class STT:
 
         return wav_audio_stream, audio.duration_seconds > self._MAX_VOICE_AUDIO_LENGTH
 
-    def _contextualize_text(self, voice_text: str) -> str:
-        response = openai.chat.completions.create(
-            messages=[
-                { 
-                    "role": "system",
-                    "content": "You are a helpful assistant."
-                },
-                {
-                    "role": "user",
-                    "content": self._gpt_prompt() + voice_text
-                },
-                
-            ],
-            max_tokens=800,  # Adjust based on the length of your input
-            temperature=0.5,
-            top_p=1.0,
-            model="gpt-4-1106-preview"    
-        )
-
-        first_choice = response.choices[0]
-        message = first_choice.message
-
-        return message.content 
-
     async def transcribe_voice(self, url: str) -> str:
         voice_data = self._download_audio(url)
 
@@ -83,14 +59,13 @@ class STT:
 
         # Transcribe using Whisper
         audio_data = whisper.load_audio(temp_file_path)
-        result = self.whisper_model.transcribe(audio_data)
+        result = self.whisper_model.transcribe(audio_data, condition_on_previous_text=False)
         voice_text = result["text"]
 
         # Clean up: delete the temporary file
         os.remove(temp_file_path)
 
-        context = self._contextualize_text(voice_text)
         if reduced:
-            context = context + "\n\n__*Only first 60 seconds transcript visible.*__"
+            voice_text = voice_text + "\n\n__*Только первые 60 секунд переведены.*__"
         
-        return context
+        return voice_text
