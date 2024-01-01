@@ -7,6 +7,7 @@ from telegram import Message, Update
 from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, filters
 
 from article_gpt import ArticleGPT
+from video_gpt import VideoGPT
 from config import Config
 from stt import STT
 
@@ -21,6 +22,7 @@ config = Config(os.environ)
 # Speech-to-Text
 stt = STT(config)
 article_gpt = ArticleGPT(config)
+video_gpt = VideoGPT(config)
 
 async def download_voice(voice_file_id, context):
     # Get the file path from Telegram
@@ -57,6 +59,10 @@ def is_bot_mentioned(botname: str, message: Message) -> bool:
     return message.reply_to_message and f'@{botname}' in message.text
 
 
+def is_youtube_url(url: str) -> bool:
+    return 'youtube.com/watch' in url or 'youtu.be/' in url
+
+
 async def process_messages(context: CallbackContext, message: Message) -> None:
     replied_message = message.reply_to_message
 
@@ -87,10 +93,19 @@ async def handle_text_message(context: CallbackContext, message: Message) -> Non
     url_pattern = r'https?://[^\s]+'
     urls = re.findall(url_pattern, message.text)
 
-    if urls:
+    if not urls:
+        logger.error(f'No URL found in message: {message.text}')
+        return
+    
+    summary = None
+    if is_youtube_url(urls[0]):
+        summary = video_gpt.summarize(urls[0])
+       
+    else:
         summary = article_gpt.summarize(urls[0])
-        escaped_text = escape_markdown(summary)
-        await message.reply_text(escaped_text, parse_mode='MarkdownV2')
+
+    escaped_text = escape_markdown(summary)
+    await message.reply_text(escaped_text, parse_mode='MarkdownV2')
 
 
 def main() -> None:
