@@ -1,0 +1,58 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 21:51-0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: article_gpt.py:16
+msgid "ARTICLE_SUMMARY_PROMPT"
+msgstr ""
+
+#: article_gpt.py:39 video_gpt.py:19
+msgid "Title"
+msgstr ""
+
+#: article_gpt.py:40
+msgid "Text"
+msgstr ""
+
+#: article_gpt.py:58 article_gpt.py:68
+msgid "Sorry, I couldn't generate the article summary."
+msgstr ""
+
+#: video_gpt.py:16
+msgid "VIDEO_SUMMARY_PROMPT"
+msgstr ""
+
+#: video_gpt.py:20
+msgid "Subtitles"
+msgstr ""
+
+#: video_gpt.py:38
+msgid "Sorry, I couldn't generate the video summary."
+msgstr ""
+
+#: video_gpt.py:104
+msgid "The video is not available for reviewing"
+msgstr ""
+
+#: video_gpt.py:109
+msgid "The subtitles are not available."
+msgstr ""
+
+#: stt.py:58
+msgid "The translation is limited to the first 60 seconds."
+msgstr ""

@@ -1,34 +1,29 @@
 import json
-import re
-import openai
-import requests
 import logging
-import os
+import re
 import xml.etree.ElementTree as ET
 
+import openai
+import requests
 from config import Config
-
+from localization import _
 
 logger = logging.getLogger(__name__)
 
 class VideoGPT:
-    _VIDEO_SUMMARY_PROMPT_FILE = "video_summary_prompt.txt"
-
     def __init__(self, config: Config) -> None:
         openai.api_key = config.get_open_ai_key()
-        file_dir = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(file_dir, self._VIDEO_SUMMARY_PROMPT_FILE)
-        
-        with open(file_path, 'r', encoding='utf-8') as file:
-            self._prompt_content = file.read()
+        self._prompt_content = _("VIDEO_SUMMARY_PROMPT")
 
-    def _gpt_it(self, title: str, text: str) -> str:
+    def _gpt_it(self, title: str, subtitles: str) -> str:
+        title_name = _('Title')
+        subtitles_name = _('Subtitles')
         try:
             response = openai.chat.completions.create(
                 messages=[
                     {
                         "role": "user",
-                        "content": self._prompt_content + f"\nTitle: {title}\nText: {text}"
+                        "content": self._prompt_content + f"\n{title_name}: {title}\n{subtitles_name}: {subtitles}"
                     }
                 ],
                 model="gpt-4-1106-preview"    
@@ -40,7 +35,7 @@ class VideoGPT:
             return message.content
         except Exception as e:
             logger.error(f"Error in generating summary: {e}")
-            return "Sorry, I couldn't generate the summary."
+            return _("Sorry, I couldn't generate the video summary.")
 
     def _get_video_info(self, video_url: str) -> dict:
         response = requests.get(video_url)
@@ -106,10 +101,15 @@ class VideoGPT:
 
         if not video_info:
             logger.error(f'Cannot process URL {video_url}, video info is empty')
-            return None
+            return _("The video is not available for reviewing")
 
         subtitles_url = self._extract_subtitles_url(video_info)
+        if not subtitles_url:
+            logger.error(f'Cannot process URL {video_url}, subtitles URL is empty')
+            return _("The subtitles are not available.")
+
         xml_subtitles = self._download_subtitles(subtitles_url)
         text_subtitles = self._convert_xml_to_text(xml_subtitles)
 
-        return self._gpt_it(video_info['videoDetails']['title'], text_subtitles)
+        title = video_info['videoDetails']['title']
+        return self._gpt_it(title, text_subtitles)

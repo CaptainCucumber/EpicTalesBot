@@ -3,17 +3,16 @@ import os
 import re
 
 import requests
+from article_gpt import ArticleGPT
+from config import Config
+
+from log_config import setup_logging
+from stt import STT
 from telegram import Message, Update
 from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, filters
-
-from article_gpt import ArticleGPT
 from video_gpt import VideoGPT
-from config import Config
-from stt import STT
 
 
-# Set up centralized logging configuration at the start of the application. Call it once only!
-from log_config import setup_logging
 setup_logging()
 logger = logging.getLogger(__name__)
 
@@ -94,7 +93,7 @@ async def handle_text_message(context: CallbackContext, message: Message) -> Non
     urls = re.findall(url_pattern, message.text)
 
     if not urls:
-        logger.error(f'No URL found in message: {message.text}')
+        logger.warning(f'No URL found in message: {message.text}')
         return
     
     summary = None
