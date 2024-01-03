@@ -2,7 +2,7 @@ import os
 
 
 class Config:
-    WHITELISTED_GROUPS = [-4084203084, -809833778, -1002093229047]
+    BLACKLISTED_GROUPS = []
 
     def __init__(self, env: os.environ):
         self._env = env

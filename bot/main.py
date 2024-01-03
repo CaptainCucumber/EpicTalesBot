@@ -34,7 +34,7 @@ async def download_voice(voice_file_id, context):
 async def handle_messages(update: Update, context: CallbackContext) -> None:
     message = update.message
 
-    if not is_whitelisted(message):
+    if is_blacklisted(message):
         await leave_group(context, message)
         return
 
@@ -50,8 +50,8 @@ async def leave_group(context: CallbackContext, message: Message) -> None:
     )
 
 
-def is_whitelisted(message: Message) -> bool:
-    return message.chat.id in Config.WHITELISTED_GROUPS
+def is_blacklisted(message: Message) -> bool:
+    return message.chat.id in Config.BLACKLISTED_GROUPS
 
 
 def is_bot_mentioned(botname: str, message: Message) -> bool:
@@ -88,7 +88,7 @@ async def handle_voice_message(context: CallbackContext, message: Message) -> No
 
 
 async def handle_text_message(context: CallbackContext, message: Message) -> None:
-    logger.info(f'New text message from chat ID {message.chat.id} and user ID {message.from_user.id}({message.from_user.name})')
+    logger.info(f'New text message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})')
     url_pattern = r'https?://[^\s]+'
     urls = re.findall(url_pattern, message.text)
 
