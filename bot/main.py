@@ -116,10 +116,15 @@ async def handle_text_message(context: CallbackContext, message: Message) -> Non
     await message.reply_text(escaped_text, parse_mode='MarkdownV2')
 
 
+def error_handler(update: Update, context: CallbackContext) -> None:
+    logger.error(f"Update '{update}' caused error '{context.error}'")
+
+
 def main() -> None:
     application = ApplicationBuilder().token(config.get_telegram_token()).build()
 
     application.add_handler(MessageHandler(filters.ALL, handle_messages))
+    application.add_error_handler(error_handler)
 
     application.run_polling()
     
