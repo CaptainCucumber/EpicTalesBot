@@ -32,14 +32,23 @@ async def download_voice(voice_file_id, context):
     return response.content
 
 async def handle_messages(update: Update, context: CallbackContext) -> None:
-    message = update.message
+    message = update.message if update.message else update.channel_post
 
     if is_blacklisted(message):
         await leave_group(context, message)
         return
 
-    if is_bot_mentioned(context.bot.username, message):
+    if message.chat.type == 'private':
+        # Process messages directly in private chats
         await process_messages(context, message)
+    elif message.chat.type in ['group', 'supergroup']:
+        # In groups, process only if bot is mentioned
+        if is_bot_mentioned(context.bot.username, message):
+            await process_messages(context, message)
+    elif message.chat.type == 'channel':
+        # TODO: Not sure what to do in channels. What is our behavior here?
+        logger.warning("Received message in channel with chat ID %s", message.chat.id)
+        await message.reply_text("Channels are not currently supported")
 
 
 async def leave_group(context: CallbackContext, message: Message) -> None:
@@ -63,7 +72,7 @@ def is_youtube_url(url: str) -> bool:
 
 
 async def process_messages(context: CallbackContext, message: Message) -> None:
-    replied_message = message.reply_to_message
+    replied_message = message.reply_to_message if message.reply_to_message else message
 
     if replied_message.voice:
         await handle_voice_message(context, replied_message)
