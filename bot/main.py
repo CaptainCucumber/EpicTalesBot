@@ -34,6 +34,10 @@ async def download_voice(voice_file_id, context):
 async def handle_messages(update: Update, context: CallbackContext) -> None:
     message = update.message if update.message else update.channel_post
 
+    if not message:
+        logger.warning("Received message with no content")
+        return
+
     if is_blacklisted(message):
         await leave_group(context, message)
         return
@@ -116,8 +120,8 @@ async def handle_text_message(context: CallbackContext, message: Message) -> Non
     await message.reply_text(escaped_text, parse_mode='MarkdownV2')
 
 
-def error_handler(update: Update, context: CallbackContext) -> None:
-    logger.error(f"Update '{update}' caused error '{context.error}'")
+async def error_handler(update: Update, context: CallbackContext) -> None:
+    logger.error(f"Update '{update}' caused error '{type(context.error)}: {context.error}'")
 
 
 def main() -> None:
