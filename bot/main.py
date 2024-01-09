@@ -84,11 +84,6 @@ async def process_messages(context: CallbackContext, message: Message) -> None:
         await handle_text_message(context, replied_message)
 
 
-def escape_markdown(text):
-    escape_chars = '[]()~`>#+-=|{}.!'
-    return ''.join(['\\' + char if char in escape_chars else char for char in text])
-
-
 async def handle_voice_message(context: CallbackContext, message: Message) -> None:
     logger.info(f'New voice message from chat ID {message.chat.id} and user ID {message.from_user.id}({message.from_user.name})')
 
@@ -96,9 +91,7 @@ async def handle_voice_message(context: CallbackContext, message: Message) -> No
     file_url = file.file_path
 
     transcription = await stt.transcribe_voice(file_url)
-    escaped_text = escape_markdown(f"_{transcription}_")
-    await message.reply_text(escaped_text, parse_mode='MarkdownV2')
-
+    await message.reply_html(transcription, quote=True)
 
 async def handle_text_message(context: CallbackContext, message: Message) -> None:
     logger.info(f'New text message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})')
@@ -116,8 +109,8 @@ async def handle_text_message(context: CallbackContext, message: Message) -> Non
     else:
         summary = article_gpt.summarize(urls[0])
 
-    escaped_text = escape_markdown(summary)
-    await message.reply_text(escaped_text, parse_mode='MarkdownV2')
+    #escaped_text = escape_markdown(summary)
+    await message.reply_html(summary, quote=True)
 
 
 async def error_handler(update: Update, context: CallbackContext) -> None:
