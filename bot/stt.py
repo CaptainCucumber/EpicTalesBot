@@ -49,13 +49,13 @@ class STT:
         # Transcribe using Whisper
         audio_data = whisper.load_audio(temp_file_path)
         result = self.whisper_model.transcribe(audio_data, condition_on_previous_text=False)
-        voice_text = result["text"]
+        voice_text = f'<i>{result["text"]}</i>'
 
         # Clean up: delete the temporary file
         os.remove(temp_file_path)
 
         if reduced:
             message = _("The translation is limited to the first 60 seconds.")
-            voice_text = f"{voice_text} \n\n__*{message}*__"
+            voice_text = f"{voice_text}\n\n<b>{message}*<b>"
         
         return voice_text
