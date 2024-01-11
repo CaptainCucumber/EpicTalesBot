@@ -56,6 +56,6 @@ class STT:
 
         if reduced:
             message = _("The translation is limited to the first 60 seconds.")
-            voice_text = f"{voice_text}\n\n<b>{message}*<b>"
+            voice_text = f"{voice_text}\n\n<b>{message}</b>"
         
         return voice_text
