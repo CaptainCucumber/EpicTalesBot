@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 from config import Config
 from localization import _
+from cache import cache_disk
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +58,7 @@ class ArticleGPT:
             logger.error(f"Error in generating summary: {e}")
             return _("Sorry, I couldn't generate the article summary.")
 
+    @cache_disk
     def summarize(self, url: str) -> str:
         html = self._download_webpage(url)
         if html:

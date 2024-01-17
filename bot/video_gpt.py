@@ -7,6 +7,7 @@ import openai
 import requests
 from config import Config
 from localization import _
+from cache import cache_disk
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +97,7 @@ class VideoGPT:
         
         return subtitles_text.strip()
 
+    @cache_disk
     def summarize(self, video_url: str) -> str:
         video_info = self._get_video_info(video_url)
 
