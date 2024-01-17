@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation for epictalesbot.com website hosting
+
+Resources:
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: epictalesbot.com
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+
+  SSLCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: epictalesbot.com
+      ValidationMethod: DNS
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        Aliases:
+          - epictalesbot.com
+        Origins:
+          - Id: WebsiteBucket
+            DomainName: !GetAtt WebsiteBucket.DomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        ViewerCertificate:
+          AcmCertificateArn: !Ref SSLCertificate
+          SslSupportMethod: sni-only
+
+  HostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: epictalesbot.com
+
+  RecordSet:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      RecordSets:
+        - Name: epictalesbot.com
+          Type: A
+          AliasTarget:
+            HostedZoneId: Z2FDTNDATAQYW2 # This is the Hosted Zone ID for CloudFront
+            DNSName: !GetAtt CloudFrontDistribution.DomainName
