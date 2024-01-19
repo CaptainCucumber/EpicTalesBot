@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-01 21:51-0800\n"
+"POT-Creation-Date: 2024-01-19 12:05-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,13 +17,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: article_gpt.py:16
+#: bot/article_gpt.py:17
 msgid "ARTICLE_SUMMARY_PROMPT"
 msgstr ""
 "Prepare a brief summary of the provided article, which can be in any "
-"language, in the concise Axios style, using formatting rules provided below. The "
-"summary should be in English, contain less than 100 words, follow the rules "
-"listed below, and contain only the article summary without additional "
+"language, in the concise Axios style, using formatting rules provided below. "
+"The summary should be in English, contain less than 100 words, follow the "
+"rules listed below, and contain only the article summary without additional "
 "communication:\n"
 "\n"
 "1. List Structure: Structure the main content in the form of a list, where "
@@ -46,19 +46,31 @@ msgstr ""
 "\n"
 "Here is the article for summary:"
 
-#: article_gpt.py:39 video_gpt.py:19
+#: bot/article_gpt.py:40 bot/video_gpt.py:22
 msgid "Title"
 msgstr "Title"
 
-#: article_gpt.py:40
+#: bot/article_gpt.py:41
 msgid "Text"
 msgstr "Text"
 
-#: article_gpt.py:58 article_gpt.py:68
+#: bot/article_gpt.py:59 bot/article_gpt.py:70
 msgid "Sorry, I couldn't generate the article summary."
 msgstr "Sorry, I couldn't generate the article summary."
 
-#: video_gpt.py:16
+#: bot/main.py:120
+msgid "Welcome message"
+msgstr ""
+"You can send me a link or a voice message and I will do all the rest of the work."
+"\n\n"
+"Or add me to a group, reply to a voice message or a message with a link, "
+"and add my name <a href='tg://user?id=6871158416'>@EpicTalesBot</a> in the response."
+
+#: bot/stt.py:58
+msgid "The translation is limited to the first 60 seconds."
+msgstr "The translation is limited to the first 60 seconds."
+
+#: bot/video_gpt.py:19
 msgid "VIDEO_SUMMARY_PROMPT"
 msgstr ""
 "Prepare a brief summary of the provided video, which can be in any language, "
@@ -81,31 +93,27 @@ msgstr ""
 "sentences.\n"
 "7. Neutral Tone: Use an informative and neutral tone, avoiding specialized "
 "jargon.\n"
-"8. Formatting: Apply following syntax for formatting, such as "
-"<b>bold</b>, <i>italic</i>, and <s>strikethrough</s>.\n"
+"8. Formatting: Apply following syntax for formatting, such as <b>bold</b>, "
+"<i>italic</i>, and <s>strikethrough</s>.\n"
 "\n"
 "Here is the content of a YouTube video:"
 
-#: video_gpt.py:20
+#: bot/video_gpt.py:23
 msgid "Subtitles"
 msgstr "Subtitles"
 
-#: video_gpt.py:38
+#: bot/video_gpt.py:41
 msgid "Sorry, I couldn't generate the video summary."
 msgstr "Sorry, I couldn't generate the video summary."
 
-#: video_gpt.py:104
+#: bot/video_gpt.py:96
 msgid "The video is not available for reviewing"
 msgstr ""
 "Sorry, I couldn't generate the video summary. The video is not available for "
 "reviewing"
 
-#: video_gpt.py:109
+#: bot/video_gpt.py:101
 msgid "The subtitles are not available."
 msgstr ""
 "Sorry, I couldn't generate the video summary. The subtitles are not "
 "available."
-
-#: stt.py:58
-msgid "The translation is limited to the first 60 seconds."
-msgstr "The translation is limited to the first 60 seconds."

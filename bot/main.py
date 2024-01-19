@@ -9,9 +9,9 @@ from config import Config
 from log_config import setup_logging
 from stt import STT
 from telegram import Message, Update
-from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, CommandHandler, filters
 from video_gpt import VideoGPT
-
+from localization import _
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -109,7 +109,6 @@ async def handle_text_message(context: CallbackContext, message: Message) -> Non
     else:
         summary = article_gpt.summarize(urls[0])
 
-    #escaped_text = escape_markdown(summary)
     await message.reply_html(summary, quote=True)
 
 
@@ -117,8 +116,14 @@ async def error_handler(update: Update, context: CallbackContext) -> None:
     logger.error(f"Update '{update}' caused error '{type(context.error)}: {context.error}'")
 
 
+async def command_start(update: Update, context: CallbackContext) -> None:
+    await update.message.reply_html(_('Welcome message'), quote=True)
+
+
 def main() -> None:
     application = ApplicationBuilder().token(config.get_telegram_token()).build()
+
+    application.add_handler(CommandHandler("start", command_start))
 
     application.add_handler(MessageHandler(filters.ALL, handle_messages))
     application.add_error_handler(error_handler)
