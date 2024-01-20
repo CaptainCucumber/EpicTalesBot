@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-19 12:05-0800\n"
+"POT-Creation-Date: 2024-01-20 10:25-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,17 +54,23 @@ msgstr "Title"
 msgid "Text"
 msgstr "Text"
 
-#: bot/article_gpt.py:59 bot/article_gpt.py:70
+#: bot/article_gpt.py:59 bot/article_gpt.py:74
 msgid "Sorry, I couldn't generate the article summary."
 msgstr "Sorry, I couldn't generate the article summary."
 
-#: bot/main.py:120
+#: bot/main.py:123
+msgid "Something went completely wrong"
+msgstr "⚠️ Something went wrong. We have received the message and are already working on a fix."
+
+#: bot/main.py:127
 msgid "Welcome message"
 msgstr ""
-"You can send me a link or a voice message and I will do all the rest of the work."
-"\n\n"
-"Or add me to a group, reply to a voice message or a message with a link, "
-"and add my name <a href='tg://user?id=6871158416'>@EpicTalesBot</a> in the response."
+"You can send me a link or a voice message and I will do all the rest of the "
+"work.\n"
+"\n"
+"Or add me to a group, reply to a voice message or a message with a link, and "
+"add my name <a href='tg://user?id=6871158416'>@EpicTalesBot</a> in the "
+"response."
 
 #: bot/stt.py:58
 msgid "The translation is limited to the first 60 seconds."

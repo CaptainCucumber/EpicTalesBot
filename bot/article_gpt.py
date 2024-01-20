@@ -1,12 +1,12 @@
-
 import logging
+import traceback
 
 import openai
 import requests
 from bs4 import BeautifulSoup
+from cache import cache_disk
 from config import Config
 from localization import _
-from cache import cache_disk
 
 logger = logging.getLogger(__name__)
 
@@ -60,13 +60,17 @@ class ArticleGPT:
 
     @cache_disk
     def summarize(self, url: str) -> str:
-        html = self._download_webpage(url)
-        if html:
-            title, text = self._extract_title_and_content(html)
-            summary = self._gpt_it(title, text)
-            return summary
+        try:
+            html = self._download_webpage(url)
+            if html:
+                title, text = self._extract_title_and_content(html)
+                summary = self._gpt_it(title, text)
+                return summary
+        except Exception as e:
+            # Capture the entire stack trace and log it
+            stack_trace = traceback.format_exc()
+            logger.error(f'Exception occurred while processing URL {url}:\n{e}\n{stack_trace}')
         
-        logger.error(f'Cannot process URL {url}, content is empty')
         return _("Sorry, I couldn't generate the article summary.")
         
 
