@@ -13,11 +13,11 @@ from pydub import AudioSegment
 logger = logging.getLogger(__name__)
 
 class STT:
-    _MAX_VOICE_AUDIO_LENGTH = 60
+    _MAX_VOICE_AUDIO_LENGTH = 5*60
 
     def __init__(self, config: Config) -> None:
         openai.api_key = config.get_open_ai_key()
-        self.whisper_model = whisper.load_model("small")
+        self.whisper_model = whisper.load_model("large")
 
     def _download_audio(self, voice_file_id: str) -> bytes:
         response = requests.get(voice_file_id)

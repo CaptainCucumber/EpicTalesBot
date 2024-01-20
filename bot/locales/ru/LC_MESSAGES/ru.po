@@ -60,7 +60,8 @@ msgstr "Извините, мне не удалось сгенерировать 
 
 #: bot/main.py:123
 msgid "Something went completely wrong"
-msgstr "⚠️ Что-то пошло не так. Мы получили сообщение и уже работаем над исправлением."
+msgstr ""
+"⚠️ Что-то пошло не так. Мы получили сообщение и уже работаем над исправлением."
 
 #: bot/main.py:127
 msgid "Welcome message"
@@ -73,8 +74,9 @@ msgstr ""
 "id=6871158416'>@EpicTalesBot</a> в ответ."
 
 #: bot/stt.py:58
-msgid "The translation is limited to the first 60 seconds."
-msgstr "Перевод ограничен первыми 60 секундами."
+#, fuzzy
+msgid "The translation is limited to the first 5 mins."
+msgstr "Перевод ограничен первыми 5ю минутами."
 
 #: bot/video_gpt.py:19
 msgid "VIDEO_SUMMARY_PROMPT"

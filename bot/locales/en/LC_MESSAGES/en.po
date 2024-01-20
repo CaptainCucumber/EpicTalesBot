@@ -60,7 +60,9 @@ msgstr "Sorry, I couldn't generate the article summary."
 
 #: bot/main.py:123
 msgid "Something went completely wrong"
-msgstr "⚠️ Something went wrong. We have received the message and are already working on a fix."
+msgstr ""
+"⚠️ Something went wrong. We have received the message and are already working "
+"on a fix."
 
 #: bot/main.py:127
 msgid "Welcome message"
@@ -73,8 +75,9 @@ msgstr ""
 "response."
 
 #: bot/stt.py:58
-msgid "The translation is limited to the first 60 seconds."
-msgstr "The translation is limited to the first 60 seconds."
+#, fuzzy
+msgid "The translation is limited to the first 5 mins."
+msgstr "The translation is limited to the first 5 mins."
 
 #: bot/video_gpt.py:19
 msgid "VIDEO_SUMMARY_PROMPT"

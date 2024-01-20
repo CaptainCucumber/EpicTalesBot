@@ -42,7 +42,7 @@ msgid "Welcome message"
 msgstr ""
 
 #: bot/stt.py:58
-msgid "The translation is limited to the first 60 seconds."
+msgid "The translation is limited to the first 5 mins."
 msgstr ""
 
 #: bot/video_gpt.py:19
