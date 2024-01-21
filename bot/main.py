@@ -9,6 +9,7 @@ from log_config import setup_logging
 from metrics import track_function
 from stt import STT
 from telegram import Message, Update
+from telegram.constants import ParseMode
 from telegram.ext import (
     ApplicationBuilder,
     CallbackContext,
@@ -25,6 +26,11 @@ logger = logging.getLogger(__name__)
 stt = STT(config)
 article_gpt = ArticleGPT(config)
 video_gpt = VideoGPT(config)
+
+
+READING_STICKER = "CAACAgEAAxkBAAPvZa08i8gvG70My_EEkqmhgwvLu5gAAqECAAKoyCFEr-C6Suk25ik0BA"
+WATCHING_STICKER = "CAACAgEAAxkBAAPzZa09iinK8z-W-mNnUp0YPHLDpkwAAhsCAAPUGESSRmhdQDpGTTQE"
+LISTENING_STICKER = "CAACAgEAAxkBAAP7Za1GmGxnW7OUXAy5-e6tIqgGZVwAAtcCAAKkdyBEDjNwiD91jjI0BA"
 
 async def download_voice(voice_file_id, context):
     # Get the file path from Telegram
@@ -93,11 +99,15 @@ async def process_messages(context: CallbackContext, message: Message) -> None:
 async def handle_voice_message(context: CallbackContext, message: Message) -> None:
     logger.info(f'New voice message from chat ID {message.chat.id} and user ID {message.from_user.id}({message.from_user.name})')
 
+    progress_message = await message.reply_sticker(LISTENING_STICKER)
+
     file = await context.bot.get_file(message.voice.file_id)
     file_url = file.file_path
 
     transcription = await stt.transcribe_voice(file_url)
-    await message.reply_html(transcription, quote=True)
+    await progress_message.delete()
+    await message.reply_text(transcription, quote=True, parse_mode=ParseMode.HTML)
+
 
 @track_function
 async def handle_text_message(context: CallbackContext, message: Message) -> None:
@@ -110,13 +120,17 @@ async def handle_text_message(context: CallbackContext, message: Message) -> Non
         return
     
     summary = None
+    progress_message = None
     if is_youtube_url(urls[0]):
+        progress_message = await message.reply_sticker(WATCHING_STICKER)
         summary = video_gpt.summarize(urls[0])
-       
     else:
+        progress_message = await message.reply_sticker(READING_STICKER)
         summary = article_gpt.summarize(urls[0])
 
-    await message.reply_html(summary, quote=True)
+    await progress_message.delete()
+    await message.reply_text(summary, quote=True, parse_mode=ParseMode.HTML)
+
 
 @track_function
 async def error_handler(update: Update, context: CallbackContext) -> None:
