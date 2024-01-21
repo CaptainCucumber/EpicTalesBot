@@ -8,6 +8,7 @@ import requests
 import whisper
 from config import Config
 from localization import _
+from metrics import track_function
 from pydub import AudioSegment
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ class STT:
 
     def __init__(self, config: Config) -> None:
         openai.api_key = config.get_open_ai_key()
-        self.whisper_model = whisper.load_model("large")
+        self.whisper_model = None # whisper.load_model("")
 
     def _download_audio(self, voice_file_id: str) -> bytes:
         response = requests.get(voice_file_id)
@@ -35,6 +36,7 @@ class STT:
 
         return wav_audio_stream, audio.duration_seconds > self._MAX_VOICE_AUDIO_LENGTH
 
+    @track_function
     async def transcribe_voice(self, url: str) -> str:
         voice_data = self._download_audio(url)
 

@@ -1,5 +1,9 @@
 import logging
+import os
 from logging.handlers import RotatingFileHandler
+
+from config import config
+
 
 def setup_logging():
     # Create a logger
@@ -10,8 +14,14 @@ def setup_logging():
     # Ideally the token should be reducted by a custom filter.
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
+
     # Create a rotating file handler
-    file_handler = RotatingFileHandler('application.log', maxBytes=1024*1024*5, backupCount=10)
+    log_file = config.get_log_path() + '/application.log'
+    log_directory = os.path.dirname(log_file)
+    if not os.path.exists(log_directory):
+        os.makedirs(log_directory)
+
+    file_handler = RotatingFileHandler(log_file, maxBytes=1024*1024*5, backupCount=10)
     file_handler.setLevel(logging.INFO)
 
      # Create a console handler

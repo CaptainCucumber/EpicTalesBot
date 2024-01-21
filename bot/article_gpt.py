@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from cache import cache_disk
 from config import Config
 from localization import _
+from metrics import metrics_logger, track_function
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +59,7 @@ class ArticleGPT:
             logger.error(f"Error in generating summary: {e}")
             return _("Sorry, I couldn't generate the article summary.")
 
+    @track_function
     @cache_disk
     def summarize(self, url: str) -> str:
         try:
@@ -70,7 +72,8 @@ class ArticleGPT:
             # Capture the entire stack trace and log it
             stack_trace = traceback.format_exc()
             logger.error(f'Exception occurred while processing URL {url}:\n{e}\n{stack_trace}')
-        
+
+        metrics_logger.function_call("summarize", success=False)
         return _("Sorry, I couldn't generate the article summary.")
         
 

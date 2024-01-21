@@ -12,3 +12,11 @@ class Config:
     
     def get_open_ai_key(self):
         return self._env['OPENAI_KEY']
+    
+    def get_log_path(self):
+        return self._env.get('EPICTALES_LOG_PATH', '/var/log/epictales')
+    
+    def get_metrics_path(self):
+        return self._env.get('EPICTALES_METRICS_PATH', '/var/log/epictales')
+
+config = Config(os.environ)

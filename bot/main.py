@@ -1,22 +1,25 @@
 import logging
-import os
 import re
 
 import requests
 from article_gpt import ArticleGPT
-from config import Config
-
+from config import Config, config
+from localization import _
 from log_config import setup_logging
+from metrics import track_function
 from stt import STT
 from telegram import Message, Update
-from telegram.ext import ApplicationBuilder, CallbackContext, MessageHandler, CommandHandler, filters
+from telegram.ext import (
+    ApplicationBuilder,
+    CallbackContext,
+    CommandHandler,
+    MessageHandler,
+    filters,
+)
 from video_gpt import VideoGPT
-from localization import _
 
 setup_logging()
 logger = logging.getLogger(__name__)
-
-config = Config(os.environ)
 
 # Speech-to-Text
 stt = STT(config)
@@ -31,6 +34,7 @@ async def download_voice(voice_file_id, context):
     response = requests.get(file_path)
     return response.content
 
+@track_function
 async def handle_messages(update: Update, context: CallbackContext) -> None:
     message = update.message if update.message else update.channel_post
 
@@ -75,6 +79,7 @@ def is_youtube_url(url: str) -> bool:
     return 'youtube.com/watch' in url or 'youtu.be/' in url
 
 
+@track_function
 async def process_messages(context: CallbackContext, message: Message) -> None:
     replied_message = message.reply_to_message if message.reply_to_message else message
 
@@ -84,6 +89,7 @@ async def process_messages(context: CallbackContext, message: Message) -> None:
         await handle_text_message(context, replied_message)
 
 
+@track_function
 async def handle_voice_message(context: CallbackContext, message: Message) -> None:
     logger.info(f'New voice message from chat ID {message.chat.id} and user ID {message.from_user.id}({message.from_user.name})')
 
@@ -93,6 +99,7 @@ async def handle_voice_message(context: CallbackContext, message: Message) -> No
     transcription = await stt.transcribe_voice(file_url)
     await message.reply_html(transcription, quote=True)
 
+@track_function
 async def handle_text_message(context: CallbackContext, message: Message) -> None:
     logger.info(f'New text message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})')
     url_pattern = r'https?://[^\s]+'
@@ -111,7 +118,7 @@ async def handle_text_message(context: CallbackContext, message: Message) -> Non
 
     await message.reply_html(summary, quote=True)
 
-
+@track_function
 async def error_handler(update: Update, context: CallbackContext) -> None:
     logger.error(f"Update '{update}' caused error '{type(context.error)}: {context.error}'")
 
@@ -123,6 +130,7 @@ async def error_handler(update: Update, context: CallbackContext) -> None:
     await message.reply_html(_("Something went completely wrong"), quote=True)
 
 
+@track_function
 async def command_start(update: Update, context: CallbackContext) -> None:
     await update.message.reply_html(_('Welcome message'), quote=True)
 
