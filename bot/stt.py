@@ -43,18 +43,10 @@ class STT:
         # Convert OGA to WAV
         wav_audio_stream, reduced = self._convert_oga_to_wav(voice_data)
 
-        # Save the WAV audio to a temporary file
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
-            temp_file.write(wav_audio_stream.read())
-            temp_file_path = temp_file.name
-
         # Transcribe using Whisper
-        segments, info  = self.model.transcribe(temp_file_path, beam_size=5)
-        result = ''.join(segments)
-        voice_text = f'<i>{result["text"]}</i>'
-
-        # Clean up: delete the temporary file
-        os.remove(temp_file_path)
+        segments, info  = self.model.transcribe(wav_audio_stream, beam_size=5)
+        result = ''.join(segment.text for segment in segments)
+        voice_text = f'<i>{result}</i>'
 
         if reduced:
             message = _("The translation is limited to the first 60 seconds.")
