@@ -136,6 +136,10 @@ async def handle_text_message(context: CallbackContext, message: Message) -> Non
 async def error_handler(update: Update, context: CallbackContext) -> None:
     logger.error(f"Update '{update}' caused error '{type(context.error)}: {context.error}'")
 
+    if not update:
+        logger.error("No update found in error handler, can't surface error to the user.")
+        return
+    
     if not update.message:
         logger.error("No message found in update, can't surface error to the user. Update: {update}")
         return
