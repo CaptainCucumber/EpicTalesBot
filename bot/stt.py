@@ -5,7 +5,7 @@ import tempfile
 
 import openai
 import requests
-import whisper
+from faster_whisper import WhisperModel
 from config import Config
 from localization import _
 from metrics import track_function
@@ -18,7 +18,7 @@ class STT:
 
     def __init__(self, config: Config) -> None:
         openai.api_key = config.get_open_ai_key()
-        self.whisper_model = None # whisper.load_model("")
+        self.model = WhisperModel("large-v2", device="cuda", compute_type="float16")
 
     def _download_audio(self, voice_file_id: str) -> bytes:
         response = requests.get(voice_file_id)
@@ -49,8 +49,8 @@ class STT:
             temp_file_path = temp_file.name
 
         # Transcribe using Whisper
-        audio_data = whisper.load_audio(temp_file_path)
-        result = self.whisper_model.transcribe(audio_data, condition_on_previous_text=False)
+        segments, info  = self.model.transcribe(temp_file_path, beam_size=5)
+        result = ''.join(segments)
         voice_text = f'<i>{result["text"]}</i>'
 
         # Clean up: delete the temporary file
