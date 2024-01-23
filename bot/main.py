@@ -78,7 +78,7 @@ def is_blacklisted(message: Message) -> bool:
 
 
 def is_bot_mentioned(botname: str, message: Message) -> bool:
-    return message.reply_to_message and f'@{botname}' in message.text
+    return message and message.reply_to_message and f'@{botname}' in message.text
 
 
 def is_youtube_url(url: str) -> bool:
