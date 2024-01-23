@@ -82,7 +82,7 @@ def is_bot_mentioned(botname: str, message: Message) -> bool:
 
 
 def is_youtube_url(url: str) -> bool:
-    return 'youtube.com/watch' in url or 'youtu.be/' in url
+    return 'youtube.com/watch' in url or 'youtu.be/' in url or 'youtube.com/shorts' in url
 
 
 @track_function
