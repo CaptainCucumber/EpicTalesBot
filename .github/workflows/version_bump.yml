@@ -1,0 +1,30 @@
+name: Semantic Version Bump
+
+on:
+  push:
+    branches:
+      - main  # Adjust this as necessary for your workflow
+
+jobs:
+  semantic-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+  
+      - name: Install python-semantic-release
+        run: |
+          pip install python-semantic-release
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          semantic-release -c .semantic-release.toml publish
