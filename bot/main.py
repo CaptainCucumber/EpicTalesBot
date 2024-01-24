@@ -18,6 +18,10 @@ from telegram.ext import (
     filters,
 )
 from video_gpt import VideoGPT
+import queue
+import threading
+import asyncio
+message_queue = queue.Queue()
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -49,7 +53,7 @@ async def handle_messages(update: Update, context: CallbackContext) -> None:
         return
 
     if is_blacklisted(message):
-        await leave_group(context, message)
+        leave_group(context, message)
         return
 
     if message.chat.type == 'private':
@@ -62,7 +66,7 @@ async def handle_messages(update: Update, context: CallbackContext) -> None:
     elif message.chat.type == 'channel':
         # TODO: Not sure what to do in channels. What is our behavior here?
         logger.warning("Received message in channel with chat ID %s", message.chat.id)
-        await message.reply_text("Channels are not currently supported")
+        message.reply_text("Channels are not currently supported")
 
 
 async def leave_group(context: CallbackContext, message: Message) -> None:
@@ -90,7 +94,7 @@ async def process_messages(context: CallbackContext, message: Message) -> None:
     replied_message = message.reply_to_message if message.reply_to_message else message
 
     if replied_message.voice:
-        await handle_voice_message(context, replied_message)
+        handle_voice_message(context, replied_message)
     elif replied_message.text:
         await handle_text_message(context, replied_message)
 
@@ -109,8 +113,8 @@ async def handle_voice_message(context: CallbackContext, message: Message) -> No
     await message.reply_text(transcription, quote=True, parse_mode=ParseMode.HTML)
 
 
-@track_function
 async def handle_text_message(context: CallbackContext, message: Message) -> None:
+    # No change in the logic, just ensure it's properly awaited in the event loop
     logger.info(f'New text message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})')
     url_pattern = r'https?://[^\s]+'
     urls = re.findall(url_pattern, message.text)
@@ -120,15 +124,13 @@ async def handle_text_message(context: CallbackContext, message: Message) -> Non
         return
     
     summary = None
-    progress_message = None
     if is_youtube_url(urls[0]):
-        progress_message = await message.reply_sticker(WATCHING_STICKER)
+        await message.reply_sticker(WATCHING_STICKER)  # Assume this is an async operation
         summary = video_gpt.summarize(urls[0])
     else:
-        progress_message = await message.reply_sticker(READING_STICKER)
+        await message.reply_sticker(READING_STICKER)  # Assume this is an async operation
         summary = article_gpt.summarize(urls[0])
 
-    await progress_message.delete()
     await message.reply_text(summary, quote=True, parse_mode=ParseMode.HTML)
 
 
@@ -153,15 +155,37 @@ async def command_start(update: Update, context: CallbackContext) -> None:
     await update.message.reply_html(_('Welcome message'), quote=True)
 
 
+
+def consumer(queue):
+    loop = asyncio.new_event_loop()
+    # it is important to set event loop here, I don't really understand why. I though asyncio still lives in the main thread
+    asyncio.set_event_loop(loop) 
+    while True:
+        update, context = queue.get()
+        logger.info(f"{threading.current_thread().name} consumed {update}")
+
+        loop.run_until_complete(handle_messages(update, context))
+        queue.task_done()
+
+
+async def message_collector(update: Update, context: CallbackContext) -> None:
+    message_queue.put((update, context))
+
+
 def main() -> None:
     application = ApplicationBuilder().token(config.get_telegram_token()).build()
 
     application.add_handler(CommandHandler("start", command_start))
-
-    application.add_handler(MessageHandler(filters.ALL, handle_messages))
+    application.add_handler(MessageHandler(filters.ALL, message_collector))
     application.add_error_handler(error_handler)
 
+    # Create consumer threads
+    for i in range(10):
+        t = threading.Thread(target=consumer, args=(message_queue,), name=f"Consumer-{i}")
+        t.start()
+
     application.run_polling()
+
     
 if __name__ == '__main__':
     main()
