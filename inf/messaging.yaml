@@ -1,0 +1,121 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  DeploymentId:
+    Type: String
+    Description: Unique identifier for each deployment
+
+  Stage:
+    Description: Deployment stage (must be either beta or prod)
+    Type: String
+    AllowedValues:
+      - beta
+      - prod
+
+Resources:
+  MessageRouterTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "${Stage}-MessageRouterTopic"
+
+  TextMessagesQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${Stage}-TextMessagesQueue"
+
+  VoiceMessagesQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${Stage}-VoiceMessagesQueue"
+
+  VoiceMessagesSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref MessageRouterTopic
+      Protocol: sqs
+      Endpoint: !GetAtt VoiceMessagesQueue.Arn
+      FilterPolicy:
+        type:
+          - "voice"
+
+  MessageReceiverAPIRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "apigateway.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: !Sub "${Stage}-SNSPublishPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "sns:Publish"
+                Resource: !Ref MessageRouterTopic
+      RoleName: !Sub "${Stage}-MessageReceiverAPIRole"
+
+  MessageReceiverAPI:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub "${Stage}-MessageReceiverAPI"
+
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: BotMessageMethod
+    Properties:
+      RestApiId: !Ref MessageReceiverAPI
+      # Use a timestamp or other changing variable to trigger updates
+      Description: !Sub "Deployment ${DeploymentId} on ${Stage}"
+      StageName: "final"
+
+  ApiGatewayStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      StageName: !Ref Stage
+      RestApiId: !Ref MessageReceiverAPI
+      DeploymentId: !Ref ApiGatewayDeployment
+
+  MessageReceiverResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref MessageReceiverAPI
+      ParentId: !GetAtt MessageReceiverAPI.RootResourceId
+      PathPart: 'messages'
+
+  BotMessageMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: POST
+      ResourceId: !Ref MessageReceiverResource
+      RestApiId: !Ref MessageReceiverAPI
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:sns:action/Publish"
+        Credentials: !GetAtt MessageReceiverAPIRole.Arn
+        RequestParameters:
+          integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
+        RequestTemplates:
+          application/json: |
+            Action=Publish&
+            TopicArn=${MessageRouterTopic}&
+            Message=$util.urlEncode("$input.body")
+
+Outputs:
+  MessageRouterTopicARN:
+    Description: "ARN of the SNS Topic"
+    Value: !Ref MessageRouterTopic
+  TextMessagesQueueURL:
+    Description: "URL of the text messages SQS queue"
+    Value: !Ref TextMessagesQueue
+  VoiceMessagesQueueURL:
+    Description: "URL of the voice messages SQS queue"
+    Value: !Ref VoiceMessagesQueue
+  MessageReceiverAPIEndpoint:
+    Description: "Endpoint URL for the API Gateway"
+    Value: !Sub "https://${MessageReceiverAPI}.execute-api.${AWS::Region}.amazonaws.com/${Stage}"
