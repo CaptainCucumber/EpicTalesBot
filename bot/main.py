@@ -3,9 +3,10 @@ import logging
 from queue import Queue
 from threading import Thread, current_thread
 
+from commands import command_start, error_handler
 from config import config
 from log_config import setup_logging
-from messages import command_start, error_handler, handle_messages
+from messages import BotBrain
 from telegram import Update
 from telegram.ext import (ApplicationBuilder, CallbackContext, CommandHandler,
                           MessageHandler, filters)
@@ -15,6 +16,7 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 message_queue = Queue()
+bot_brain = BotBrain(config)
 
 def message_consumer(queue):
     loop = asyncio.new_event_loop()
@@ -27,7 +29,7 @@ def message_consumer(queue):
 
         logger.info(f"{current_thread().name} consumed {update}")
 
-        loop.run_until_complete(handle_messages(update, context))
+        loop.run_until_complete(bot_brain.process_new_message(update, context))
         queue.task_done()
 
 
@@ -55,7 +57,6 @@ if __name__ == '__main__':
     main()
     logger.info("Cleaning resources....")
 
-    # After the asyncio part completes, clean up the consumer processes
     for _ in range(5):  # Send termination signal
         message_queue.put((None, None))
 
