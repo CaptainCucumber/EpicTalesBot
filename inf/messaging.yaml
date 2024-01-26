@@ -8,10 +8,19 @@ Parameters:
     Description: Deployment stage name
 
 Resources:
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${Stage}-DLQ"
+
   MessageQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: !Sub "${Stage}-MessageQueue"
+      VisibilityTimeout: 60
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DeadLetterQueue.Arn
+        maxReceiveCount: 3
 
   RouterFunctionExecutionRole:
     Type: AWS::IAM::Role
