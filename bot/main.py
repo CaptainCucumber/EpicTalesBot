@@ -1,65 +1,66 @@
-import asyncio
 import logging
-from queue import Queue
-from threading import Thread, current_thread
+import traceback
 
 from commands import command_start, error_handler
 from config import config
 from log_config import setup_logging
 from messages import BotBrain
 from telegram import Update
-from telegram.ext import (ApplicationBuilder, CallbackContext, CommandHandler,
-                          MessageHandler, filters)
+from telegram.ext import CallbackContext, Application, ApplicationBuilder
+import boto3
+import asyncio
+import json
+from botocore.exceptions import NoCredentialsError
 
 setup_logging()
 
 logger = logging.getLogger(__name__)
 
-message_queue = Queue()
+# AWS stuff
+sqs_client = boto3.client('sqs', region_name='us-west-2')
+
+# Bot inits
 bot_brain = BotBrain(config)
 
-def message_consumer(queue):
-    loop = asyncio.new_event_loop()
-    # it is important to set event loop here, I don't really understand why. I though asyncio still lives in the main thread
-    asyncio.set_event_loop(loop) 
+
+def pull_messages(sqs_queue_url) -> None:
     while True:
-        update, context = queue.get()
-        if update is None and context is None: # Termination signal
+        try:
+            # Visibility time and DLQ are set on infrastructure level.
+            # See, CF template.
+            response = sqs_client.receive_message(
+                QueueUrl=sqs_queue_url,
+                AttributeNames=['All'],
+                MaxNumberOfMessages=1,
+                WaitTimeSeconds=20,
+            )
+
+            messages = response.get('Messages', [])
+            logger.info(f'{len(messages)} message to process')
+
+            for message in messages:
+                logger.info(f"Received message: {message['Body']}")
+                    
+                first_decode = json.loads(message['Body'])
+                final_dict = json.loads(first_decode)
+
+                # Initialize Telegram bot application to keep backwards compatibility
+                # TODO: reduce dependencies to Telegram classes
+                application = ApplicationBuilder().token(config.get_telegram_token()).build()
+                context = CallbackContext(application)
+                update = Update.de_json(final_dict, application.bot)
+
+                asyncio.run(bot_brain.process_new_message(update, context))
+
+                # Delete the message from the queue to prevent reprocessing
+                sqs_client.delete_message(
+                    QueueUrl=sqs_queue_url,
+                    ReceiptHandle=message['ReceiptHandle']
+                )
+        except Exception as e:
+            logger.error(f"An error occurred: {e}\nCall stack: {traceback.format_exc()}")
             break
-
-        logger.info(f"{current_thread().name} consumed {update}")
-
-        loop.run_until_complete(bot_brain.process_new_message(update, context))
-        queue.task_done()
-
-
-async def message_router(update: Update, context: CallbackContext) -> None:
-    message_queue.put((update, context))
-
-
-def main() -> None:
-    application = ApplicationBuilder().token(config.get_telegram_token()).build()
-
-    application.add_handler(CommandHandler("start", command_start))
-    application.add_handler(MessageHandler(filters.ALL, message_router))
-    application.add_error_handler(error_handler)
-
-    application.run_polling()
 
     
 if __name__ == '__main__':
-    consumers = []
-    for _ in range(5):
-        process = Thread(target=message_consumer, args=(message_queue,))
-        process.start()
-        consumers.append(process)
-
-    main()
-    logger.info("Cleaning resources....")
-
-    for _ in range(5):  # Send termination signal
-        message_queue.put((None, None))
-
-    for consumer in consumers:
-        consumer.join()
-
+    pull_messages(config.get_message_queue_url())

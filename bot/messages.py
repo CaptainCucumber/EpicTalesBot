@@ -45,7 +45,7 @@ class BotBrain:
         replied_message = message.reply_to_message if message.reply_to_message else message
 
         if replied_message.voice:
-            self._handle_voice_message(context, replied_message)
+            await self._handle_voice_message(context, replied_message)
         elif replied_message.text:
             await self._handle_text_message(context, replied_message)
 

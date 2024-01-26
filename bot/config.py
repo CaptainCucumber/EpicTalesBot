@@ -18,5 +18,8 @@ class Config:
     
     def get_metrics_path(self):
         return self._env.get('EPICTALES_METRICS_PATH', '/var/log/epictales')
+    
+    def get_message_queue_url(self):
+        return self._env["MESSAGE_QUEUE_URL"]
 
 config = Config(os.environ)
