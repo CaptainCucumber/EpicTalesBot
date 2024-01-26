@@ -1,121 +1,133 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Description: Deploy API Gateway, a Lambda function, and an SQS queue
 
 Parameters:
-  DeploymentId:
-    Type: String
-    Description: Unique identifier for each deployment
-
   Stage:
-    Description: Deployment stage (must be either beta or prod)
     Type: String
-    AllowedValues:
-      - beta
-      - prod
+    Default: beta
+    Description: Deployment stage name
 
 Resources:
-  MessageRouterTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      TopicName: !Sub "${Stage}-MessageRouterTopic"
-
-  TextMessagesQueue:
+  MessageQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub "${Stage}-TextMessagesQueue"
+      QueueName: !Sub "${Stage}-MessageQueue"
 
-  VoiceMessagesQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: !Sub "${Stage}-VoiceMessagesQueue"
-
-  VoiceMessagesSubscription:
-    Type: AWS::SNS::Subscription
-    Properties:
-      TopicArn: !Ref MessageRouterTopic
-      Protocol: sqs
-      Endpoint: !GetAtt VoiceMessagesQueue.Arn
-      FilterPolicy:
-        type:
-          - "voice"
-
-  MessageReceiverAPIRole:
+  RouterFunctionExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
-          - Effect: "Allow"
+          - Effect: Allow
             Principal:
-              Service: "apigateway.amazonaws.com"
-            Action: "sts:AssumeRole"
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
-        - PolicyName: !Sub "${Stage}-SNSPublishPolicy"
+        - PolicyName: SendMessageToSQSQueue
           PolicyDocument:
-            Version: "2012-10-17"
+            Version: '2012-10-17'
             Statement:
-              - Effect: "Allow"
-                Action: "sns:Publish"
-                Resource: !Ref MessageRouterTopic
-      RoleName: !Sub "${Stage}-MessageReceiverAPIRole"
+              - Effect: Allow
+                Action: sqs:SendMessage
+                Resource: !GetAtt MessageQueue.Arn
+        - PolicyName: LambdaAPIGatewayInvoke
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - lambda:InvokeFunction
+                Resource: "*"
 
-  MessageReceiverAPI:
+  RouterFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+          def lambda_handler(event, context):
+              sqs = boto3.client('sqs')
+              queue_url = os.getenv('QUEUE_URL')
+              sqs.send_message(
+                  QueueUrl=queue_url,
+                  MessageBody=json.dumps(event['body'])
+              )
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Message sent to SQS queue')
+              }
+      Handler: index.lambda_handler
+      Role: !GetAtt RouterFunctionExecutionRole.Arn
+      Runtime: python3.10
+      Environment:
+        Variables:
+          QUEUE_URL: !Ref MessageQueue
+
+  BotMessageAPI:
     Type: AWS::ApiGateway::RestApi
     Properties:
-      Name: !Sub "${Stage}-MessageReceiverAPI"
-
-  ApiGatewayDeployment:
-    Type: AWS::ApiGateway::Deployment
-    DependsOn: BotMessageMethod
-    Properties:
-      RestApiId: !Ref MessageReceiverAPI
-      # Use a timestamp or other changing variable to trigger updates
-      Description: !Sub "Deployment ${DeploymentId} on ${Stage}"
-      StageName: "final"
+      Name: !Sub "${Stage}-BotMessageAPI"
+      Description: An API Gateway with a single POST method for bot messages
+      FailOnWarnings: 'true'
 
   ApiGatewayStage:
     Type: AWS::ApiGateway::Stage
     Properties:
       StageName: !Ref Stage
-      RestApiId: !Ref MessageReceiverAPI
+      Description: !Sub "${Stage} stage for BotMessageAPI"
+      RestApiId: !Ref BotMessageAPI
       DeploymentId: !Ref ApiGatewayDeployment
+  
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - MethodPostMessage
+    Properties:
+      RestApiId: !Ref BotMessageAPI
+      Description: "Deployment for the BotMessageAPI"
 
-  MessageReceiverResource:
+  ResourceMessage:
     Type: AWS::ApiGateway::Resource
     Properties:
-      RestApiId: !Ref MessageReceiverAPI
-      ParentId: !GetAtt MessageReceiverAPI.RootResourceId
-      PathPart: 'messages'
+      RestApiId: !Ref BotMessageAPI
+      ParentId: !GetAtt BotMessageAPI.RootResourceId
+      PathPart: message
 
-  BotMessageMethod:
+  MethodPostMessage:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
       HttpMethod: POST
-      ResourceId: !Ref MessageReceiverResource
-      RestApiId: !Ref MessageReceiverAPI
+      ResourceId: !Ref ResourceMessage
+      RestApiId: !Ref BotMessageAPI
       Integration:
         IntegrationHttpMethod: POST
-        Type: AWS
-        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:sns:action/Publish"
-        Credentials: !GetAtt MessageReceiverAPIRole.Arn
-        RequestParameters:
-          integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
-        RequestTemplates:
-          application/json: |
-            Action=Publish&
-            TopicArn=${MessageRouterTopic}&
-            Message=$util.urlEncode("$input.body")
+        Type: AWS_PROXY
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RouterFunction.Arn}/invocations"
+      MethodResponses:
+        - StatusCode: 200
+
+  LambdaPermissionForAPIGateway:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref RouterFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BotMessageAPI}/*/POST/message"
 
 Outputs:
-  MessageRouterTopicARN:
-    Description: "ARN of the SNS Topic"
-    Value: !Ref MessageRouterTopic
-  TextMessagesQueueURL:
-    Description: "URL of the text messages SQS queue"
-    Value: !Ref TextMessagesQueue
-  VoiceMessagesQueueURL:
-    Description: "URL of the voice messages SQS queue"
-    Value: !Ref VoiceMessagesQueue
-  MessageReceiverAPIEndpoint:
-    Description: "Endpoint URL for the API Gateway"
-    Value: !Sub "https://${MessageReceiverAPI}.execute-api.${AWS::Region}.amazonaws.com/${Stage}"
+  ApiGatewayInvokeURL:
+    Description: "Invoke URL for API Gateway"
+    Value: !Sub "https://${BotMessageAPI}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/message"
+  SQSQueueURL:
+    Description: "URL for the SQS Queue"
+    Value: !Ref MessageQueue
+  SQSQueueARN:
+    Description: "ARN for the SQS Queue"
+    Value: !GetAtt MessageQueue.Arn
+  ApiEndpoint:
+    Description: "URL for the deployed API stage"
+    Value: !Sub "https://${BotMessageAPI}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
