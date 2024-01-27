@@ -21,6 +21,15 @@ Resources:
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt DeadLetterQueue.Arn
         maxReceiveCount: 3
+  
+  VoiceQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${Stage}-VoiceQueue"
+      VisibilityTimeout: 60
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DeadLetterQueue.Arn
+        maxReceiveCount: 3
 
   RouterFunctionExecutionRole:
     Type: AWS::IAM::Role
@@ -57,9 +66,23 @@ Resources:
           import json
           import boto3
           import os
+
+          logger = logging.getLogger()
+
           def lambda_handler(event, context):
               sqs = boto3.client('sqs')
-              queue_url = os.getenv('QUEUE_URL')
+
+              message_body = event['body']
+              message = json.loads(message_body)
+              
+              has_voice = (
+                  'voice' in message.get("message", {}) or 
+                  'voice' in message.get("message", {}).get("reply_to_message", {})
+              )
+              
+              queue_url = os.getenv('VOICE_QUEUE_URL') if has_voice else \
+                          os.getenv('MESSAGE_QUEUE_URL')
+              
               sqs.send_message(
                   QueueUrl=queue_url,
                   MessageBody=json.dumps(event['body'])
@@ -73,7 +96,8 @@ Resources:
       Runtime: python3.10
       Environment:
         Variables:
-          QUEUE_URL: !Ref MessageQueue
+          MESSAGE_QUEUE_URL: !Ref MessageQueue
+          VOICE_QUEUE_URL: !Ref VoiceQueue
 
   BotMessageAPI:
     Type: AWS::ApiGateway::RestApi
