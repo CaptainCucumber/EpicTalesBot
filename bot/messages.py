@@ -1,5 +1,6 @@
 import logging
 import re
+from typing import Optional
 
 from article_gpt import ArticleGPT
 from config import Config
@@ -11,7 +12,6 @@ from telegram.constants import ParseMode
 from telegram.ext import CallbackContext
 from video_gpt import VideoGPT
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -20,10 +20,10 @@ class BotBrain:
     WATCHING_STICKER = "CAACAgEAAxkBAAPzZa09iinK8z-W-mNnUp0YPHLDpkwAAhsCAAPUGESSRmhdQDpGTTQE"
     LISTENING_STICKER = "CAACAgEAAxkBAAP7Za1GmGxnW7OUXAy5-e6tIqgGZVwAAtcCAAKkdyBEDjNwiD91jjI0BA"
 
-    def __init__(self, config: Config) -> None:
-        self._stt = STT(config)
-        self._video_gpt = VideoGPT(config)
-        self._article_gpt = ArticleGPT(config)
+    def __init__(self, video_gpt_instance: VideoGPT, article_gpt_instance: ArticleGPT, stt_instance: Optional[STT]) -> None:
+        self._video_gpt = video_gpt_instance
+        self._article_gpt = article_gpt_instance
+        self._stt = stt_instance
 
     def _is_blacklisted(self, message: Message) -> bool:
         return message.chat.id in Config.BLACKLISTED_GROUPS

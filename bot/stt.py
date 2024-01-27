@@ -18,7 +18,7 @@ class STT:
 
     def __init__(self, config: Config) -> None:
         openai.api_key = config.get_open_ai_key()
-        self.model = WhisperModel("large-v2", device="cuda", compute_type="float16")
+        self.model = WhisperModel("large-v3", device="cuda", compute_type="float16")
 
     def _download_audio(self, voice_file_id: str) -> bytes:
         response = requests.get(voice_file_id)

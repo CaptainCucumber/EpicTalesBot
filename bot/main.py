@@ -1,16 +1,18 @@
+import argparse
+import asyncio
+import json
 import logging
 import traceback
 
-from commands import command_start, error_handler
+import boto3
+from article_gpt import ArticleGPT
 from config import config
 from log_config import setup_logging
 from messages import BotBrain
+from stt import STT
 from telegram import Update
-from telegram.ext import CallbackContext, Application, ApplicationBuilder
-import boto3
-import asyncio
-import json
-from botocore.exceptions import NoCredentialsError
+from telegram.ext import ApplicationBuilder, CallbackContext
+from video_gpt import VideoGPT
 
 setup_logging()
 
@@ -19,9 +21,18 @@ logger = logging.getLogger(__name__)
 # AWS stuff
 sqs_client = boto3.client('sqs', region_name='us-west-2')
 
-# Bot inits
-bot_brain = BotBrain(config)
+# Command line arguments parsing
+parser = argparse.ArgumentParser(description="EpicTales bot")
+parser.add_argument('--disable-stt', action='store_true', help='Disable Speech-to-text functionality.')
+args = parser.parse_args()
 
+# Bot initialization
+stt_instance = None if args.disable_stt else STT(config)
+video_gpt_instance = VideoGPT(config)
+article_gpt_instance = ArticleGPT(config)
+bot_brain = BotBrain(video_gpt_instance, article_gpt_instance, stt_instance)
+
+logger.info(f"The bot is initialized. Speech-to-text disabled? {args.disable_stt}")
 
 def pull_messages(sqs_queue_url) -> None:
     while True:
