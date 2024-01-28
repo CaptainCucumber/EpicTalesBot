@@ -59,9 +59,7 @@ def pull_messages(sqs_queue_url) -> None:
             messages = response.get('Messages', [])
             logger.info(f'{len(messages)} message to process')
 
-            for message in messages:
-                logger.info(f"Received message: {message['Body']}")
-                    
+            for message in messages:                    
                 first_decode = json.loads(message['Body'])
                 final_dict = json.loads(first_decode)
 
@@ -82,6 +80,9 @@ def pull_messages(sqs_queue_url) -> None:
                     ReceiptHandle=message['ReceiptHandle']
                 )
         except Exception as e:
+            if message and 'Body' in message:
+                logger.error(f"Received message: {message['Body']}")
+
             logger.error(f"An error occurred: {e}\nCall stack: {traceback.format_exc()}")
             break
 
