@@ -66,6 +66,7 @@ Resources:
           import json
           import boto3
           import os
+          import logging
 
           logger = logging.getLogger()
 
