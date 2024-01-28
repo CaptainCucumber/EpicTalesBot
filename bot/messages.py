@@ -82,7 +82,7 @@ class BotBrain:
         await message.reply_text(summary, quote=True, parse_mode=ParseMode.HTML)
 
     @track_function
-    async def process_new_message(self, update: Update, context: CallbackContext) -> None:
+    async def process_new_message(self, update: Update, context: CallbackContext, botname: Optional[str]) -> None:
         message = update.message if update.message else update.channel_post
 
         if not message:
@@ -98,7 +98,7 @@ class BotBrain:
             await self._route_message_by_type(context, message)
         elif message.chat.type in ['group', 'supergroup']:
             # In groups, process only if bot is mentioned
-            if self._is_bot_mentioned(context.bot.username, message):
+            if self._is_bot_mentioned(botname, message):
                 await self._route_message_by_type(context, message)
         elif message.chat.type == 'channel':
             # TODO: Not sure what to do in channels. What is our behavior here?
