@@ -48,7 +48,9 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: sqs:SendMessage
-                Resource: !GetAtt MessageQueue.Arn
+                Resource:
+                  - !GetAtt MessageQueue.Arn
+                  - !GetAtt VoiceQueue.Arn
         - PolicyName: LambdaAPIGatewayInvoke
           PolicyDocument:
             Version: '2012-10-17'
