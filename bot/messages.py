@@ -62,7 +62,6 @@ class BotBrain:
         await message.reply_text(transcription, quote=True, parse_mode=ParseMode.HTML)
 
     async def _handle_text_message(self, context: CallbackContext, message: Message) -> None:
-        # No change in the logic, just ensure it's properly awaited in the event loop
         logger.info(f'New text message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})')
         url_pattern = r'https?://[^\s]+'
         urls = re.findall(url_pattern, message.text)
@@ -72,13 +71,15 @@ class BotBrain:
             return
         
         summary = None
+        progress_message = None
         if self._is_youtube_url(urls[0]):
-            await message.reply_sticker(self.WATCHING_STICKER)  # Assume this is an async operation
+            progress_message = await message.reply_sticker(self.WATCHING_STICKER)
             summary = self._video_gpt.summarize(urls[0])
         else:
-            await message.reply_sticker(self.READING_STICKER)  # Assume this is an async operation
+            progress_message = await message.reply_sticker(self.READING_STICKER)
             summary = self._article_gpt.summarize(urls[0])
 
+        await progress_message.delete()
         await message.reply_text(summary, quote=True, parse_mode=ParseMode.HTML)
 
     @track_function
