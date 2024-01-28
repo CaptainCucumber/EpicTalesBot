@@ -10,7 +10,7 @@ from config import config
 from log_config import setup_logging
 from messages import BotBrain
 from stt import STT
-from telegram import Update
+from telegram import Update, Bot
 from telegram.ext import ApplicationBuilder, CallbackContext
 from video_gpt import VideoGPT
 import requests
@@ -45,6 +45,8 @@ def get_bot_username(bot_token) -> str:
     return None
 
 def pull_messages(sqs_queue_url) -> None:
+    logger.info(f"Start pulling messages from: {sqs_queue_url}")
+
     while True:
         try:
             # Visibility time and DLQ are set on infrastructure level.
@@ -57,9 +59,10 @@ def pull_messages(sqs_queue_url) -> None:
             )
 
             messages = response.get('Messages', [])
-            logger.info(f'{len(messages)} message to process')
 
-            for message in messages:                    
+            for message in messages:
+                logger.info("Receive new message from the queue")
+                    
                 first_decode = json.loads(message['Body'])
                 final_dict = json.loads(first_decode)
 
@@ -70,7 +73,7 @@ def pull_messages(sqs_queue_url) -> None:
 
                 bot_username = get_bot_username(config.get_telegram_token())
 
-                update = Update.de_json(final_dict, application.bot)
+                update = Update.de_json(final_dict, Bot(token=config.get_telegram_token()))
 
                 asyncio.run(bot_brain.process_new_message(update, context, bot_username))
 

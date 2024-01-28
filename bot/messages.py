@@ -50,7 +50,7 @@ class BotBrain:
             await self._handle_text_message(context, replied_message)
 
     async def _handle_voice_message(self, context: CallbackContext, message: Message) -> None:
-        logger.info(f'New voice message from chat ID {message.chat.id} and user ID {message.from_user.id}({message.from_user.name})')
+        logger.info(f'New voice message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})')
 
         progress_message = await message.reply_sticker(self.LISTENING_STICKER)
 
@@ -73,9 +73,11 @@ class BotBrain:
         summary = None
         progress_message = None
         if self._is_youtube_url(urls[0]):
+            logger.info(f"Summarizing video: {urls[0]}")
             progress_message = await message.reply_sticker(self.WATCHING_STICKER)
             summary = self._video_gpt.summarize(urls[0])
         else:
+            logger.info(f"Summarizing article: {urls[0]}")
             progress_message = await message.reply_sticker(self.READING_STICKER)
             summary = self._article_gpt.summarize(urls[0])
 
@@ -94,6 +96,7 @@ class BotBrain:
             self._leave_group(context, message)
             return
 
+        logger.info(f"Processing new message with type: '{message.chat.type}'")
         if message.chat.type == 'private':
             # Process messages directly in private chats
             await self._route_message_by_type(context, message)
@@ -101,6 +104,8 @@ class BotBrain:
             # In groups, process only if bot is mentioned
             if self._is_bot_mentioned(botname, message):
                 await self._route_message_by_type(context, message)
+            else:
+                logger.info("The bot name was not mentioned in the message")
         elif message.chat.type == 'channel':
             # TODO: Not sure what to do in channels. What is our behavior here?
             logger.warning("Received message in channel with chat ID %s", message.chat.id)
