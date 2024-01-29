@@ -72,7 +72,11 @@ msgstr ""
 "\n"
 "Or add me to a group, reply to a voice message or a message with a link, and "
 "add my name <a href='tg://user?id=6871158416'>@EpicTalesBot</a> in the "
-"response."
+"response.\n"
+"\n"
+"Commands:\n"
+"/start - shows this message\n"
+"/version - shows current bot version"
 
 #: bot/stt.py:58
 #, fuzzy
