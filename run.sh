@@ -17,4 +17,4 @@ function compile_locales() {
 compile_locales
 
 # Run the Python application
-.venv/bin/python ./bot/main.py
+make -j 6 runall
