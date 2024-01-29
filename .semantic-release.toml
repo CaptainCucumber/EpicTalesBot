@@ -14,5 +14,5 @@ allowed_tags = ["build", "chore", "ci", "docs", "feat", "fix", "perf", "style", 
 minor_tags = ["feat"]
 patch_tags = ["fix", "perf"]
 
-[semantic_release.version_variable]
-path = "bot/__init__.py:__version__"
+[tool.semantic_release]
+version_variables = ["bot/__init__.py:__version__"]

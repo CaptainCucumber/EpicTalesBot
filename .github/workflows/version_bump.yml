@@ -31,5 +31,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          semantic-release -c .semantic-release.toml publish
+          semantic-release -c .semantic-release.toml version --commit
 
