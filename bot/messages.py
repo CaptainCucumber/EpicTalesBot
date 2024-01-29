@@ -11,6 +11,7 @@ from telegram import Message, Update
 from telegram.constants import ParseMode
 from telegram.ext import CallbackContext
 from video_gpt import VideoGPT
+from __init__ import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +85,18 @@ class BotBrain:
         await progress_message.delete()
         await message.reply_text(summary, quote=True, parse_mode=ParseMode.HTML)
 
+    async def _handle_command(self, context: CallbackContext, message: Message) -> None:
+        logger.info(f"New command '{message.text}' from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})")
+        command = message.text.split()[0]
+
+        if command == '/start':
+            await message.reply_html(_('Welcome message'), quote=True)
+        elif command == '/version':
+            await message.reply_html(f'<code>{__version__}</code>')
+        else:
+            logger.info(f"Unknown command '{command}' from user {message.from_user.id} ({message.from_user.name})")
+
+
     @track_function
     async def process_new_message(self, update: Update, context: CallbackContext, botname: Optional[str]) -> None:
         message = update.message if update.message else update.channel_post
@@ -97,7 +110,9 @@ class BotBrain:
             return
 
         logger.info(f"Processing new message with type: '{message.chat.type}'")
-        if message.chat.type == 'private':
+        if message.text.startswith('/'):
+            await self._handle_command(context, message)
+        elif message.chat.type == 'private':
             # Process messages directly in private chats
             await self._route_message_by_type(context, message)
         elif message.chat.type in ['group', 'supergroup']:
