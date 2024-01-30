@@ -2,7 +2,50 @@
 
 
 
-## v1.1.0 (2024-01-29)
+## v1.2.0 (2024-01-30)
+
+### Build
+
+* build: Run the app using run.sh only
+
+Include make into run to keep consistent and don&#39;t forget to generate
+locales. ([`720e2e4`](https://github.com/CaptainCucumber/EpicTalesBot/commit/720e2e4daa691b29939dc473a72a438d0db9e654))
+
+### Ci
+
+* ci: Update version in file and GitHub
+
+The config and command line should update the file and GitHub version
+at the same time. ([`1f5a0b4`](https://github.com/CaptainCucumber/EpicTalesBot/commit/1f5a0b4d0c2232a5eb0a7f1d18abadc67592cf09))
+
+### Documentation
+
+* docs: Update localization text for commands ([`ec81a3f`](https://github.com/CaptainCucumber/EpicTalesBot/commit/ec81a3f71fc963ff2235c7d46589a7df562ff662))
+
+### Feature
+
+* feat: Two commands /start and /version
+
+Shows usage and bot version respectfully. ([`a77bcf8`](https://github.com/CaptainCucumber/EpicTalesBot/commit/a77bcf8f85a3f8ff6c5f7e1d731813c21021adec))
+
+### Fix
+
+* fix: Catch all message processing exceptions.
+
+This is a temporary fix for exception handling, cause it excausts pool
+of running instances. ([`3f8d7cd`](https://github.com/CaptainCucumber/EpicTalesBot/commit/3f8d7cd76e5b3f4d016855ac922a99358eda845b))
+
+### Unknown
+
+* Add process id into each log line.
+
+Multiple instance write into a single file and it helps to separate
+them. ([`23d3277`](https://github.com/CaptainCucumber/EpicTalesBot/commit/23d32779f235c3f7cc9e645f89a5fbc2f78455cf))
+
+* doc: Documentation for new commands. ([`91ad2ca`](https://github.com/CaptainCucumber/EpicTalesBot/commit/91ad2cad0b13ee911b2c72206ab4fdc7a84daf1d))
+
+
+## v1.1.0 (2024-01-30)
 
 ### Build
 
