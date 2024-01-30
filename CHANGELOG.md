@@ -2,6 +2,19 @@
 
 
 
+## v1.2.1 (2024-01-30)
+
+### Fix
+
+* fix: Must check if text is even exist.
+
+This caused a lot of issues. Need integration tests. ([`790ac24`](https://github.com/CaptainCucumber/EpicTalesBot/commit/790ac24933d230da058db7a93dcc2483ae88b642))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`eb76bdf`](https://github.com/CaptainCucumber/EpicTalesBot/commit/eb76bdfcd64bc63da4a5c3ff80c65bf11e4c1964))
+
+
 ## v1.2.0 (2024-01-30)
 
 ### Build
