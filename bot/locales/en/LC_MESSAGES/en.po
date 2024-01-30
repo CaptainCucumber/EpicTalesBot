@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-20 10:25-0800\n"
+"POT-Creation-Date: 2024-01-29 15:59-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bot/article_gpt.py:17
+#: bot/article_gpt.py:18
 msgid "ARTICLE_SUMMARY_PROMPT"
 msgstr ""
 "Prepare a brief summary of the provided article, which can be in any "
@@ -46,25 +46,25 @@ msgstr ""
 "\n"
 "Here is the article for summary:"
 
-#: bot/article_gpt.py:40 bot/video_gpt.py:22
+#: bot/article_gpt.py:41 bot/video_gpt.py:23
 msgid "Title"
 msgstr "Title"
 
-#: bot/article_gpt.py:41
+#: bot/article_gpt.py:42
 msgid "Text"
 msgstr "Text"
 
-#: bot/article_gpt.py:59 bot/article_gpt.py:74
+#: bot/article_gpt.py:60 bot/article_gpt.py:77
 msgid "Sorry, I couldn't generate the article summary."
 msgstr "Sorry, I couldn't generate the article summary."
 
-#: bot/main.py:123
+#: bot/commands.py:23
 msgid "Something went completely wrong"
 msgstr ""
 "⚠️ Something went wrong. We have received the message and are already working "
 "on a fix."
 
-#: bot/main.py:127
+#: bot/commands.py:28 bot/messages.py:93
 msgid "Welcome message"
 msgstr ""
 "You can send me a link or a voice message and I will do all the rest of the "
@@ -78,12 +78,12 @@ msgstr ""
 "/start - shows this message\n"
 "/version - shows current bot version"
 
-#: bot/stt.py:58
+#: bot/stt.py:52
 #, fuzzy
-msgid "The translation is limited to the first 5 mins."
+msgid "The translation is limited to the first 60 seconds."
 msgstr "The translation is limited to the first 5 mins."
 
-#: bot/video_gpt.py:19
+#: bot/video_gpt.py:20
 msgid "VIDEO_SUMMARY_PROMPT"
 msgstr ""
 "Prepare a brief summary of the provided video, which can be in any language, "
@@ -111,21 +111,21 @@ msgstr ""
 "\n"
 "Here is the content of a YouTube video:"
 
-#: bot/video_gpt.py:23
+#: bot/video_gpt.py:24
 msgid "Subtitles"
 msgstr "Subtitles"
 
-#: bot/video_gpt.py:41
+#: bot/video_gpt.py:42
 msgid "Sorry, I couldn't generate the video summary."
 msgstr "Sorry, I couldn't generate the video summary."
 
-#: bot/video_gpt.py:96
+#: bot/video_gpt.py:98
 msgid "The video is not available for reviewing"
 msgstr ""
 "Sorry, I couldn't generate the video summary. The video is not available for "
 "reviewing"
 
-#: bot/video_gpt.py:101
+#: bot/video_gpt.py:103
 msgid "The subtitles are not available."
 msgstr ""
 "Sorry, I couldn't generate the video summary. The subtitles are not "

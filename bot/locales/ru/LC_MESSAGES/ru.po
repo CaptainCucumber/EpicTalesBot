@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-20 10:25-0800\n"
+"POT-Creation-Date: 2024-01-29 15:59-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bot/article_gpt.py:17
+#: bot/article_gpt.py:18
 msgid "ARTICLE_SUMMARY_PROMPT"
 msgstr ""
 "Подготовьте краткое резюме предоставленной статьи, которое может быть на "
@@ -46,50 +46,49 @@ msgstr ""
 "\n"
 "Вот статья для резюмирования:"
 
-#: bot/article_gpt.py:40 bot/video_gpt.py:22
+#: bot/article_gpt.py:41 bot/video_gpt.py:23
 msgid "Title"
 msgstr "Название"
 
-#: bot/article_gpt.py:41
+#: bot/article_gpt.py:42
 msgid "Text"
 msgstr "Текст"
 
-#: bot/article_gpt.py:59 bot/article_gpt.py:74
+#: bot/article_gpt.py:60 bot/article_gpt.py:77
 msgid "Sorry, I couldn't generate the article summary."
 msgstr "Извините, мне не удалось сгенерировать резюме статьи."
 
-#: bot/main.py:123
+#: bot/commands.py:23
 msgid "Something went completely wrong"
 msgstr ""
 "⚠️ Что-то пошло не так. Мы получили сообщение и уже работаем над исправлением."
 
-#: bot/main.py:127
+#: bot/commands.py:28 bot/messages.py:93
 msgid "Welcome message"
 msgstr ""
-"Ты можешь послать мне ссылку или голосовое сообщение и я сделаю всю "
+"Вы можете отправить мне ссылку или голосовое сообщение, и я выполню всю "
 "остальную работу.\n"
 "\n"
-"Или же добавить меня в группу, ответить на звуковое сообщение или сообщение "
-"с ссылкой, и добавить мое имя <a href='tg://user?"
-"id=6871158416'>@EpicTalesBot</a> в ответ.\n"
+"Или добавьте меня в группу, ответьте на голосовое сообщение или сообщение со "
+"ссылкой и добавьте мое имя <a href='tg://user?id=6871158416'>@EpicTalesBot</a> "
+"в ответе.\n"
 "\n"
-"Комманды:\n"
-"\n"
+"Команды:\n"
 "/start - показывает это сообщение\n"
-"/version - показывает текущую версию бота\n"
+"/version - показывает текущую версию бота"
 
-#: bot/stt.py:58
+#: bot/stt.py:52
 #, fuzzy
-msgid "The translation is limited to the first 5 mins."
+msgid "The translation is limited to the first 60 seconds."
 msgstr "Перевод ограничен первыми 5ю минутами."
 
-#: bot/video_gpt.py:19
+#: bot/video_gpt.py:20
 msgid "VIDEO_SUMMARY_PROMPT"
 msgstr ""
 "Подготовьте краткое резюме предоставленного видео, которое может быть на "
-"любом языке, в лаконичном стиле Axios. Резюме должно быть на русском языке, содержать менее 120 слов, "
-"следовать перечисленным ниже правилам и содержать только резюме видео без "
-"дополнительной коммуникации:\n"
+"любом языке, в лаконичном стиле Axios. Резюме должно быть на русском языке, "
+"содержать менее 120 слов, следовать перечисленным ниже правилам и содержать "
+"только резюме видео без дополнительной коммуникации:\n"
 "\n"
 "1. Структура списка: Структурируйте основное содержание в виде списка, где "
 "каждый элемент передает полную мысль или факт, начиная с соответствующего "
@@ -108,25 +107,24 @@ msgstr ""
 "специализированного жаргона.\n"
 "8. Форматирование: Применяйте следующий синтаксис для форматирования, такой "
 "как <b>жирный</b>, <i>курсив</i>, и <s>зачеркнутый</s>.\n"
-"9. Ни в коем случае не использовать язык Markdown в ответе."
-"\n"
+"9. Ни в коем случае не использовать язык Markdown в ответе.\n"
 "Вот содержание YouTube видео:"
 
-#: bot/video_gpt.py:23
+#: bot/video_gpt.py:24
 msgid "Subtitles"
 msgstr "Субтитры"
 
-#: bot/video_gpt.py:41
+#: bot/video_gpt.py:42
 msgid "Sorry, I couldn't generate the video summary."
 msgstr "Извините, мне не удалось сгенерировать резюме видео."
 
-#: bot/video_gpt.py:96
+#: bot/video_gpt.py:98
 msgid "The video is not available for reviewing"
 msgstr ""
 "Извините, мне не удалось сгенерировать резюме видео. Видео недоступно для "
 "просмотра"
 
-#: bot/video_gpt.py:101
+#: bot/video_gpt.py:103
 msgid "The subtitles are not available."
 msgstr ""
 "Извините, мне не удалось сгенерировать резюме видео. Субтитры недоступны."
