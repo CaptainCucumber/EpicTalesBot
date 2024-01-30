@@ -99,30 +99,34 @@ class BotBrain:
 
     @track_function
     async def process_new_message(self, update: Update, context: CallbackContext, botname: Optional[str]) -> None:
-        message = update.message if update.message else update.channel_post
+        try:
+            message = update.message if update.message else update.channel_post
 
-        if not message:
-            logger.warning("Received message with no content")
-            return
+            if not message:
+                logger.warning("Received message with no content")
+                return
 
-        if self._is_blacklisted(message):
-            self._leave_group(context, message)
-            return
+            if self._is_blacklisted(message):
+                self._leave_group(context, message)
+                return
 
-        logger.info(f"Processing new message with type: '{message.chat.type}'")
-        if message.text.startswith('/'):
-            await self._handle_command(context, message)
-        elif message.chat.type == 'private':
-            # Process messages directly in private chats
-            await self._route_message_by_type(context, message)
-        elif message.chat.type in ['group', 'supergroup']:
-            # In groups, process only if bot is mentioned
-            if self._is_bot_mentioned(botname, message):
+            logger.info(f"Processing new message with type: '{message.chat.type}'")
+            if message.text.startswith('/'):
+                await self._handle_command(context, message)
+            elif message.chat.type == 'private':
+                # Process messages directly in private chats
                 await self._route_message_by_type(context, message)
-            else:
-                logger.info("The bot name was not mentioned in the message")
-        elif message.chat.type == 'channel':
-            # TODO: Not sure what to do in channels. What is our behavior here?
-            logger.warning("Received message in channel with chat ID %s", message.chat.id)
-            message.reply_text("Channels are not currently supported")
+            elif message.chat.type in ['group', 'supergroup']:
+                # In groups, process only if bot is mentioned
+                if self._is_bot_mentioned(botname, message):
+                    await self._route_message_by_type(context, message)
+                else:
+                    logger.info("The bot name was not mentioned in the message")
+            elif message.chat.type == 'channel':
+                # TODO: Not sure what to do in channels. What is our behavior here?
+                logger.warning("Received message in channel with chat ID %s", message.chat.id)
+                message.reply_text("Channels are not currently supported")
+        except Exception as e:
+            # TODO: Need to report back to user that something went wrong
+            logger.error(f"Error processing message: {update}", exc_info=e, stack_info=True)
 
