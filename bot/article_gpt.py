@@ -45,10 +45,18 @@ class ArticleGPT:
                 messages=[
                     {
                         "role": "user",
-                        "content": self._prompt_content + f"\n{title_name}: {title}\n{text_name}: {text}"
+                        "content": self._prompt_content
+                    },
+                    {
+                        "role": "system",
+                        "content": f"{title_name}: {title}\n{text_name}: {text}"
                     }
                 ],
-                model="gpt-4-1106-preview"    
+                model="gpt-4-1106-preview",
+                temperature=0.2,
+                top_p=0.9,
+                frequency_penalty=0.5,
+                presence_penalty=0.9
             )
 
             first_choice = response.choices[0]

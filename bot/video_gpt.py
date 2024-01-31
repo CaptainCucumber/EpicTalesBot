@@ -13,7 +13,7 @@ from metrics import track_function
 logger = logging.getLogger(__name__)
 
 class VideoGPT:
-    SUPPORTED_SUBTITLE_LANGUAGES = ['en', 'es', 'fr', 'de', 'it', 'nl', 'pt', 'ru', 'zh', 'ja', 'ko']
+    SUPPORTED_SUBTITLE_LANGUAGES = ['en', 'es', 'fr', 'de', 'it', 'nl', 'pt', 'ru', 'zh', 'ja', 'ko', 'uk']
 
     def __init__(self, config: Config) -> None:
         openai.api_key = config.get_open_ai_key()
@@ -27,10 +27,18 @@ class VideoGPT:
                 messages=[
                     {
                         "role": "user",
-                        "content": self._prompt_content + f"\n{title_name}: {title}\n{subtitles_name}: {subtitles}"
+                        "content": self._prompt_content
+                    },
+                    {
+                        "role": "system",
+                        "content": f"{title_name}: {title}\n{subtitles_name}: {subtitles}"
                     }
                 ],
-                model="gpt-4-1106-preview"    
+                model="gpt-4-1106-preview",
+                temperature=0.2,
+                top_p=0.9,
+                frequency_penalty=0.5,
+                presence_penalty=0.9
             )
 
             first_choice = response.choices[0]
