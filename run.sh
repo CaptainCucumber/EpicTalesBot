@@ -17,4 +17,4 @@ function compile_locales() {
 compile_locales
 
 # Run the Python application
-make -j 6 runall
+make -j 7 runall
