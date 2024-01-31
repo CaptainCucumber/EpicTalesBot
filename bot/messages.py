@@ -30,7 +30,7 @@ class BotBrain:
         return message.chat.id in Config.BLACKLISTED_GROUPS
 
     def _is_bot_mentioned(self, botname: str, message: Message) -> bool:
-        return message and message.reply_to_message and f'@{botname}' in message.text
+        return message and message.reply_to_message and message.text and f'@{botname}' in message.text
 
     def _is_youtube_url(self, url: str) -> bool:
         return 'youtube.com/watch' in url or 'youtu.be/' in url or 'youtube.com/shorts' in url
