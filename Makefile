@@ -18,4 +18,13 @@ message_queue5:
 voice_queue1:
 	TELEGRAM_TOKEN=token1 OPENAI_KEY=key1 MESSAGE_QUEUE_URL=url2 .venv/bin/python ./bot/main.py
 
-runall: message_queue1 message_queue2 message_queue3 message_queue4 message_queue5 voice_queue1
+retry_voice_queue1:
+	@while true; do \
+		if voice_queue1; then \
+			break; \
+		else \
+			echo "Attempt failed, retrying..."; \
+		fi \
+	done
+
+runall: message_queue1 message_queue2 message_queue3 message_queue4 message_queue5 retry_voice_queue1
