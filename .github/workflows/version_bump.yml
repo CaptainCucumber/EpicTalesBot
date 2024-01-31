@@ -23,13 +23,9 @@ jobs:
         run: |
           pip install python-semantic-release
 
-      - name: List files in the root directory
-        run: |
-          ls -la
-
       - name: Run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          semantic-release -c .semantic-release.toml version --commit
+          semantic-release -c .semantic-release.toml version --commit --tag --push
 
