@@ -2,6 +2,20 @@
 
 
 
+## v1.2.2 (2024-01-31)
+
+### Fix
+
+* fix: Handle none text messages.
+
+Avoid throwing an exception when message is a sticker or animation. Do
+not look for a bot name there. ([`28d66f7`](https://github.com/CaptainCucumber/EpicTalesBot/commit/28d66f7d4902c0deee03ac55b537f23679fc8f1f))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`f5f0a66`](https://github.com/CaptainCucumber/EpicTalesBot/commit/f5f0a66de27c25b65f7322d8897f296808a1b467))
+
+
 ## v1.2.1 (2024-01-30)
 
 ### Fix
