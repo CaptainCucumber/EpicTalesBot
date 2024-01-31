@@ -2,6 +2,36 @@
 
 
 
+## v1.3.0 (2024-01-31)
+
+### Ci
+
+* ci: Publish tags.
+
+Revome debug ls command and publish tags. ([`751fac1`](https://github.com/CaptainCucumber/EpicTalesBot/commit/751fac19b5ca7cccf5424493630460c2d59b1c1c))
+
+* ci: Pass task count to parent make process.
+
+Since make is called recursively, send task info to parent to parallel
+it. ([`fc08d1b`](https://github.com/CaptainCucumber/EpicTalesBot/commit/fc08d1b3fa26854c87ea486123c211454e89317e))
+
+* ci: Agressively keep voice process alive
+
+Bot use a single thread to process voice messages, so must be kept alive
+at any cost. ([`755f3bb`](https://github.com/CaptainCucumber/EpicTalesBot/commit/755f3bb551df7c162a166cc00e10d8ee875a546f))
+
+### Feature
+
+* feat: Tune in models for video and articles.
+
+This is a basic tune in. Less improvisation, strictly follow the rules.
+Rules are passed as a system role, helps GPT better interpret it. ([`f5fd5a7`](https://github.com/CaptainCucumber/EpicTalesBot/commit/f5fd5a79219f693c7e188ac951459d5e24e97491))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`98c4f2f`](https://github.com/CaptainCucumber/EpicTalesBot/commit/98c4f2ffb14e8cbbc40693e2015a1b1ac9983900))
+
+
 ## v1.2.2 (2024-01-31)
 
 ### Fix
