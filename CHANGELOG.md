@@ -2,6 +2,35 @@
 
 
 
+## v1.4.0 (2024-02-01)
+
+### Feature
+
+* feat: Google STT integration.
+
+The bot falls back to Google STT when the main GPU is busy. It helps to
+process the request at low cost when the bot exhausts all resources. ([`e5ae7c2`](https://github.com/CaptainCucumber/EpicTalesBot/commit/e5ae7c28c4d1a77b629ec8304f617fd8448dcaf5))
+
+### Fix
+
+* fix: Split very long messages to multi texts
+
+Split extra long messages to multi messages one after another. Post
+separate warning message at the end if audio exceeds 5 mins. ([`08158bf`](https://github.com/CaptainCucumber/EpicTalesBot/commit/08158bfcc4ad4b2263618d69bff3a49a51078c46))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`5485949`](https://github.com/CaptainCucumber/EpicTalesBot/commit/54859494219cf97b6da68792c99439ca9d91b405))
+
+* Minor adjustments.
+
+Google dependency is missing and remove unused imports. ([`ab66167`](https://github.com/CaptainCucumber/EpicTalesBot/commit/ab66167fb56538baf300c78428c0338ae005c1f3))
+
+* Print full function name with class.
+
+For better data analysis print full func name. ([`ce7c702`](https://github.com/CaptainCucumber/EpicTalesBot/commit/ce7c7020ca86807940f6fc14f3a9786160cc12d1))
+
+
 ## v1.3.1 (2024-02-01)
 
 ### Chore
