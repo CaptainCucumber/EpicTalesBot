@@ -56,6 +56,12 @@ class BotBrain:
             await self._handle_text_message(context, replied_message)
 
     async def _handle_voice_message(self, context: CallbackContext, message: Message) -> None:
+
+        def split_and_format_string(input_string, max_length):
+            parts = [input_string[i:i+max_length] for i in range(0, len(input_string), max_length)]
+            formatted_parts = ['<i>{}</i>'.format(part) for part in parts]
+            return formatted_parts
+
         logger.info(f'New voice message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})')
 
         progress_message = await message.reply_sticker(self.LISTENING_STICKER)
@@ -63,13 +69,19 @@ class BotBrain:
         file = await context.bot.get_file(message.voice.file_id)
         file_url = file.file_path
 
-        transcription = await self._stt.transcribe_voice(file_url)
-
-        if len(transcription) >= self.MAX_MESSAGE_LENGTH:
-            transcription = transcription[:self.MAX_MESSAGE_LENGTH-4] + '</i>'
+        transcription, duration = await self._stt.transcribe_voice(file_url)
+        texts = split_and_format_string(transcription, self.MAX_MESSAGE_LENGTH)
 
         await progress_message.delete()
-        await message.reply_text(transcription, quote=True, parse_mode=ParseMode.HTML)
+
+        for text in texts:
+            await message.reply_text(text, quote=True, parse_mode=ParseMode.HTML)
+
+        if duration > self._stt._MAX_VOICE_AUDIO_LENGTH:
+            limit_message = _("The translation is limited to the first 60 seconds.")
+            warning_message = f"<b>{limit_message}</b>"
+            await message.reply_text(warning_message, quote=True, parse_mode=ParseMode.HTML)
+
 
     async def _handle_text_message(self, context: CallbackContext, message: Message) -> None:
         logger.info(f'New text message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})')

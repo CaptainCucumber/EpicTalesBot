@@ -6,6 +6,7 @@ import traceback
 
 import boto3
 from article_gpt import ArticleGPT
+from google_stt import GoogleSTT
 from config import config
 from log_config import setup_logging
 from messages import BotBrain
@@ -29,9 +30,10 @@ args = parser.parse_args()
 
 # Bot initialization
 stt_instance = None if args.disable_stt else STT(config)
+gstt_instance = GoogleSTT(config)
 video_gpt_instance = VideoGPT(config)
 article_gpt_instance = ArticleGPT(config)
-bot_brain = BotBrain(video_gpt_instance, article_gpt_instance, stt_instance)
+bot_brain = BotBrain(video_gpt_instance, article_gpt_instance, stt_instance, gstt_instance)
 
 logger.info(f"The bot is initialized. Speech-to-text disabled? {args.disable_stt}")
 

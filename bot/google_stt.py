@@ -34,7 +34,8 @@ class GoogleSTT:
         oga_audio_stream = io.BytesIO(voice_data)
         audio = AudioSegment.from_ogg(oga_audio_stream)
         
-        logger.info(f"Audio duration: {audio.duration_seconds} seconds")
+        original_duration = audio.duration_seconds
+        logger.info(f"Audio duration: {original_duration} seconds")
 
         audio = audio[:self._MAX_VOICE_AUDIO_LENGTH * 1000]
         frame_rate = audio.frame_rate
@@ -55,4 +56,4 @@ class GoogleSTT:
 
         # Transcribe the audio file
         response = self._client.recognize(config=config, audio=audio)
-        return ' '.join([result.alternatives[0].transcript for result in response.results])
+        return ' '.join([result.alternatives[0].transcript for result in response.results]), original_duration
