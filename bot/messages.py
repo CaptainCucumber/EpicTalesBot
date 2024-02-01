@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 class BotBrain:
+    MAX_MESSAGE_LENGTH = 4096
+
     READING_STICKER = "CAACAgEAAxkBAAPvZa08i8gvG70My_EEkqmhgwvLu5gAAqECAAKoyCFEr-C6Suk25ik0BA"
     WATCHING_STICKER = "CAACAgEAAxkBAAPzZa09iinK8z-W-mNnUp0YPHLDpkwAAhsCAAPUGESSRmhdQDpGTTQE"
     LISTENING_STICKER = "CAACAgEAAxkBAAP7Za1GmGxnW7OUXAy5-e6tIqgGZVwAAtcCAAKkdyBEDjNwiD91jjI0BA"
@@ -59,6 +61,10 @@ class BotBrain:
         file_url = file.file_path
 
         transcription = await self._stt.transcribe_voice(file_url)
+
+        if len(transcription) >= self.MAX_MESSAGE_LENGTH:
+            transcription = transcription[:self.MAX_MESSAGE_LENGTH-4] + '</i>'
+
         await progress_message.delete()
         await message.reply_text(transcription, quote=True, parse_mode=ParseMode.HTML)
 
