@@ -6,6 +6,11 @@ from logging.handlers import RotatingFileHandler
 
 from config import Config, config
 
+def get_full_function_name(func):
+    if hasattr(func, '__qualname__'):
+        return func.__qualname__
+    return func.__name__
+
 
 class MetricsLogger:
     def __init__(self, config: Config):
@@ -50,7 +55,7 @@ def track_function(func):
             raise
         finally:
             duration = int((time.time() - start_time) * 1000)
-            metrics_logger.function_call(func.__name__, success=success)
-            metrics_logger.function_timing(func.__name__, duration)
+            metrics_logger.function_call(get_full_function_name(func), success=success)
+            metrics_logger.function_timing(get_full_function_name(func), duration)
         return result
     return wrapper
