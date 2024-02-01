@@ -1,12 +1,10 @@
 import io
 import logging
-import os
-import tempfile
 
 import openai
 import requests
-from faster_whisper import WhisperModel
 from config import Config
+from faster_whisper import WhisperModel
 from localization import _
 from metrics import track_function
 from pydub import AudioSegment
