@@ -21,5 +21,8 @@ class Config:
     
     def get_message_queue_url(self):
         return self._env["MESSAGE_QUEUE_URL"]
+    
+    def get_google_cloud_creds_file(self):
+        return self._env["GOOGLE_APPLICATION_CREDENTIALS"]
 
 config = Config(os.environ)

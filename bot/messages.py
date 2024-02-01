@@ -3,7 +3,8 @@ import re
 from typing import Optional
 
 from article_gpt import ArticleGPT
-from config import Config
+from google_stt import GoogleSTT
+from config import Config, config
 from localization import _
 from metrics import track_function
 from stt import STT
@@ -16,6 +17,8 @@ from __init__ import __version__
 logger = logging.getLogger(__name__)
 
 
+google_stt = GoogleSTT(config)
+
 class BotBrain:
     MAX_MESSAGE_LENGTH = 4096
 
@@ -23,10 +26,10 @@ class BotBrain:
     WATCHING_STICKER = "CAACAgEAAxkBAAPzZa09iinK8z-W-mNnUp0YPHLDpkwAAhsCAAPUGESSRmhdQDpGTTQE"
     LISTENING_STICKER = "CAACAgEAAxkBAAP7Za1GmGxnW7OUXAy5-e6tIqgGZVwAAtcCAAKkdyBEDjNwiD91jjI0BA"
 
-    def __init__(self, video_gpt_instance: VideoGPT, article_gpt_instance: ArticleGPT, stt_instance: Optional[STT]) -> None:
+    def __init__(self, video_gpt_instance: VideoGPT, article_gpt_instance: ArticleGPT, stt_instance: Optional[STT], gstt_instance: Optional[STT]) -> None:
         self._video_gpt = video_gpt_instance
         self._article_gpt = article_gpt_instance
-        self._stt = stt_instance
+        self._stt = stt_instance if stt_instance else gstt_instance
 
     def _is_blacklisted(self, message: Message) -> bool:
         return message.chat.id in Config.BLACKLISTED_GROUPS
