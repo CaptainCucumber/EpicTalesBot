@@ -2,6 +2,27 @@
 
 
 
+## v1.3.1 (2024-02-01)
+
+### Chore
+
+* chore: Increase summary limit to 250 words
+
+For both acticle and video summary. ([`d9e9cd1`](https://github.com/CaptainCucumber/EpicTalesBot/commit/d9e9cd11a68a012cee2fc4a56ea8b9a0af173f4a))
+
+### Fix
+
+* fix: Shorter very long voice messages.
+
+For voice messages that translates to more than 4096 characters, limit
+to 4096. This is temporary fix and should be replaced with multi
+message repsonse. ([`403f1cc`](https://github.com/CaptainCucumber/EpicTalesBot/commit/403f1ccff0026db481aabf6e774ea9c80945524f))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`e17ae27`](https://github.com/CaptainCucumber/EpicTalesBot/commit/e17ae272297d721320a7fecf9a3d746d9453c177))
+
+
 ## v1.3.0 (2024-01-31)
 
 ### Ci
