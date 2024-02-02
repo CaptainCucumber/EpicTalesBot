@@ -1,10 +1,14 @@
 import logging
 import os
 import time
+from datetime import datetime
 from functools import wraps
 from logging.handlers import RotatingFileHandler
 
+import boto3
 from config import Config, config
+
+cloudwatch = boto3.client('cloudwatch')
 
 def get_full_function_name(func):
     if hasattr(func, '__qualname__'):
@@ -59,3 +63,146 @@ def track_function(func):
             metrics_logger.function_timing(get_full_function_name(func), duration)
         return result
     return wrapper
+
+def publish_voice_messages_processed(count=1):
+    cloudwatch.put_metric_data(
+        Namespace='EpicTalesBot',
+        MetricData=[
+            {
+                'MetricName': 'VoiceMessagesProcessed',
+                'Dimensions': [
+                    {
+                        'Name': 'Feature',
+                        'Value': 'VoiceProcessing'
+                    },
+                    {
+                        'Name': 'Environment',
+                        'Value': config.get_environment()
+                    },
+                ],
+                'Timestamp': datetime.utcnow(),
+                'Value': count,
+                'Unit': 'Count'
+            },
+        ]
+    )
+
+def publish_articles_summarized(count=1):
+    cloudwatch.put_metric_data(
+        Namespace='EpicTalesBot',
+        MetricData=[
+            {
+                'MetricName': 'ArticlesSummarized',
+                'Dimensions': [
+                    {
+                        'Name': 'Feature',
+                        'Value': 'ArticleSummarization'
+                    },
+                    {
+                        'Name': 'Environment',
+                        'Value': config.get_environment()
+                    },
+                ],
+                'Timestamp': datetime.utcnow(),
+                'Value': count,
+                'Unit': 'Count'
+            },
+        ]
+    )
+
+def publish_videos_watched(count=1):
+    cloudwatch.put_metric_data(
+        Namespace='EpicTales',
+        MetricData=[
+            {
+                'MetricName': 'VideosWatched',
+                'Dimensions': [
+                    {
+                        'Name': 'Feature',
+                        'Value': 'VideoSummarization'
+                    },
+                    {
+                        'Name': 'Environment',
+                        'Value': config.get_environment()
+                    },
+                ],
+                'Timestamp': datetime.utcnow(),
+                'Value': count,
+                'Unit': 'Count'
+            },
+        ]
+    )
+
+def publish_request_success_rate(count, is_success=True):
+    metric_name = 'RequestSuccessRate' if is_success else 'RequestErrorRate'
+    cloudwatch.put_metric_data(
+        Namespace='EpicTalesBot',
+        MetricData=[
+            {
+                'MetricName': metric_name,
+                'Dimensions': [
+                    {
+                        'Name': 'Feature',
+                        'Value': 'General'
+                    },
+                    {
+                        'Name': 'Type',
+                        'Value': 'Success' if is_success else 'Error'
+                    },
+                    {
+                        'Name': 'Environment',
+                        'Value': config.get_environment()
+                    },
+                ],
+                'Timestamp': datetime.utcnow(),
+                'Value': count,
+                'Unit': 'Count'
+            },
+        ]
+    )
+
+def publish_voice_message_duration(duration_in_seconds):
+    cloudwatch.put_metric_data(
+        Namespace='EpicTalesBot',
+        MetricData=[
+            {
+                'MetricName': 'VoiceMessageDuration',
+                'Dimensions': [
+                    {
+                        'Name': 'Feature',
+                        'Value': 'VoiceProcessing'
+                    },
+                    {
+                        'Name': 'Environment',
+                        'Value': config.get_environment()
+                    },
+                ],
+                'Timestamp': datetime.utcnow(),
+                'Value': duration_in_seconds,
+                'Unit': 'Seconds'
+            },
+        ]
+    )
+
+def publish_processed_time(time_taken_seconds):
+    cloudwatch.put_metric_data(
+        Namespace='EpicTalesBot',
+        MetricData=[
+            {
+                'MetricName': 'VoiceMessageProccedTime',
+                'Dimensions': [
+                    {
+                        'Name': 'Feature',
+                        'Value': 'VoiceProcessedTime'
+                    },
+                    {
+                        'Name': 'Environment',
+                        'Value': config.get_environment()
+                    },
+                ],
+                'Timestamp': datetime.utcnow(),
+                'Value': time_taken_seconds,
+                'Unit': 'Seconds'
+            },
+        ]
+    )

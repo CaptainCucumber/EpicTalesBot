@@ -24,5 +24,8 @@ class Config:
     
     def get_google_cloud_creds_file(self):
         return self._env["GOOGLE_APPLICATION_CREDENTIALS"]
+    
+    def get_environment(self):
+        return self._env.get('EPICTALES_ENVIRONMENT', 'prod')
 
 config = Config(os.environ)

@@ -10,6 +10,7 @@ from google.cloud import speech
 from google.oauth2 import service_account
 import json
 from pydub.utils import mediainfo
+from metrics import track_function, publish_processed_time, publish_voice_message_duration
 
 
 logger = logging.getLogger(__name__)
@@ -41,7 +42,7 @@ class GoogleSTT:
         frame_rate = audio.frame_rate
 
         # Configure the request
-        audio = speech.RecognitionAudio(content=voice_data)
+        speech_audio = speech.RecognitionAudio(content=voice_data)
         config = speech.RecognitionConfig(
             encoding=speech.RecognitionConfig.AudioEncoding.OGG_OPUS,
             sample_rate_hertz=frame_rate,
@@ -55,5 +56,8 @@ class GoogleSTT:
         )
 
         # Transcribe the audio file
-        response = self._client.recognize(config=config, audio=audio)
+        response = self._client.recognize(config=config, audio=speech_audio)
+
+        publish_voice_message_duration(original_duration)
+        publish_processed_time(audio.duration_seconds)
         return ' '.join([result.alternatives[0].transcript for result in response.results]), original_duration

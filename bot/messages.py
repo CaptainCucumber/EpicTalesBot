@@ -6,7 +6,7 @@ from article_gpt import ArticleGPT
 from google_stt import GoogleSTT
 from config import Config, config
 from localization import _
-from metrics import track_function
+from metrics import track_function, publish_request_success_rate, publish_videos_watched, publish_articles_summarized
 from stt import STT
 from telegram import Message, Update
 from telegram.constants import ParseMode
@@ -82,6 +82,8 @@ class BotBrain:
             warning_message = f"<b>{limit_message}</b>"
             await message.reply_text(warning_message, quote=True, parse_mode=ParseMode.HTML)
 
+        publish_request_success_rate(1, True)
+
 
     async def _handle_text_message(self, context: CallbackContext, message: Message) -> None:
         logger.info(f'New text message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})')
@@ -94,7 +96,8 @@ class BotBrain:
         
         summary = None
         progress_message = None
-        if self._is_youtube_url(urls[0]):
+        is_youtube = self._is_youtube_url(urls[0])
+        if is_youtube:
             logger.info(f"Summarizing video: {urls[0]}")
             progress_message = await message.reply_sticker(self.WATCHING_STICKER)
             summary = self._video_gpt.summarize(urls[0])
@@ -105,6 +108,9 @@ class BotBrain:
 
         await progress_message.delete()
         await message.reply_text(summary, quote=True, parse_mode=ParseMode.HTML)
+        
+        publish_videos_watched() if is_youtube else publish_articles_summarized()
+        publish_request_success_rate(1, True)
 
     async def _handle_command(self, context: CallbackContext, message: Message) -> None:
         logger.info(f"New command '{message.text}' from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})")
@@ -149,5 +155,6 @@ class BotBrain:
                 message.reply_text("Channels are not currently supported")
         except Exception as e:
             # TODO: Need to report back to user that something went wrong
+            publish_request_success_rate(1, False)
             logger.error(f"Error processing message: {update}", exc_info=e, stack_info=True)
 
