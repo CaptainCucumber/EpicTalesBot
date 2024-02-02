@@ -7,6 +7,7 @@ from logging.handlers import RotatingFileHandler
 
 import boto3
 from config import Config, config
+from tracking import get_tracking_context
 
 cloudwatch = boto3.client("cloudwatch")
 
@@ -74,6 +75,7 @@ def track_function(func):
 
 
 def publish_voice_messages_processed(count=1):
+    context = get_tracking_context()
     cloudwatch.put_metric_data(
         Namespace="EpicTalesBot",
         MetricData=[
@@ -82,6 +84,9 @@ def publish_voice_messages_processed(count=1):
                 "Dimensions": [
                     {"Name": "Feature", "Value": "VoiceProcessing"},
                     {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "User", "Value": str(context.user_id)},
+                    {"Name": "Chat", "Value": str(context.chat_id)},
+                    {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
                 "Value": count,
@@ -92,6 +97,7 @@ def publish_voice_messages_processed(count=1):
 
 
 def publish_articles_summarized(count=1):
+    context = get_tracking_context()
     cloudwatch.put_metric_data(
         Namespace="EpicTalesBot",
         MetricData=[
@@ -100,6 +106,9 @@ def publish_articles_summarized(count=1):
                 "Dimensions": [
                     {"Name": "Feature", "Value": "ArticleSummarization"},
                     {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "User", "Value": str(context.user_id)},
+                    {"Name": "Chat", "Value": str(context.chat_id)},
+                    {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
                 "Value": count,
@@ -110,6 +119,7 @@ def publish_articles_summarized(count=1):
 
 
 def publish_videos_watched(count=1):
+    context = get_tracking_context()
     cloudwatch.put_metric_data(
         Namespace="EpicTales",
         MetricData=[
@@ -118,6 +128,9 @@ def publish_videos_watched(count=1):
                 "Dimensions": [
                     {"Name": "Feature", "Value": "VideoSummarization"},
                     {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "User", "Value": str(context.user_id)},
+                    {"Name": "Chat", "Value": str(context.chat_id)},
+                    {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
                 "Value": count,
@@ -128,6 +141,7 @@ def publish_videos_watched(count=1):
 
 
 def publish_request_success_rate(count, is_success=True):
+    context = get_tracking_context()
     metric_name = "RequestSuccessRate" if is_success else "RequestErrorRate"
     cloudwatch.put_metric_data(
         Namespace="EpicTalesBot",
@@ -138,6 +152,9 @@ def publish_request_success_rate(count, is_success=True):
                     {"Name": "Feature", "Value": "General"},
                     {"Name": "Type", "Value": "Success" if is_success else "Error"},
                     {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "User", "Value": str(context.user_id)},
+                    {"Name": "Chat", "Value": str(context.chat_id)},
+                    {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
                 "Value": count,
@@ -148,6 +165,7 @@ def publish_request_success_rate(count, is_success=True):
 
 
 def publish_voice_message_duration(duration_in_seconds):
+    context = get_tracking_context()
     cloudwatch.put_metric_data(
         Namespace="EpicTalesBot",
         MetricData=[
@@ -156,6 +174,9 @@ def publish_voice_message_duration(duration_in_seconds):
                 "Dimensions": [
                     {"Name": "Feature", "Value": "VoiceProcessing"},
                     {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "User", "Value": str(context.user_id)},
+                    {"Name": "Chat", "Value": str(context.chat_id)},
+                    {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
                 "Value": duration_in_seconds,
@@ -166,6 +187,7 @@ def publish_voice_message_duration(duration_in_seconds):
 
 
 def publish_processed_time(time_taken_seconds):
+    context = get_tracking_context()
     cloudwatch.put_metric_data(
         Namespace="EpicTalesBot",
         MetricData=[
@@ -174,6 +196,9 @@ def publish_processed_time(time_taken_seconds):
                 "Dimensions": [
                     {"Name": "Feature", "Value": "VoiceProcessedTime"},
                     {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "User", "Value": str(context.user_id)},
+                    {"Name": "Chat", "Value": str(context.chat_id)},
+                    {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
                 "Value": time_taken_seconds,

@@ -17,6 +17,7 @@ from stt import STT
 from telegram import Message, Update
 from telegram.constants import ParseMode
 from telegram.ext import CallbackContext
+from tracking import generate_tracking_container
 from video_gpt import VideoGPT
 
 logger = logging.getLogger(__name__)
@@ -180,6 +181,12 @@ class BotBrain:
             if not message:
                 logger.warning("Received message with no content")
                 return
+
+            generate_tracking_container(
+                user_id=message.from_user.id,
+                chat_id=message.chat.id,
+                chat_type=message.chat.type,
+            )
 
             if self._is_blacklisted(message):
                 self._leave_group(context, message)
