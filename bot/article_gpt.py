@@ -11,6 +11,7 @@ from metrics import metrics_logger, track_function
 
 logger = logging.getLogger(__name__)
 
+
 class ArticleGPT:
 
     def __init__(self, config: Config) -> None:
@@ -21,42 +22,46 @@ class ArticleGPT:
     def _download_webpage(self, url: str) -> str:
         logger.info(f"Downloading article content: {url}")
         try:
-            response = requests.get(url, headers = {'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=30)
+            response = requests.get(
+                url,
+                headers={"User-Agent": "Mozilla/5.0"},
+                allow_redirects=True,
+                timeout=30,
+            )
             if response.status_code == 200:
                 return response.text
-            
-            logger.error(f"Error in downloading webpage {url}: status code {response.status_code}")
+
+            logger.error(
+                f"Error in downloading webpage {url}: status code {response.status_code}"
+            )
         except requests.RequestException as e:
             logger.error(f"Error in downloading webpage {url}: {e}")
-        
+
         return None
-    
+
     def _extract_title_and_content(self, html: str) -> tuple[str, str]:
-        soup = BeautifulSoup(html, 'html.parser')
-        text = ' '.join([p.get_text() for p in soup.find_all('p')])
+        soup = BeautifulSoup(html, "html.parser")
+        text = " ".join([p.get_text() for p in soup.find_all("p")])
         title = soup.title.get_text()
-        return title, text 
+        return title, text
 
     def _gpt_it(self, title: str, text: str) -> str:
-        title_name = _('Title')
-        text_name = _('Text')
+        title_name = _("Title")
+        text_name = _("Text")
         try:
             response = openai.chat.completions.create(
                 messages=[
-                    {
-                        "role": "user",
-                        "content": self._prompt_content
-                    },
+                    {"role": "user", "content": self._prompt_content},
                     {
                         "role": "system",
-                        "content": f"{title_name}: {title}\n{text_name}: {text}"
-                    }
+                        "content": f"{title_name}: {title}\n{text_name}: {text}",
+                    },
                 ],
                 model="gpt-4-1106-preview",
                 temperature=0.2,
                 top_p=0.9,
                 frequency_penalty=0.5,
-                presence_penalty=0.9
+                presence_penalty=0.9,
             )
 
             first_choice = response.choices[0]
@@ -79,9 +84,9 @@ class ArticleGPT:
         except Exception as e:
             # Capture the entire stack trace and log it
             stack_trace = traceback.format_exc()
-            logger.error(f'Exception occurred while processing URL {url}:\n{e}\n{stack_trace}')
+            logger.error(
+                f"Exception occurred while processing URL {url}:\n{e}\n{stack_trace}"
+            )
 
         metrics_logger.function_call("summarize", success=False)
         return _("Sorry, I couldn't generate the article summary.")
-        
-

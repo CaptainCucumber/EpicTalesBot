@@ -4,10 +4,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-cache = dc.Cache('./cachedir')
+cache = dc.Cache("./cachedir")
+
 
 def get_full_function_name(func):
-    if hasattr(func, '__qualname__'):
+    if hasattr(func, "__qualname__"):
         return func.__qualname__
     return func.__name__
 
@@ -20,7 +21,9 @@ def cache_disk(func):
 
         # Check cache
         if key in cache:
-            logger.info(f"Function '{get_full_function_name(func)}' hit the cache. Return cached value.")
+            logger.info(
+                f"Function '{get_full_function_name(func)}' hit the cache. Return cached value."
+            )
             return cache[key]
 
         # Call the function and cache its result

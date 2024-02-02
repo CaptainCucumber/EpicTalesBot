@@ -21,11 +21,13 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 # AWS stuff
-sqs_client = boto3.client('sqs', region_name='us-west-2')
+sqs_client = boto3.client("sqs", region_name="us-west-2")
 
 # Command line arguments parsing
 parser = argparse.ArgumentParser(description="EpicTales bot")
-parser.add_argument('--disable-stt', action='store_true', help='Disable Speech-to-text functionality.')
+parser.add_argument(
+    "--disable-stt", action="store_true", help="Disable Speech-to-text functionality."
+)
 args = parser.parse_args()
 
 # Bot initialization
@@ -33,7 +35,9 @@ stt_instance = None if args.disable_stt else STT(config)
 gstt_instance = GoogleSTT(config)
 video_gpt_instance = VideoGPT(config)
 article_gpt_instance = ArticleGPT(config)
-bot_brain = BotBrain(video_gpt_instance, article_gpt_instance, stt_instance, gstt_instance)
+bot_brain = BotBrain(
+    video_gpt_instance, article_gpt_instance, stt_instance, gstt_instance
+)
 
 logger.info(f"The bot is initialized. Speech-to-text disabled? {args.disable_stt}")
 
@@ -43,8 +47,9 @@ def get_bot_username(bot_token) -> str:
     response = requests.get(url)
     if response.status_code == 200:
         bot_info = response.json()
-        return bot_info['result']['username']
+        return bot_info["result"]["username"]
     return None
+
 
 def pull_messages(sqs_queue_url) -> None:
     logger.info(f"Start pulling messages from: {sqs_queue_url}")
@@ -55,42 +60,49 @@ def pull_messages(sqs_queue_url) -> None:
             # See, CF template.
             response = sqs_client.receive_message(
                 QueueUrl=sqs_queue_url,
-                AttributeNames=['All'],
+                AttributeNames=["All"],
                 MaxNumberOfMessages=1,
                 WaitTimeSeconds=20,
             )
 
-            messages = response.get('Messages', [])
+            messages = response.get("Messages", [])
 
             for message in messages:
                 logger.info("Receive new message from the queue")
-                    
-                first_decode = json.loads(message['Body'])
+
+                first_decode = json.loads(message["Body"])
                 final_dict = json.loads(first_decode)
 
                 # Initialize Telegram bot application to keep backwards compatibility
                 # TODO: reduce dependencies to Telegram classes
-                application = ApplicationBuilder().token(config.get_telegram_token()).build()
+                application = (
+                    ApplicationBuilder().token(config.get_telegram_token()).build()
+                )
                 context = CallbackContext(application)
 
                 bot_username = get_bot_username(config.get_telegram_token())
 
-                update = Update.de_json(final_dict, Bot(token=config.get_telegram_token()))
+                update = Update.de_json(
+                    final_dict, Bot(token=config.get_telegram_token())
+                )
 
-                asyncio.run(bot_brain.process_new_message(update, context, bot_username))
+                asyncio.run(
+                    bot_brain.process_new_message(update, context, bot_username)
+                )
 
                 # Delete the message from the queue to prevent reprocessing
                 sqs_client.delete_message(
-                    QueueUrl=sqs_queue_url,
-                    ReceiptHandle=message['ReceiptHandle']
+                    QueueUrl=sqs_queue_url, ReceiptHandle=message["ReceiptHandle"]
                 )
         except Exception as e:
-            if message and 'Body' in message:
+            if message and "Body" in message:
                 logger.error(f"Received message: {message['Body']}")
 
-            logger.error(f"An error occurred: {e}\nCall stack: {traceback.format_exc()}")
+            logger.error(
+                f"An error occurred: {e}\nCall stack: {traceback.format_exc()}"
+            )
             break
 
-    
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     pull_messages(config.get_message_queue_url())
