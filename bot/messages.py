@@ -17,7 +17,12 @@ from stt import STT
 from telegram import Message, Update
 from telegram.constants import ParseMode
 from telegram.ext import CallbackContext
-from tracking import generate_tracking_container
+from tracking import (
+    generate_tracking_container,
+    publish_start_command_used,
+    publish_unknown_command_used,
+    publish_version_command_used,
+)
 from video_gpt import VideoGPT
 
 logger = logging.getLogger(__name__)
@@ -164,12 +169,15 @@ class BotBrain:
 
         if command == "/start":
             await message.reply_html(_("Welcome message"), quote=True)
+            publish_start_command_used()
         elif command == "/version":
             await message.reply_html(f"<code>{__version__}</code>")
+            publish_version_command_used()
         else:
             logger.info(
                 f"Unknown command '{command}' from user {message.from_user.id} ({message.from_user.name})"
             )
+            publish_unknown_command_used()
 
     @track_function
     async def process_new_message(

@@ -206,3 +206,69 @@ def publish_processed_time(time_taken_seconds):
             },
         ],
     )
+
+
+def publish_start_command_used(count=1):
+    context = get_tracking_context()
+    cloudwatch.put_metric_data(
+        Namespace="EpicTalesBot",
+        MetricData=[
+            {
+                "MetricName": "Command",
+                "Dimensions": [
+                    {"Name": "CommandName", "Value": "Start"},
+                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "User", "Value": str(context.user_id)},
+                    {"Name": "Chat", "Value": str(context.chat_id)},
+                    {"Name": "ChatType", "Value": context.chat_type},
+                ],
+                "Timestamp": datetime.utcnow(),
+                "Value": count,
+                "Unit": "Count",
+            },
+        ],
+    )
+
+
+def publish_version_command_used(count=1):
+    context = get_tracking_context()
+    cloudwatch.put_metric_data(
+        Namespace="EpicTalesBot",
+        MetricData=[
+            {
+                "MetricName": "Command",
+                "Dimensions": [
+                    {"Name": "CommandName", "Value": "version"},
+                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "User", "Value": str(context.user_id)},
+                    {"Name": "Chat", "Value": str(context.chat_id)},
+                    {"Name": "ChatType", "Value": context.chat_type},
+                ],
+                "Timestamp": datetime.utcnow(),
+                "Value": count,
+                "Unit": "Count",
+            },
+        ],
+    )
+
+
+def publish_unknown_command_used(count=1):
+    context = get_tracking_context()
+    cloudwatch.put_metric_data(
+        Namespace="EpicTalesBot",
+        MetricData=[
+            {
+                "MetricName": "Command",
+                "Dimensions": [
+                    {"Name": "CommandName", "Value": "unknown"},
+                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "User", "Value": str(context.user_id)},
+                    {"Name": "Chat", "Value": str(context.chat_id)},
+                    {"Name": "ChatType", "Value": context.chat_type},
+                ],
+                "Timestamp": datetime.utcnow(),
+                "Value": count,
+                "Unit": "Count",
+            },
+        ],
+    )
