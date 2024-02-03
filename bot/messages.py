@@ -10,6 +10,9 @@ from localization import _
 from metrics import (
     publish_articles_summarized,
     publish_request_success_rate,
+    publish_start_command_used,
+    publish_unknown_command_used,
+    publish_version_command_used,
     publish_videos_watched,
     track_function,
 )
@@ -17,12 +20,7 @@ from stt import STT
 from telegram import Message, Update
 from telegram.constants import ParseMode
 from telegram.ext import CallbackContext
-from tracking import (
-    generate_tracking_container,
-    publish_start_command_used,
-    publish_unknown_command_used,
-    publish_version_command_used,
-)
+from tracking import generate_tracking_container
 from video_gpt import VideoGPT
 
 logger = logging.getLogger(__name__)
