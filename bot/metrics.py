@@ -121,7 +121,7 @@ def publish_articles_summarized(count=1):
 def publish_videos_watched(count=1):
     context = get_tracking_context()
     cloudwatch.put_metric_data(
-        Namespace="EpicTales",
+        Namespace="EpicTalesBot",
         MetricData=[
             {
                 "MetricName": "VideosWatched",
@@ -265,6 +265,24 @@ def publish_unknown_command_used(count=1):
                     {"Name": "User", "Value": str(context.user_id)},
                     {"Name": "Chat", "Value": str(context.chat_id)},
                     {"Name": "ChatType", "Value": context.chat_type},
+                ],
+                "Timestamp": datetime.utcnow(),
+                "Value": count,
+                "Unit": "Count",
+            },
+        ],
+    )
+
+
+def publish_process_start_command_used(count=1):
+    cloudwatch.put_metric_data(
+        Namespace="EpicTalesBot",
+        MetricData=[
+            {
+                "MetricName": "Process",
+                "Dimensions": [
+                    {"Name": "State", "Value": "Start"},
+                    {"Name": "Environment", "Value": config.get_environment()},
                 ],
                 "Timestamp": datetime.utcnow(),
                 "Value": count,

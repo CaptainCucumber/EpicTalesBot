@@ -5,16 +5,17 @@ import logging
 import traceback
 
 import boto3
+import requests
 from article_gpt import ArticleGPT
-from google_stt import GoogleSTT
 from config import config
+from google_stt import GoogleSTT
 from log_config import setup_logging
 from messages import BotBrain
 from stt import STT
-from telegram import Update, Bot
+from telegram import Bot, Update
 from telegram.ext import ApplicationBuilder, CallbackContext
+from tracking import publish_process_start_command_used
 from video_gpt import VideoGPT
-import requests
 
 setup_logging()
 
@@ -105,4 +106,5 @@ def pull_messages(sqs_queue_url) -> None:
 
 
 if __name__ == "__main__":
+    publish_process_start_command_used()
     pull_messages(config.get_message_queue_url())
