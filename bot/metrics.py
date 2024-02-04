@@ -290,3 +290,21 @@ def publish_process_start_command_used(count=1):
             },
         ],
     )
+
+
+def publish_channel_not_supported_message(count=1):
+    cloudwatch.put_metric_data(
+        Namespace="EpicTalesBot",
+        MetricData=[
+            {
+                "MetricName": "Warning",
+                "Dimensions": [
+                    {"Name": "ChannelNotSupported", "Value": "SendMessage"},
+                    {"Name": "Environment", "Value": config.get_environment()},
+                ],
+                "Timestamp": datetime.utcnow(),
+                "Value": count,
+                "Unit": "Count",
+            },
+        ],
+    )

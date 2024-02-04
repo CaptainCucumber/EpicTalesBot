@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-29 15:59-0800\n"
+"POT-Creation-Date: 2024-02-03 18:45-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,50 +17,54 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bot/article_gpt.py:18
+#: bot/article_gpt.py:19
 msgid "ARTICLE_SUMMARY_PROMPT"
 msgstr ""
 
-#: bot/article_gpt.py:41 bot/video_gpt.py:23
+#: bot/article_gpt.py:49 bot/video_gpt.py:37
 msgid "Title"
 msgstr ""
 
-#: bot/article_gpt.py:42
+#: bot/article_gpt.py:50
 msgid "Text"
 msgstr ""
 
-#: bot/article_gpt.py:60 bot/article_gpt.py:77
+#: bot/article_gpt.py:73 bot/article_gpt.py:92
 msgid "Sorry, I couldn't generate the article summary."
 msgstr ""
 
-#: bot/commands.py:23
+#: bot/commands.py:30
 msgid "Something went completely wrong"
 msgstr ""
 
-#: bot/commands.py:28 bot/messages.py:93
+#: bot/commands.py:35 bot/messages.py:169
 msgid "Welcome message"
 msgstr ""
 
-#: bot/stt.py:52
+#: bot/messages.py:123
 msgid "The translation is limited to the first 60 seconds."
 msgstr ""
 
-#: bot/video_gpt.py:20
+#: bot/messages.py:215
+msgid "Channels are not currently supported"
+msgstr ""
+
+#: bot/video_gpt.py:34
 msgid "VIDEO_SUMMARY_PROMPT"
 msgstr ""
 
-#: bot/video_gpt.py:24
+#: bot/video_gpt.py:38
 msgid "Subtitles"
 msgstr ""
 
-#: bot/video_gpt.py:42
+#: bot/video_gpt.py:61
 msgid "Sorry, I couldn't generate the video summary."
 msgstr ""
 
-#: bot/video_gpt.py:98
+#: bot/video_gpt.py:126
 msgid "The video is not available for reviewing"
 msgstr ""
 
-#: bot/video_gpt.py:103
+#: bot/video_gpt.py:131
 msgid "The subtitles are not available."
 msgstr ""

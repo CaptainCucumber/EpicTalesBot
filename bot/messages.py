@@ -9,6 +9,7 @@ from google_stt import GoogleSTT
 from localization import _
 from metrics import (
     publish_articles_summarized,
+    publish_channel_not_supported_message,
     publish_request_success_rate,
     publish_start_command_used,
     publish_unknown_command_used,
@@ -20,13 +21,11 @@ from stt import STT
 from telegram import Message, Update
 from telegram.constants import ParseMode
 from telegram.ext import CallbackContext
+from touch import Touch
 from tracking import generate_tracking_container
 from video_gpt import VideoGPT
 
 logger = logging.getLogger(__name__)
-
-
-google_stt = GoogleSTT(config)
 
 
 class BotBrain:
@@ -52,6 +51,7 @@ class BotBrain:
         self._video_gpt = video_gpt_instance
         self._article_gpt = article_gpt_instance
         self._stt = stt_instance if stt_instance else gstt_instance
+        self._touch = Touch("./touchdir")
 
     def _is_blacklisted(self, message: Message) -> bool:
         return message.chat.id in Config.BLACKLISTED_GROUPS
@@ -189,7 +189,7 @@ class BotBrain:
                 return
 
             generate_tracking_container(
-                user_id=message.from_user.id,
+                user_id=None if message.from_user is None else message.from_user.id,
                 chat_id=message.chat.id,
                 chat_type=message.chat.type,
             )
@@ -215,7 +215,18 @@ class BotBrain:
                 logger.warning(
                     "Received message in channel with chat ID %s", message.chat.id
                 )
-                message.reply_text("Channels are not currently supported")
+
+                # Post the message once only
+                if not self._touch.touch_entity(message.chat.id, message.chat.type):
+                    logger.warning(
+                        f"Sending message in channel {message.chat.id} that channels are not supported"
+                    )
+                    await message.chat.send_message(
+                        _("Channels are not currently supported"),
+                        disable_web_page_preview=True,
+                        parse_mode=ParseMode.HTML,
+                    )
+                    publish_channel_not_supported_message()
         except Exception as e:
             # TODO: Need to report back to user that something went wrong
             publish_request_success_rate(1, False)
