@@ -199,7 +199,11 @@ class BotBrain:
                 return
 
             logger.info(f"Processing new message with type: '{message.chat.type}'")
-            if message.text and message.text.startswith("/"):
+            if (
+                message.text
+                and message.text.startswith("/")
+                and message.chat.type != "channel"
+            ):
                 await self._handle_command(context, message)
             elif message.chat.type == "private":
                 # Process messages directly in private chats
