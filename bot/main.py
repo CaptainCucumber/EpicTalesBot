@@ -11,10 +11,10 @@ from config import config
 from google_stt import GoogleSTT
 from log_config import setup_logging
 from messages import BotBrain
+from metrics import publish_process_start_command_used
 from stt import STT
 from telegram import Bot, Update
 from telegram.ext import ApplicationBuilder, CallbackContext
-from tracking import publish_process_start_command_used
 from video_gpt import VideoGPT
 
 setup_logging()
