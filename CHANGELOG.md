@@ -2,6 +2,37 @@
 
 
 
+## v1.4.1 (2024-02-03)
+
+### Build
+
+* build: Embrase and adopt black ([`d7f3d73`](https://github.com/CaptainCucumber/EpicTalesBot/commit/d7f3d73176ee6b4b9cf1b8772271066441ee8f30))
+
+### Ci
+
+* ci: Metrics for commands
+
+Version, Start and the rest goes to unknown. ([`f1dd97c`](https://github.com/CaptainCucumber/EpicTalesBot/commit/f1dd97c21a9bd061efa42f472850795d1e0ead8d))
+
+* ci: Emit CloudWatch metrics.
+
+Basica metrics for CW to understand the load. ([`f479353`](https://github.com/CaptainCucumber/EpicTalesBot/commit/f479353ae8d70cf414251f77c047b92b08c21463))
+
+### Fix
+
+* fix: Incorrect imports
+
+Pushing too fast! Need to slow down! ([`dac9483`](https://github.com/CaptainCucumber/EpicTalesBot/commit/dac94835ca63bd718a48fe85866f67724de90d93))
+
+### Unknown
+
+* Chat and use data in metrics.
+
+Should help to understand bot usage. ([`6064f6f`](https://github.com/CaptainCucumber/EpicTalesBot/commit/6064f6f3023efd0e53c5c24bd05b208d7c5637cb))
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`400a003`](https://github.com/CaptainCucumber/EpicTalesBot/commit/400a0037e350ed0b3bcfba4b24b55be93ec5a807))
+
+
 ## v1.4.0 (2024-02-01)
 
 ### Feature
