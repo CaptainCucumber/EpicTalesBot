@@ -2,6 +2,35 @@
 
 
 
+## v1.5.0 (2024-02-03)
+
+### Ci
+
+* ci: Start process metric.
+
+It counts how many times the bot restarted. It means it encountered
+unrecoverable exception.
+
+Fix name space typo. ([`35876c9`](https://github.com/CaptainCucumber/EpicTalesBot/commit/35876c935471cc457d8fdcbeeb6111ae4bb6e4fa))
+
+### Feature
+
+* feat: Tell users the bot doesn&#39;t support channels.
+
+Show the message only once and never again (reply on touch). Give two
+links to support account and bot channel. ([`1424b60`](https://github.com/CaptainCucumber/EpicTalesBot/commit/1424b60920b7687821360e24c42d1bb77be1c77a))
+
+* feat: Touch is a cache to mark message.
+
+When the bot need to send one and only one message. ([`a657104`](https://github.com/CaptainCucumber/EpicTalesBot/commit/a65710483989bb6d26585aba77fb6697aac8f1ad))
+
+### Unknown
+
+* No comments :( ([`7582aa3`](https://github.com/CaptainCucumber/EpicTalesBot/commit/7582aa312f1fa64f2ad8b6622213851c2885a02f))
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`9fb4b20`](https://github.com/CaptainCucumber/EpicTalesBot/commit/9fb4b20c0b77a5e55442f1c079e4987acfa9ba5c))
+
+
 ## v1.4.1 (2024-02-03)
 
 ### Build
