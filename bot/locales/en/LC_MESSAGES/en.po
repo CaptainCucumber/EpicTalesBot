@@ -85,7 +85,8 @@ msgstr "The translation is limited to the first 5 mins."
 
 #: bot/messages.py:215
 msgid "Channels are not currently supported"
-msgstr "Currently, our bot supports interaction in private messages and group "
+msgstr "🗣 <a href='https://t.me/EpicTalesBot'>EpicTalesBot</a> \n\n"
+"Currently, our bot supports interaction in private messages and group "
 "chats, but unfortunately, it does not yet work with Telegram channels. 🚫"
 "\n\n"
 "If you would like to see such a feature in the future, please let us know!"
