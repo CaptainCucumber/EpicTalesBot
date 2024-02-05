@@ -1,0 +1,4 @@
+[Unit]
+Description=EpictalesBot Services
+Wants=epictalesbot-messages@1.service epictalesbot-messages@2.service epictalesbot-messages@3.service epictalesbot-messages@4.service epictalesbot-voice-cloud@1.service epictalesbot-voice-cloud@2.service epictalesbot-voice-local@1.service
+After=network.target
