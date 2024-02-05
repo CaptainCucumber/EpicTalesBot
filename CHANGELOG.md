@@ -2,6 +2,24 @@
 
 
 
+## v1.5.1 (2024-02-04)
+
+### Documentation
+
+* docs: More info in channel warning message. ([`ebdb7ec`](https://github.com/CaptainCucumber/EpicTalesBot/commit/ebdb7ec8c62cd908f643723438afa83031fc20c9))
+
+### Fix
+
+* fix: Don&#39;t react to commands in channels
+
+There is no commands in channels, at least not officially. In case the
+bot sees one, just ignore it in the channel ([`8e8f7bf`](https://github.com/CaptainCucumber/EpicTalesBot/commit/8e8f7bfbaa12aedf30f51e9e2baaccd1b2f1bed0))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`bb9ca75`](https://github.com/CaptainCucumber/EpicTalesBot/commit/bb9ca752bee39c1a0125b40bfb3123845c6303cd))
+
+
 ## v1.5.0 (2024-02-04)
 
 ### Ci
