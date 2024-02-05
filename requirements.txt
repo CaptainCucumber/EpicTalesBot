@@ -8,3 +8,4 @@ nvidia-cudnn-cu11==11.11.3.6
 nvidia-cublas-cu11==11.11.3.6
 pytest==8.0.0
 google-cloud-speech==2.23.0
+toml==0.10.2
