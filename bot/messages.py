@@ -19,7 +19,7 @@ from metrics import (
 )
 from stt import STT
 from telegram import Message, Update
-from telegram.constants import ParseMode
+from telegram.constants import ChatType, ParseMode
 from telegram.ext import CallbackContext
 from touch import Touch
 from tracking import generate_tracking_container
@@ -202,13 +202,13 @@ class BotBrain:
             if (
                 message.text
                 and message.text.startswith("/")
-                and message.chat.type != "channel"
+                and message.chat.type != ChatType.CHANNEL
             ):
                 await self._handle_command(context, message)
-            elif message.chat.type == "private":
+            elif message.chat.type == ChatType.PRIVATE:
                 # Process messages directly in private chats
                 await self._route_message_by_type(context, message)
-            elif message.chat.type in ["group", "supergroup"]:
+            elif message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
                 # In groups, process only if bot is mentioned
                 if self._is_bot_mentioned(botname, message):
                     await self._route_message_by_type(context, message)

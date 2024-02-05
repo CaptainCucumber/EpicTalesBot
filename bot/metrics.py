@@ -9,7 +9,12 @@ import boto3
 from config import Config, config
 from tracking import get_tracking_context
 
-cloudwatch = boto3.client("cloudwatch")
+cloudwatch = boto3.client(
+    "cloudwatch",
+    region_name=config.get_aws_region(),
+    aws_access_key_id=config.get_aws_access_key_id(),
+    aws_secret_access_key=config.get_aws_secret_access_key(),
+)
 
 
 def get_full_function_name(func):

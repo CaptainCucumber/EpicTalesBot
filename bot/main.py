@@ -22,12 +22,20 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 # AWS stuff
-sqs_client = boto3.client("sqs", region_name="us-west-2")
+sqs_client = boto3.client(
+    "sqs",
+    region_name=config.get_aws_region(),
+    aws_access_key_id=config.get_aws_access_key_id(),
+    aws_secret_access_key=config.get_aws_secret_access_key(),
+)
 
 # Command line arguments parsing
 parser = argparse.ArgumentParser(description="EpicTales bot")
 parser.add_argument(
     "--disable-stt", action="store_true", help="Disable Speech-to-text functionality."
+)
+parser.add_argument(
+    "--message-queue", type=str, required=True, help="Queue URL to pull messages from"
 )
 args = parser.parse_args()
 
@@ -107,4 +115,4 @@ def pull_messages(sqs_queue_url) -> None:
 
 if __name__ == "__main__":
     publish_process_start_command_used()
-    pull_messages(config.get_message_queue_url())
+    pull_messages(args.message_queue)
