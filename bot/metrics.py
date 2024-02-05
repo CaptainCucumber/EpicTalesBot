@@ -33,7 +33,7 @@ class MetricsLogger:
         )
 
         handler = RotatingFileHandler(
-            metrics_file, maxBytes=10 * 1024 * 1024, backupCount=5
+            metrics_file, maxBytes=30 * 1024 * 1024, backupCount=50
         )
         formatter = logging.Formatter("%(asctime)s - %(message)s")
         handler.setFormatter(formatter)
