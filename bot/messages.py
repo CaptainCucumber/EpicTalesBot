@@ -15,7 +15,6 @@ from metrics import (
     publish_unknown_command_used,
     publish_version_command_used,
     publish_videos_watched,
-    track_function,
 )
 from stt import STT
 from telegram import Message, Update
@@ -177,7 +176,6 @@ class BotBrain:
             )
             publish_unknown_command_used()
 
-    @track_function
     async def process_new_message(
         self, update: Update, context: CallbackContext, botname: Optional[str]
     ) -> None:

@@ -8,7 +8,6 @@ import requests
 from cache import cache_disk
 from config import Config
 from localization import _
-from metrics import track_function
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +115,6 @@ class VideoGPT:
 
         return subtitles_text.strip()
 
-    @track_function
     @cache_disk
     def summarize(self, video_url: str) -> str:
         video_info = self._get_video_info(video_url)

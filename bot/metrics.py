@@ -17,12 +17,6 @@ cloudwatch = boto3.client(
 )
 
 
-def get_full_function_name(func):
-    if hasattr(func, "__qualname__"):
-        return func.__qualname__
-    return func.__name__
-
-
 class MetricsLogger:
     def __init__(self, config: Config):
         metrics_file = config.get_metrics_path() + "/epictales-metrics.log"
@@ -40,7 +34,7 @@ class MetricsLogger:
         handler = RotatingFileHandler(
             metrics_file, maxBytes=30 * 1024 * 1024, backupCount=50
         )
-        formatter = logging.Formatter("%(asctime)s - %(message)s")
+        formatter = logging.Formatter("%(process)d -%(asctime)s - %(message)s")
         handler.setFormatter(formatter)
 
         self.logger.addHandler(handler)
@@ -58,25 +52,6 @@ class MetricsLogger:
 
 
 metrics_logger = MetricsLogger(config)
-
-
-def track_function(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.time()
-        try:
-            result = func(*args, **kwargs)
-            success = True
-        except Exception as e:
-            success = False
-            raise
-        finally:
-            duration = int((time.time() - start_time) * 1000)
-            metrics_logger.function_call(get_full_function_name(func), success=success)
-            metrics_logger.function_timing(get_full_function_name(func), duration)
-        return result
-
-    return wrapper
 
 
 def publish_voice_messages_processed(count=1):

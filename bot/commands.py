@@ -1,14 +1,12 @@
 import logging
 
 from localization import _
-from metrics import track_function
 from telegram import Update
 from telegram.ext import CallbackContext
 
 logger = logging.getLogger(__name__)
 
 
-@track_function
 async def error_handler(update: Update, context: CallbackContext) -> None:
     logger.error(
         f"Update '{update}' caused error '{type(context.error)}: {context.error}'"
@@ -30,6 +28,5 @@ async def error_handler(update: Update, context: CallbackContext) -> None:
     await message.reply_html(_("Something went completely wrong"), quote=True)
 
 
-@track_function
 async def command_start(update: Update, context: CallbackContext) -> None:
     await update.message.reply_html(_("Welcome message"), quote=True)

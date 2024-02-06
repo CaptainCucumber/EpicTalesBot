@@ -6,11 +6,7 @@ import requests
 from config import Config
 from faster_whisper import WhisperModel
 from localization import _
-from metrics import (
-    track_function,
-    publish_processed_time,
-    publish_voice_message_duration,
-)
+from metrics import publish_processed_time, publish_voice_message_duration
 from pydub import AudioSegment
 
 logger = logging.getLogger(__name__)
@@ -27,7 +23,6 @@ class STT:
         response = requests.get(voice_file_id)
         return response.content
 
-    @track_function
     async def transcribe_voice(self, url: str) -> str:
         voice_data = self._download_audio(url)
 
