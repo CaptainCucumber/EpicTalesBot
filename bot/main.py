@@ -11,7 +11,7 @@ from config import config
 from google_stt import GoogleSTT
 from log_config import setup_logging
 from messages import BotBrain
-from metrics import publish_process_start_command_used
+from metrics import publish_process_started
 from stt import STT
 from telegram import Bot, Update
 from telegram.ext import ApplicationBuilder, CallbackContext
@@ -114,5 +114,5 @@ def pull_messages(sqs_queue_url) -> None:
 
 
 if __name__ == "__main__":
-    publish_process_start_command_used()
+    publish_process_started()
     pull_messages(args.message_queue)

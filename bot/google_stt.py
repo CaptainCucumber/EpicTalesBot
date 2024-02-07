@@ -7,11 +7,7 @@ from config import Config
 from google.cloud import speech
 from google.oauth2 import service_account
 from localization import _
-from metrics import (
-    publish_processed_time,
-    publish_voice_message_duration,
-    track_function,
-)
+from metrics import publish_voice_message_processed
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 
@@ -62,8 +58,9 @@ class GoogleSTT:
         # Transcribe the audio file
         response = self._client.recognize(config=config, audio=speech_audio)
 
-        publish_voice_message_duration(original_duration)
-        publish_processed_time(audio.duration_seconds)
+        publish_voice_message_processed(
+            "cloud", original_duration, audio.duration_seconds
+        )
         return (
             " ".join(
                 [result.alternatives[0].transcript for result in response.results]

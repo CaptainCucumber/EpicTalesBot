@@ -6,7 +6,7 @@ import requests
 from config import Config
 from faster_whisper import WhisperModel
 from localization import _
-from metrics import publish_processed_time, publish_voice_message_duration
+from metrics import publish_voice_message_processed
 from pydub import AudioSegment
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,8 @@ class STT:
         # Transcribe using Whisper
         segments, info = self.model.transcribe(wav_audio_stream, beam_size=5)
 
-        publish_voice_message_duration(original_duration)
-        publish_processed_time(audio.duration_seconds)
+        publish_voice_message_processed(
+            "local", original_duration, audio.duration_seconds
+        )
 
         return "".join(segment.text for segment in segments), original_duration
