@@ -226,10 +226,10 @@ def publish_channel_not_supported_message(count=1):
 
 def publish_process_started(count=1):
     cloudwatch.put_metric_data(
-        Namespace="EpicTalesBot",
+        Namespace=CLOUDWATCH_NAMESPACE,
         MetricData=[
             {
-                "MetricName": "Process",
+                "MetricName": "ProcessStarted",
                 "Dimensions": [
                     {"Name": "Environment", "Value": config.get_environment()},
                 ],
