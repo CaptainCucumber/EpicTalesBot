@@ -1,5 +1,3 @@
-import os
-
 import toml
 
 
@@ -22,9 +20,6 @@ class Config:
 
     def get_log_path(self):
         return self.config["epictalesbot"].get("logs_path", "/var/log/epictales")
-
-    def get_metrics_path(self):
-        return self.config["epictalesbot"].get("metrics_path", "/var/log/epictales")
 
     def get_google_cloud_creds_file(self):
         return self.config["google"]["cloud"]["credentials_file"]

@@ -1,12 +1,7 @@
-import logging
-import os
-import time
 from datetime import datetime
-from functools import wraps
-from logging.handlers import RotatingFileHandler
 
 import boto3
-from config import Config, config
+from config import config
 from tracking import get_tracking_context
 
 cloudwatch = boto3.client(
@@ -17,43 +12,6 @@ cloudwatch = boto3.client(
 )
 
 CLOUDWATCH_NAMESPACE = "EpicTalesBot-1.5.1"
-
-
-class MetricsLogger:
-    def __init__(self, config: Config):
-        metrics_file = config.get_metrics_path() + "/epictales-metrics.log"
-
-        metrics_directory = os.path.dirname(metrics_file)
-        if not os.path.exists(metrics_directory):
-            os.makedirs(metrics_directory)
-
-        self.logger = logging.getLogger("EpicTalesMetrics")
-        self.logger.setLevel(logging.INFO)
-        self.logger.propagate = (
-            False  # Prevent the logger from propagating messages to the root logger
-        )
-
-        handler = RotatingFileHandler(
-            metrics_file, maxBytes=30 * 1024 * 1024, backupCount=50
-        )
-        formatter = logging.Formatter("%(process)d -%(asctime)s - %(message)s")
-        handler.setFormatter(formatter)
-
-        self.logger.addHandler(handler)
-
-    def log_metric(self, metric_name, value, **tags):
-        tag_str = ", ".join([f'{key}="{value}"' for key, value in tags.items()])
-        self.logger.info(f"{metric_name}={value}, {tag_str}")
-
-    def function_call(self, function_name, success=True):
-        status = "success" if success else "failure"
-        self.log_metric("function_call", 1, function_name=function_name, status=status)
-
-    def function_timing(self, function_name, duration):
-        self.log_metric("function_timing", duration, function_name=function_name)
-
-
-metrics_logger = MetricsLogger(config)
 
 
 def publish_articles_summarized(count=1):
