@@ -95,9 +95,7 @@ def pull_messages(sqs_queue_url) -> None:
                     final_dict, Bot(token=config.get_telegram_token())
                 )
 
-                asyncio.run(
-                    bot_brain.process_new_message(update, context, bot_username)
-                )
+                bot_brain.process_new_message(update, context, bot_username)
 
                 # Delete the message from the queue to prevent reprocessing
                 sqs_client.delete_message(

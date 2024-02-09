@@ -70,14 +70,14 @@ class BotBrain:
             or "youtube.com/shorts" in url
         )
 
-    async def _leave_group(self, context: CallbackContext, message: Message) -> None:
-        await context.bot.leave_chat(message.chat.id)
+    def _leave_group(self, context: CallbackContext, message: Message) -> None:
+        context.bot.leave_chat(message.chat.id)
         logger.warning(
             f"Leaving non-whitelisted group with chat ID {message.chat.id}, "
             f"message type: {message.chat.type} and message: {message.text}"
         )
 
-    async def _route_message_by_type(
+    def _route_message_by_type(
         self, context: CallbackContext, message: Message
     ) -> None:
         replied_message = (
@@ -85,13 +85,11 @@ class BotBrain:
         )
 
         if replied_message.voice:
-            await self._handle_voice_message(context, replied_message)
+            self._handle_voice_message(context, replied_message)
         elif replied_message.text:
-            await self._handle_text_message(context, replied_message)
+            self._handle_text_message(context, replied_message)
 
-    async def _handle_voice_message(
-        self, context: CallbackContext, message: Message
-    ) -> None:
+    def _handle_voice_message(self, context: CallbackContext, message: Message) -> None:
 
         def split_and_format_string(input_string, max_length):
             parts = [
@@ -105,31 +103,27 @@ class BotBrain:
             f"New voice message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})"
         )
 
-        progress_message = await message.reply_sticker(self.LISTENING_STICKER)
+        progress_message = message.reply_sticker(self.LISTENING_STICKER)
 
-        file = await context.bot.get_file(message.voice.file_id)
+        file = context.bot.get_file(message.voice.file_id)
         file_url = file.file_path
 
-        transcription, duration = await self._stt.transcribe_voice(file_url)
+        transcription, duration = self._stt.transcribe_voice(file_url)
         texts = split_and_format_string(transcription, self.MAX_MESSAGE_LENGTH)
 
-        await progress_message.delete()
+        progress_message.delete()
 
         for text in texts:
-            await message.reply_text(text, quote=True, parse_mode=ParseMode.HTML)
+            message.reply_text(text, quote=True, parse_mode=ParseMode.HTML)
 
         if duration > self._stt._MAX_VOICE_AUDIO_LENGTH:
             limit_message = _("The translation is limited to the first 60 seconds.")
             warning_message = f"<b>{limit_message}</b>"
-            await message.reply_text(
-                warning_message, quote=True, parse_mode=ParseMode.HTML
-            )
+            message.reply_text(warning_message, quote=True, parse_mode=ParseMode.HTML)
 
         publish_request_success_rate(1, True)
 
-    async def _handle_text_message(
-        self, context: CallbackContext, message: Message
-    ) -> None:
+    def _handle_text_message(self, context: CallbackContext, message: Message) -> None:
         logger.info(
             f"New text message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})"
         )
@@ -145,30 +139,30 @@ class BotBrain:
         is_youtube = self._is_youtube_url(urls[0])
         if is_youtube:
             logger.info(f"Summarizing video: {urls[0]}")
-            progress_message = await message.reply_sticker(self.WATCHING_STICKER)
+            progress_message = message.reply_sticker(self.WATCHING_STICKER)
             summary = self._video_gpt.summarize(urls[0])
         else:
             logger.info(f"Summarizing article: {urls[0]}")
-            progress_message = await message.reply_sticker(self.READING_STICKER)
+            progress_message = message.reply_sticker(self.READING_STICKER)
             summary = self._article_gpt.summarize(urls[0])
 
-        await progress_message.delete()
-        await message.reply_text(summary, quote=True, parse_mode=ParseMode.HTML)
+        progress_message.delete()
+        message.reply_text(summary, quote=True, parse_mode=ParseMode.HTML)
 
         publish_videos_watched() if is_youtube else publish_articles_summarized()
         publish_request_success_rate(1, True)
 
-    async def _handle_command(self, context: CallbackContext, message: Message) -> None:
+    def _handle_command(self, context: CallbackContext, message: Message) -> None:
         logger.info(
             f"New command '{message.text}' from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})"
         )
         command = message.text.split()[0]
 
         if command == "/start":
-            await message.reply_html(_("Welcome message"), quote=True)
+            message.reply_html(_("Welcome message"), quote=True)
             publish_start_command_used()
         elif command == "/version":
-            await message.reply_html(f"<code>{__version__}</code>")
+            message.reply_html(f"<code>{__version__}</code>")
             publish_version_command_used()
         else:
             logger.info(
@@ -176,7 +170,7 @@ class BotBrain:
             )
             publish_unknown_command_used()
 
-    async def process_new_message(
+    def process_new_message(
         self, update: Update, context: CallbackContext, botname: Optional[str]
     ) -> None:
         try:
@@ -202,14 +196,14 @@ class BotBrain:
                 and message.text.startswith("/")
                 and message.chat.type != ChatType.CHANNEL
             ):
-                await self._handle_command(context, message)
+                self._handle_command(context, message)
             elif message.chat.type == ChatType.PRIVATE:
                 # Process messages directly in private chats
-                await self._route_message_by_type(context, message)
+                self._route_message_by_type(context, message)
             elif message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
                 # In groups, process only if bot is mentioned
                 if self._is_bot_mentioned(botname, message):
-                    await self._route_message_by_type(context, message)
+                    self._route_message_by_type(context, message)
                 else:
                     logger.info("The bot name was not mentioned in the message")
             elif message.chat.type == "channel":
@@ -223,7 +217,7 @@ class BotBrain:
                     logger.warning(
                         f"Sending message in channel {message.chat.id} that channels are not supported"
                     )
-                    await message.chat.send_message(
+                    message.chat.send_message(
                         _("Channels are not currently supported"),
                         disable_web_page_preview=True,
                         parse_mode=ParseMode.HTML,
