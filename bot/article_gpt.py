@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 from cache import cache_disk
 from config import Config
 from localization import _
+from playwright.sync_api import sync_playwright
+from playwright_stealth import stealth_sync
 
 logger = logging.getLogger(__name__)
 
@@ -17,24 +19,26 @@ class ArticleGPT:
         openai.api_key = config.get_open_ai_key()
         self._prompt_content = _("ARTICLE_SUMMARY_PROMPT")
 
+        playwright = sync_playwright().start()
+        self._browser = playwright.chromium.launch(headless=True)
+        self._context = self._browser.new_context()
+
     # Return None if an error occurred
     def _download_webpage(self, url: str) -> str:
         logger.info(f"Downloading article content: {url}")
-        try:
-            response = requests.get(
-                url,
-                headers={"User-Agent": "Mozilla/5.0"},
-                allow_redirects=True,
-                timeout=30,
-            )
-            if response.status_code == 200:
-                return response.text
+        page = self._context.new_page()
+        stealth_sync(page)
 
-            logger.error(
-                f"Error in downloading webpage {url}: status code {response.status_code}"
-            )
+        try:
+            page.goto(url, wait_until="load")
+            html_content = page.content()
+            return html_content
+
         except requests.RequestException as e:
             logger.error(f"Error in downloading webpage {url}: {e}")
+
+        finally:
+            page.close()
 
         return None
 
