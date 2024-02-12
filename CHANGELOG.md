@@ -2,6 +2,99 @@
 
 
 
+## v1.5.2 (2024-02-12)
+
+### Chore
+
+* chore: Change package type name to avoid collision ([`7eaaad6`](https://github.com/CaptainCucumber/EpicTalesBot/commit/7eaaad6f2918f015a28f394b11dcece90935743f))
+
+* chore: Don&#39;t use blacklisted groups.
+
+Today we already have a mechanism on API level to prevent message spam. ([`772b852`](https://github.com/CaptainCucumber/EpicTalesBot/commit/772b852e04f02dfd0c756dc0ccbcc8541e596931))
+
+* chore: Remoce dependency on metric logger.
+
+CW metrics work fantastic, so we don&#39;t need local storage for metrics
+anymore. ([`cd3ebf4`](https://github.com/CaptainCucumber/EpicTalesBot/commit/cd3ebf40b9c4c891d38d14f8091ee998ab803642))
+
+* chore: Simplify metrics.
+
+Too many dimentions makes metrics aggrigation on backend complicated and
+sometimes impossible. ([`2b9cc8d`](https://github.com/CaptainCucumber/EpicTalesBot/commit/2b9cc8d57bfeab22e832e87f98015e0003d391de))
+
+* chore: Finalize move to config file.
+
+Adapt the code to get variables from config rather than environment. ([`c132bfe`](https://github.com/CaptainCucumber/EpicTalesBot/commit/c132bfee558dbb5b1301b5b6d95321d322d91a77))
+
+* chore: Ignore cache directory ([`d70c5ec`](https://github.com/CaptainCucumber/EpicTalesBot/commit/d70c5ec5cdc0b01445079c4cf4d4936ab5128a40))
+
+### Ci
+
+* ci: Move away from environment variables.
+
+User config file instead. The reason to ease maintenance and handling.
+It is difficult to keep environment variables in place especially when
+process can&#39;t be directly controlled. ([`8a9e5cc`](https://github.com/CaptainCucumber/EpicTalesBot/commit/8a9e5ccf2cab0a65f0365a1dd0ad15d0252b5188))
+
+* ci: Moving from Make to systemctl
+
+The main reason for the move is auto-recovery per process. Although
+its possible to implement custom recovery mechanism in Make, it&#39;s more
+convinient to use systemctl. ([`bbcd88c`](https://github.com/CaptainCucumber/EpicTalesBot/commit/bbcd88c9bdbc3e750259518feaf34591bf50a1dd))
+
+### Documentation
+
+* docs: Increate log side and retention period.
+
+Too many requests, need larger logs to debug. ([`285787c`](https://github.com/CaptainCucumber/EpicTalesBot/commit/285787c7b32a99e1b9607e9395bed883d11717f6))
+
+### Performance
+
+* perf: Use headless browser for webpage content
+
+Use playwright to download HTML content. It gives much better results
+comparing to bs4. Although some pages content is not available. ([`b04b256`](https://github.com/CaptainCucumber/EpicTalesBot/commit/b04b25605c4cb2b9e771696a5f7e584037e1ef32))
+
+### Refactor
+
+* refactor: Finalize switch to sync APIs.
+
+From now on each instance of the bot is a sync single thread. It allows
+us to scale within a single machine having multiple threads processing
+same message queue.
+
+Why?
+- Easy to maintain and test
+- Resilience. A faulty message doesn&#39;t shutdown the bot, only one
+instance
+- Integration with 3rd party libraries that don&#39;t have async. ([`fbf7318`](https://github.com/CaptainCucumber/EpicTalesBot/commit/fbf731883a86a7826ae56fa2a5d8059f3ac0bdfb))
+
+* refactor: Message structure to handle all messages
+
+This is uber structure acts like a dict and
+namespace at the same time. Basically it emulates
+full class behaviour without haveing a class. ([`b8c712e`](https://github.com/CaptainCucumber/EpicTalesBot/commit/b8c712e15075592b9afd6d43a0c2f6ee81ce9708))
+
+* refactor: Sync Telegram APIs
+
+New set of sync APIs. Unfortunatelly Telegram officially doesn&#39;t provide
+sync APIs. ([`d43dcba`](https://github.com/CaptainCucumber/EpicTalesBot/commit/d43dcba360da673f831515c57f00f4ad24d71bd9))
+
+* refactor: Remove all async/await references.
+
+First step to migrate to sync logic. ([`d677b27`](https://github.com/CaptainCucumber/EpicTalesBot/commit/d677b27a4120d39ea85f2fed9856cf77d36fc14d))
+
+### Unknown
+
+* Fix metrics name ([`aa180a4`](https://github.com/CaptainCucumber/EpicTalesBot/commit/aa180a4db60c64452a81add71e6f194ddabc10db))
+
+* Remove redundant tracking system.
+
+This is profiling rather than metrics. ([`12b7475`](https://github.com/CaptainCucumber/EpicTalesBot/commit/12b74753fa0ec61d9dbb196dd3e323585f0a5d0f))
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`ba6c54a`](https://github.com/CaptainCucumber/EpicTalesBot/commit/ba6c54af03fd639b227840bcce23490f764c1d2a))
+
+
 ## v1.5.1 (2024-02-04)
 
 ### Documentation
