@@ -2,7 +2,6 @@ import toml
 
 
 class Config:
-    BLACKLISTED_GROUPS = []
     _instance = None
 
     def __new__(cls, config_path):
