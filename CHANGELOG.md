@@ -2,6 +2,19 @@
 
 
 
+## v1.5.3 (2024-02-12)
+
+### Fix
+
+* fix: Reply to commands
+
+The bot didn&#39;t responde to a command. ([`160e7c4`](https://github.com/CaptainCucumber/EpicTalesBot/commit/160e7c47f9300ea19b15b3c205d89dcb73cfa508))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`dcf8375`](https://github.com/CaptainCucumber/EpicTalesBot/commit/dcf8375ab6a3419250187570800330a344fd1ca3))
+
+
 ## v1.5.2 (2024-02-12)
 
 ### Chore
