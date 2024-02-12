@@ -165,7 +165,9 @@ class MessageDispatcher:
             )
             publish_start_command_used()
         elif command == "/version":
-            self._telegram.reply_message(f"<code>{__version__}</code>")
+            self._telegram.reply_message(
+                self.chat_id, self.message_id, f"<code>{__version__}</code>"
+            )
             publish_version_command_used()
         else:
             logger.info(
