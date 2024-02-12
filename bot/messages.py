@@ -1,15 +1,15 @@
 import logging
 import re
-from typing import Optional
+from types.message import Message
+from typing import Union
 
 from __init__ import __version__
 from article_gpt import ArticleGPT
-from config import Config, config
+from config import config
 from google_stt import GoogleSTT
 from localization import _
 from metrics import (
     publish_articles_summarized,
-    publish_channel_not_supported_message,
     publish_request_success_rate,
     publish_start_command_used,
     publish_unknown_command_used,
@@ -17,9 +17,7 @@ from metrics import (
     publish_videos_watched,
 )
 from stt import STT
-from telegram import Message, Update
-from telegram.constants import ChatType, ParseMode
-from telegram.ext import CallbackContext
+from tlg.api import TelegramAPI
 from touch import Touch
 from tracking import generate_tracking_container
 from video_gpt import VideoGPT
@@ -27,7 +25,7 @@ from video_gpt import VideoGPT
 logger = logging.getLogger(__name__)
 
 
-class BotBrain:
+class MessageDispatcher:
     MAX_MESSAGE_LENGTH = 4096
 
     READING_STICKER = (
@@ -42,26 +40,44 @@ class BotBrain:
 
     def __init__(
         self,
+        botname: str,
         video_gpt_instance: VideoGPT,
         article_gpt_instance: ArticleGPT,
-        stt_instance: Optional[STT],
-        gstt_instance: Optional[STT],
+        voice_transcriber: Union[STT, GoogleSTT],
+        update: Message,
     ) -> None:
+        self._botname = botname
         self._video_gpt = video_gpt_instance
         self._article_gpt = article_gpt_instance
-        self._stt = stt_instance if stt_instance else gstt_instance
+        self._stt = voice_transcriber
+        self._update = update
+
+        self._telegram = TelegramAPI(config)
+
         self._touch = Touch("./touchdir")
 
-    def _is_blacklisted(self, message: Message) -> bool:
-        return message.chat.id in Config.BLACKLISTED_GROUPS
+    @property
+    def user_id(self) -> int:
+        return self._update.message.from_user.id
 
-    def _is_bot_mentioned(self, botname: str, message: Message) -> bool:
-        return (
-            message
-            and message.reply_to_message
-            and message.text
-            and f"@{botname}" in message.text
-        )
+    @property
+    def chat_id(self) -> int:
+        return self._update.message.chat.id
+
+    @property
+    def chat_type(self) -> str:
+        return self._update.message.chat.type
+
+    @property
+    def username(self) -> str:
+        return self._update.message.from_user.username
+
+    @property
+    def message_id(self) -> int:
+        return self._update.message.message_id
+
+    def _is_bot_mentioned(self, botname: str, message: dict) -> bool:
+        return f"@{botname}" in message.text
 
     def _is_youtube_url(self, url: str) -> bool:
         return (
@@ -70,26 +86,7 @@ class BotBrain:
             or "youtube.com/shorts" in url
         )
 
-    def _leave_group(self, context: CallbackContext, message: Message) -> None:
-        context.bot.leave_chat(message.chat.id)
-        logger.warning(
-            f"Leaving non-whitelisted group with chat ID {message.chat.id}, "
-            f"message type: {message.chat.type} and message: {message.text}"
-        )
-
-    def _route_message_by_type(
-        self, context: CallbackContext, message: Message
-    ) -> None:
-        replied_message = (
-            message.reply_to_message if message.reply_to_message else message
-        )
-
-        if replied_message.voice:
-            self._handle_voice_message(context, replied_message)
-        elif replied_message.text:
-            self._handle_text_message(context, replied_message)
-
-    def _handle_voice_message(self, context: CallbackContext, message: Message) -> None:
+    def _handle_voice_message(self, message: dict) -> None:
 
         def split_and_format_string(input_string, max_length):
             parts = [
@@ -100,32 +97,33 @@ class BotBrain:
             return formatted_parts
 
         logger.info(
-            f"New voice message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})"
+            f"New voice message from chat ID {self.chat_id} and user ID {self.user_id} ({self.username})"
         )
 
-        progress_message = message.reply_sticker(self.LISTENING_STICKER)
+        progress_message = self._telegram.reply_with_sticker(
+            self.chat_id, self.message_id, self.LISTENING_STICKER
+        )
 
-        file = context.bot.get_file(message.voice.file_id)
-        file_url = file.file_path
+        file_url = self._telegram.get_voice_file_path(message.voice.file_id)
 
         transcription, duration = self._stt.transcribe_voice(file_url)
         texts = split_and_format_string(transcription, self.MAX_MESSAGE_LENGTH)
 
-        progress_message.delete()
+        self._telegram.delete_message(self.chat_id, progress_message["message_id"])
 
         for text in texts:
-            message.reply_text(text, quote=True, parse_mode=ParseMode.HTML)
+            self._telegram.reply_message(self.chat_id, self.message_id, text)
 
         if duration > self._stt._MAX_VOICE_AUDIO_LENGTH:
             limit_message = _("The translation is limited to the first 60 seconds.")
             warning_message = f"<b>{limit_message}</b>"
-            message.reply_text(warning_message, quote=True, parse_mode=ParseMode.HTML)
+            self._telegram.reply_message(self.chat_id, self.message_id, warning_message)
 
         publish_request_success_rate(1, True)
 
-    def _handle_text_message(self, context: CallbackContext, message: Message) -> None:
+    def _handle_text_message(self, message: dict) -> None:
         logger.info(
-            f"New text message from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})"
+            f"New text message from chat ID {self.chat_id} and user ID {self.user_id} ({self.username})"
         )
         url_pattern = r"https?://[^\s]+"
         urls = re.findall(url_pattern, message.text)
@@ -139,90 +137,94 @@ class BotBrain:
         is_youtube = self._is_youtube_url(urls[0])
         if is_youtube:
             logger.info(f"Summarizing video: {urls[0]}")
-            progress_message = message.reply_sticker(self.WATCHING_STICKER)
+            progress_message = self._telegram.reply_with_sticker(
+                self.chat_id, self.message_id, self.WATCHING_STICKER
+            )
             summary = self._video_gpt.summarize(urls[0])
         else:
             logger.info(f"Summarizing article: {urls[0]}")
-            progress_message = message.reply_sticker(self.READING_STICKER)
+            progress_message = self._telegram.reply_with_sticker(
+                self.chat_id, self.message_id, self.READING_STICKER
+            )
             summary = self._article_gpt.summarize(urls[0])
 
-        progress_message.delete()
-        message.reply_text(summary, quote=True, parse_mode=ParseMode.HTML)
+        self._telegram.delete_message(self.chat_id, progress_message["message_id"])
+        self._telegram.reply_message(self.chat_id, self.message_id, summary)
 
         publish_videos_watched() if is_youtube else publish_articles_summarized()
         publish_request_success_rate(1, True)
 
-    def _handle_command(self, context: CallbackContext, message: Message) -> None:
+    def _handle_command(self, command: str) -> None:
         logger.info(
-            f"New command '{message.text}' from chat ID {message.chat.id} and user ID {message.from_user.id} ({message.from_user.name})"
+            f"New command '{command}' from chat ID {self.chat_id} and user ID {self.user_id} ({self.username})"
         )
-        command = message.text.split()[0]
 
         if command == "/start":
-            message.reply_html(_("Welcome message"), quote=True)
+            self._telegram.reply_message(
+                self.chat_id, self.message_id, _("Welcome message")
+            )
             publish_start_command_used()
         elif command == "/version":
-            message.reply_html(f"<code>{__version__}</code>")
+            self._telegram.reply_message(f"<code>{__version__}</code>")
             publish_version_command_used()
         else:
             logger.info(
-                f"Unknown command '{command}' from user {message.from_user.id} ({message.from_user.name})"
+                f"Unknown command '{command}' from user {self.user_id} ({self.username})"
             )
             publish_unknown_command_used()
 
-    def process_new_message(
-        self, update: Update, context: CallbackContext, botname: Optional[str]
-    ) -> None:
+    def _get_command(self, message_text: str) -> bool:
+        if not message_text.startswith("/"):
+            return None
+
+        return message_text.split()[0]
+
+    def _get_voice_message(self, message: dict) -> bool:
+        if "voice" in message:
+            return message
+
+        if "voice" in message.get("reply_to_message", {}):
+            return message.reply_to_message
+
+        return {}
+
+    def process_new_message(self, update: dict) -> None:
         try:
-            message = update.message if update.message else update.channel_post
-
-            if not message:
-                logger.warning("Received message with no content")
-                return
-
+            message = update.message
             generate_tracking_container(
-                user_id=None if message.from_user is None else message.from_user.id,
+                user_id=None if message.from_user.id is None else message.from_user.id,
                 chat_id=message.chat.id,
                 chat_type=message.chat.type,
             )
 
-            if self._is_blacklisted(message):
-                self._leave_group(context, message)
+            if not hasattr(update, "message"):
                 return
 
-            logger.info(f"Processing new message with type: '{message.chat.type}'")
-            if (
-                message.text
-                and message.text.startswith("/")
-                and message.chat.type != ChatType.CHANNEL
-            ):
-                self._handle_command(context, message)
-            elif message.chat.type == ChatType.PRIVATE:
-                # Process messages directly in private chats
-                self._route_message_by_type(context, message)
-            elif message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
-                # In groups, process only if bot is mentioned
-                if self._is_bot_mentioned(botname, message):
-                    self._route_message_by_type(context, message)
-                else:
-                    logger.info("The bot name was not mentioned in the message")
-            elif message.chat.type == "channel":
-                # TODO: Not sure what to do in channels. What is our behavior here?
-                logger.warning(
-                    "Received message in channel with chat ID %s", message.chat.id
-                )
+            # Handle voice messages first
+            voice_message = self._get_voice_message(message)
+            if voice_message:
+                self._handle_voice_message(voice_message)
+                return
 
-                # Post the message once only
-                if not self._touch.touch_entity(message.chat.id, message.chat.type):
-                    logger.warning(
-                        f"Sending message in channel {message.chat.id} that channels are not supported"
-                    )
-                    message.chat.send_message(
-                        _("Channels are not currently supported"),
-                        disable_web_page_preview=True,
-                        parse_mode=ParseMode.HTML,
-                    )
-                    publish_channel_not_supported_message()
+            text = message.get("text", {})
+            if text:
+                # Handle commands
+                command = self._get_command(message.text)
+                if command:
+                    self._handle_command(command)
+                    return
+
+                if self.chat_type in [
+                    "supergroup",
+                    "group",
+                ] and not self._is_bot_mentioned(self._botname, message):
+                    return
+
+                reply_to_message = message.get("reply_to_message", {})
+                text_message = reply_to_message if reply_to_message else message
+                self._handle_text_message(text_message)
+
+            # TODO: if user adds the bot to a channel, sent the warning message
         except Exception as e:
             # TODO: Need to report back to user that something went wrong
             publish_request_success_rate(1, False)

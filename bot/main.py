@@ -1,8 +1,8 @@
 import argparse
-import asyncio
 import json
 import logging
 import traceback
+from types.message import Message
 
 import boto3
 import requests
@@ -10,15 +10,12 @@ from article_gpt import ArticleGPT
 from config import config
 from google_stt import GoogleSTT
 from log_config import setup_logging
-from messages import BotBrain
+from messages import MessageDispatcher
 from metrics import publish_process_started
 from stt import STT
-from telegram import Bot, Update
-from telegram.ext import ApplicationBuilder, CallbackContext
 from video_gpt import VideoGPT
 
 setup_logging()
-
 logger = logging.getLogger(__name__)
 
 # AWS stuff
@@ -40,13 +37,9 @@ parser.add_argument(
 args = parser.parse_args()
 
 # Bot initialization
-stt_instance = None if args.disable_stt else STT(config)
-gstt_instance = GoogleSTT(config)
+stt_instance = GoogleSTT(config) if args.disable_stt else STT(config)
 video_gpt_instance = VideoGPT(config)
 article_gpt_instance = ArticleGPT(config)
-bot_brain = BotBrain(
-    video_gpt_instance, article_gpt_instance, stt_instance, gstt_instance
-)
 
 logger.info(f"The bot is initialized. Speech-to-text disabled? {args.disable_stt}")
 
@@ -62,6 +55,7 @@ def get_bot_username(bot_token) -> str:
 
 def pull_messages(sqs_queue_url) -> None:
     logger.info(f"Start pulling messages from: {sqs_queue_url}")
+    botname = get_bot_username(config.get_telegram_token())
 
     while True:
         try:
@@ -80,22 +74,19 @@ def pull_messages(sqs_queue_url) -> None:
                 logger.info("Receive new message from the queue")
 
                 first_decode = json.loads(message["Body"])
-                final_dict = json.loads(first_decode)
+                update = json.loads(first_decode)
 
                 # Initialize Telegram bot application to keep backwards compatibility
                 # TODO: reduce dependencies to Telegram classes
-                application = (
-                    ApplicationBuilder().token(config.get_telegram_token()).build()
-                )
-                context = CallbackContext(application)
-
-                bot_username = get_bot_username(config.get_telegram_token())
-
-                update = Update.de_json(
-                    final_dict, Bot(token=config.get_telegram_token())
+                bot_brain = MessageDispatcher(
+                    botname,
+                    video_gpt_instance,
+                    article_gpt_instance,
+                    stt_instance,
+                    Message(update),
                 )
 
-                bot_brain.process_new_message(update, context, bot_username)
+                bot_brain.process_new_message(Message(update))
 
                 # Delete the message from the queue to prevent reprocessing
                 sqs_client.delete_message(

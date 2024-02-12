@@ -23,7 +23,7 @@ class STT:
         response = requests.get(voice_file_id)
         return response.content
 
-    async def transcribe_voice(self, url: str) -> str:
+    def transcribe_voice(self, url: str) -> str:
         voice_data = self._download_audio(url)
 
         oga_audio_stream = io.BytesIO(voice_data)
