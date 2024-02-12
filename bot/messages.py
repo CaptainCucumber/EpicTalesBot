@@ -1,6 +1,5 @@
 import logging
 import re
-from types.message import Message
 from typing import Union
 
 from __init__ import __version__
@@ -16,6 +15,7 @@ from metrics import (
     publish_version_command_used,
     publish_videos_watched,
 )
+from models.message import Message
 from stt import STT
 from tlg.api import TelegramAPI
 from touch import Touch

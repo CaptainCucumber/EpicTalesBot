@@ -2,7 +2,6 @@ import argparse
 import json
 import logging
 import traceback
-from types.message import Message
 
 import boto3
 import requests
@@ -12,6 +11,7 @@ from google_stt import GoogleSTT
 from log_config import setup_logging
 from messages import MessageDispatcher
 from metrics import publish_process_started
+from models.message import Message
 from stt import STT
 from video_gpt import VideoGPT
 
