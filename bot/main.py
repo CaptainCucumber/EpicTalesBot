@@ -1,6 +1,8 @@
 import argparse
 import json
 import logging
+import signal
+import sys
 import traceback
 
 import boto3
@@ -36,6 +38,20 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+# Add a global flag for shutdown
+shutdown_flag = False
+
+
+def signal_handler(signum, frame):
+    global shutdown_flag
+    logger.info("Receive terminate signal. Shutting down...")
+    shutdown_flag = True
+
+
+# Register the signal handler
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
+
 # Bot initialization
 stt_instance = GoogleSTT(config) if args.disable_stt else STT(config)
 video_gpt_instance = VideoGPT(config)
@@ -54,10 +70,12 @@ def get_bot_username(bot_token) -> str:
 
 
 def pull_messages(sqs_queue_url) -> None:
+    global shutdown_flag
+
     logger.info(f"Start pulling messages from: {sqs_queue_url}")
     botname = get_bot_username(config.get_telegram_token())
 
-    while True:
+    while not shutdown_flag:
         try:
             # Visibility time and DLQ are set on infrastructure level.
             # See, CF template.
@@ -105,3 +123,5 @@ def pull_messages(sqs_queue_url) -> None:
 if __name__ == "__main__":
     publish_process_started()
     pull_messages(args.message_queue)
+
+    logger.info("Service shutdown completed. Bye!")

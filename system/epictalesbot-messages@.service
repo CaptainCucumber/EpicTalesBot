@@ -1,5 +1,6 @@
 [Unit]
 Description=EpictalesBot Message Service Instance %i
+PartOf=epictalesbot.target
 After=network.target
 
 [Service]
@@ -7,7 +8,8 @@ Type=simple
 WorkingDirectory=/path/to/EpicTalesBot
 ExecStart=/path/to/EpicTalesBot/.venv/bin/python ./bot/main.py --disable-stt
 Environment="TELEGRAM_TOKEN= OPENAI_KEY= MESSAGE_QUEUE_URL="
-Restart=on-failure
+Restart=always
+RestartSec=10s
 
 [Install]
 WantedBy=multi-user.target
