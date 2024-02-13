@@ -70,7 +70,11 @@ class MessageDispatcher:
 
     @property
     def username(self) -> str:
-        return self._update.message.from_user.username
+        return (
+            self._update.message.from_user.username
+            if "username" in self._update.message.from_user
+            else "XXX_NO_USERNAME"
+        )
 
     @property
     def message_id(self) -> int:
