@@ -2,6 +2,26 @@
 
 
 
+## v1.5.4 (2024-02-13)
+
+### Ci
+
+* ci: Grasefully shutting down the service
+
+Finish message processing with `systemctl restart` is received. ([`c223c5c`](https://github.com/CaptainCucumber/EpicTalesBot/commit/c223c5ca13decc65fc57a147e3762f7f683e3a1f))
+
+### Fix
+
+* fix: Handle no username case.
+
+Looks like some users might not have a username or bot doesn&#39;t have
+access to it. ([`d7f3a94`](https://github.com/CaptainCucumber/EpicTalesBot/commit/d7f3a943cad498abae5236994dda4f874e77345e))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`1fb2f10`](https://github.com/CaptainCucumber/EpicTalesBot/commit/1fb2f10be39b3cabde80de6277dc93fb75a9637d))
+
+
 ## v1.5.3 (2024-02-12)
 
 ### Fix
