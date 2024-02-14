@@ -2,6 +2,30 @@
 
 
 
+## v1.5.5 (2024-02-14)
+
+### Chore
+
+* chore: Push leftovers from refactoring
+
+Add recorder to log messages for future reference. Message is passed
+at init time. ([`88bee4e`](https://github.com/CaptainCucumber/EpicTalesBot/commit/88bee4ed45118ac79c454e664b9206b14b6097f0))
+
+* chore: Commands are now processed in dispatcher ([`40e6b71`](https://github.com/CaptainCucumber/EpicTalesBot/commit/40e6b71ef126a3256593bf9ca67114a392368132))
+
+### Performance
+
+* perf: Increase message visibility time.
+
+It might take longer than 60 sec to process a link or very long
+voice message. Hire the message for longer to avoice other service
+processing it, leading to double result. ([`2b5ee0d`](https://github.com/CaptainCucumber/EpicTalesBot/commit/2b5ee0db684534d7e2c4bbebf6c12615e2d1cfda))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`c09b021`](https://github.com/CaptainCucumber/EpicTalesBot/commit/c09b0214b146f30e317fc3abe9fe41f0c744a906))
+
+
 ## v1.5.4 (2024-02-13)
 
 ### Ci
