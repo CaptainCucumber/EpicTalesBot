@@ -2,6 +2,7 @@ import json
 
 import requests
 from config import Config
+from tlg.record import record_message
 
 
 class TelegramAPI:
@@ -26,6 +27,7 @@ class TelegramAPI:
             raise Exception(f"Failed to send message: {response.text}")
 
         result = json.loads(response.text)["result"]
+        record_message(result)
         return result
 
     def reply_with_sticker(self, chat_id: int, message_id: int, sticker: str) -> dict:

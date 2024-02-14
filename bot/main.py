@@ -94,8 +94,6 @@ def pull_messages(sqs_queue_url) -> None:
                 first_decode = json.loads(message["Body"])
                 update = json.loads(first_decode)
 
-                # Initialize Telegram bot application to keep backwards compatibility
-                # TODO: reduce dependencies to Telegram classes
                 bot_brain = MessageDispatcher(
                     botname,
                     video_gpt_instance,
@@ -104,7 +102,7 @@ def pull_messages(sqs_queue_url) -> None:
                     Message(update),
                 )
 
-                bot_brain.process_new_message(Message(update))
+                bot_brain.process_new_message()
 
                 # Delete the message from the queue to prevent reprocessing
                 sqs_client.delete_message(

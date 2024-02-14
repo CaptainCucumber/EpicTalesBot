@@ -194,16 +194,16 @@ class MessageDispatcher:
 
         return {}
 
-    def process_new_message(self, update: dict) -> None:
+    def process_new_message(self) -> None:
         try:
-            message = update.message
+            message = self._update.message
             generate_tracking_container(
                 user_id=None if message.from_user.id is None else message.from_user.id,
                 chat_id=message.chat.id,
                 chat_type=message.chat.type,
             )
 
-            if not hasattr(update, "message"):
+            if not hasattr(self._update, "message"):
                 return
 
             # Handle voice messages first
