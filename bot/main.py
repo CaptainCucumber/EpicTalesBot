@@ -31,7 +31,11 @@ sqs_client = boto3.client(
 # Command line arguments parsing
 parser = argparse.ArgumentParser(description="EpicTales bot")
 parser.add_argument(
-    "--disable-stt", action="store_true", help="Disable Speech-to-text functionality."
+    "--processing-voice",
+    type=str,
+    choices=["cpu", "gpu", "cloud"],
+    default="gpu",
+    help="Set where voice messages should be processed: on local CPU, local GPU, or Cloud.",
 )
 parser.add_argument(
     "--message-queue", type=str, required=True, help="Queue URL to pull messages from"
@@ -53,11 +57,22 @@ signal.signal(signal.SIGTERM, signal_handler)
 signal.signal(signal.SIGINT, signal_handler)
 
 # Bot initialization
-stt_instance = GoogleSTT(config) if args.disable_stt else STT(config)
+stt_instance = None
+if args.processing_voice == "cpu":
+    logger.info("Using local CPU for speech-to-text")
+    stt_instance = STT(config, "cpu")
+elif args.processing_voice == "gpu":
+    logger.info("Using local GPU for speech-to-text")
+    stt_instance = STT(config, "gpu")
+elif args.processing_voice == "cloud":
+    stt_instance = GoogleSTT(config)
+else:
+    raise Exception(f"Unknown location for the model: {args.processing_voice}")
+
 video_gpt_instance = VideoGPT(config)
 article_gpt_instance = ArticleGPT(config)
 
-logger.info(f"The bot is initialized. Speech-to-text disabled? {args.disable_stt}")
+logger.info(f"The bot is initialized. Speech-to-text runs on '{args.processing_voice}'")
 
 
 def get_bot_username(bot_token) -> str:

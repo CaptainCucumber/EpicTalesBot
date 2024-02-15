@@ -1,15 +1,13 @@
 [Unit]
-Description=EpictalesBot Message Service Instance %i
-PartOf=epictalesbot.target
+Description=EpictalesBot Voice Local Service Instance %i
 After=network.target
 
 [Service]
 Type=simple
 WorkingDirectory=/path/to/EpicTalesBot
-ExecStart=/path/to/EpicTalesBot/.venv/bin/python ./bot/main.py
+ExecStart=/path/to/EpicTalesBot/.venv/bin/python ./bot/main.py --processing-voice="cpu"
 Environment="TELEGRAM_TOKEN= OPENAI_KEY= MESSAGE_QUEUE_URL="
-Restart=always
-RestartSec=10s
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

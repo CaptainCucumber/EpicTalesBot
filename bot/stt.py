@@ -15,9 +15,29 @@ logger = logging.getLogger(__name__)
 class STT:
     _MAX_VOICE_AUDIO_LENGTH = 5 * 60
 
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: Config, location: str) -> None:
         openai.api_key = config.get_open_ai_key()
-        self.model = WhisperModel("large-v3", device="cuda", compute_type="float16")
+        self.location = location
+
+        model_cache_dir = "/var/cache/epictales/faster-whisper/" + location
+
+        if location == "gpu":
+            self.model = WhisperModel(
+                "large-v3",
+                device="cuda",
+                compute_type="float16",
+                download_root=model_cache_dir,
+            )
+        elif location == "cpu":
+            self.model = WhisperModel(
+                "large-v3",
+                device="cpu",
+                cpu_threads=12,
+                num_workers=12,
+                download_root=model_cache_dir,
+            )
+        else:
+            raise Exception(f"Unknown location for the model: {location}")
 
     def _download_audio(self, voice_file_id: str) -> bytes:
         response = requests.get(voice_file_id)
@@ -41,7 +61,9 @@ class STT:
         segments, info = self.model.transcribe(wav_audio_stream, beam_size=5)
 
         publish_voice_message_processed(
-            "local", original_duration, audio.duration_seconds
+            "local" if self.location == "gpu" else "cpu",
+            original_duration,
+            audio.duration_seconds,
         )
 
         return "".join(segment.text for segment in segments), original_duration
