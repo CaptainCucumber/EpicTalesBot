@@ -2,6 +2,20 @@
 
 
 
+## v1.5.6 (2024-02-15)
+
+### Fix
+
+* fix: Avoid mixing two similar languages.
+
+Looks like GSTT confuses Russian and Ukrainian. Having a lot of negative
+feedbacks from users. Need to keep them strictly separate. ([`6b8e7fe`](https://github.com/CaptainCucumber/EpicTalesBot/commit/6b8e7fe2ccc2f1994fb10797ec4d325082cacec0))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`52dae50`](https://github.com/CaptainCucumber/EpicTalesBot/commit/52dae50345ef6770376174d6eff32c9488f12d1c))
+
+
 ## v1.5.5 (2024-02-14)
 
 ### Chore
