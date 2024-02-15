@@ -47,7 +47,7 @@ class GoogleSTT:
             encoding=speech.RecognitionConfig.AudioEncoding.OGG_OPUS,
             sample_rate_hertz=frame_rate,
             language_code="ru-RU",
-            alternative_language_codes=["ru-RU", "uk-UA", "en-US"],
+            alternative_language_codes=["ru-RU", "en-US"],
             enable_word_confidence=True,
             enable_automatic_punctuation=True,
             profanity_filter=False,
