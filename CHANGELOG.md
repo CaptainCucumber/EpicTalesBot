@@ -2,6 +2,23 @@
 
 
 
+## v1.5.8 (2024-02-16)
+
+### Fix
+
+* fix: Safe API methods.
+
+1. Users delete original message before bot completes transcription.
+2. Group admins didn&#39;t provide sufficient permissions to post stickers.
+
+In both cases, use safe APIs to keep going and still post the results.
+Case 2 must be addressed by posting a warning message with touch. ([`024eb03`](https://github.com/CaptainCucumber/EpicTalesBot/commit/024eb0324c9ad04be03e8b694d0b04924348b37d))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`5f9e862`](https://github.com/CaptainCucumber/EpicTalesBot/commit/5f9e862b320640e1d93cae93de31a73886c42c1c))
+
+
 ## v1.5.7 (2024-02-16)
 
 ### Performance
