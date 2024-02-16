@@ -1,8 +1,11 @@
 import json
+import logging
 
 import requests
 from config import Config
 from tlg.record import record_message
+
+logger = logging.getLogger(__name__)
 
 
 class TelegramAPI:
@@ -46,6 +49,18 @@ class TelegramAPI:
         result = json.loads(response.text)["result"]
         return result
 
+    def reply_with_sticker_safe(
+        self, chat_id: int, message_id: int, sticker: str
+    ) -> dict:
+        """Replies with a sticker in a safe manner by catching and logging any exceptions."""
+        result = dict()
+        try:
+            result = self.reply_with_sticker(chat_id, message_id, sticker)
+        except Exception as e:
+            logger.error(f"Failed to send sticker: {e}")
+
+        return result
+
     def delete_message(self, chat_id: int, message_id: int) -> None:
         """Deletes a message."""
         method = "deleteMessage"
@@ -54,6 +69,13 @@ class TelegramAPI:
         response = requests.post(url, data=data)
         if not response.ok:
             raise Exception(f"Failed to delete message: {response.text}")
+
+    def delete_message_safe(self, chat_id: int, message_id: int) -> None:
+        """Deletes a message in a safe manner by catching and logging any exceptions."""
+        try:
+            self.delete_message(chat_id, message_id)
+        except Exception as e:
+            logger.error(f"Failed to delete message: {e}")
 
     def get_voice_file_path(self, file_id: str) -> str:
         """Retrieves the full file path to a voice message using its file_id."""

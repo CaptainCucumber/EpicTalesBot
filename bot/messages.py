@@ -104,7 +104,7 @@ class MessageDispatcher:
             f"New voice message from chat ID {self.chat_id} and user ID {self.user_id} ({self.username})"
         )
 
-        progress_message = self._telegram.reply_with_sticker(
+        progress_message = self._telegram.reply_with_sticker_safe(
             self.chat_id, self.message_id, self.LISTENING_STICKER
         )
 
@@ -113,7 +113,7 @@ class MessageDispatcher:
         transcription, duration = self._stt.transcribe_voice(file_url)
         texts = split_and_format_string(transcription, self.MAX_MESSAGE_LENGTH)
 
-        self._telegram.delete_message(self.chat_id, progress_message["message_id"])
+        self._telegram.delete_message_safe(self.chat_id, progress_message["message_id"])
 
         for text in texts:
             self._telegram.reply_message(self.chat_id, self.message_id, text)
@@ -141,18 +141,18 @@ class MessageDispatcher:
         is_youtube = self._is_youtube_url(urls[0])
         if is_youtube:
             logger.info(f"Summarizing video: {urls[0]}")
-            progress_message = self._telegram.reply_with_sticker(
+            progress_message = self._telegram.reply_with_sticker_safe(
                 self.chat_id, self.message_id, self.WATCHING_STICKER
             )
             summary = self._video_gpt.summarize(urls[0])
         else:
             logger.info(f"Summarizing article: {urls[0]}")
-            progress_message = self._telegram.reply_with_sticker(
+            progress_message = self._telegram.reply_with_sticker_safe(
                 self.chat_id, self.message_id, self.READING_STICKER
             )
             summary = self._article_gpt.summarize(urls[0])
 
-        self._telegram.delete_message(self.chat_id, progress_message["message_id"])
+        self._telegram.delete_message_safe(self.chat_id, progress_message["message_id"])
         self._telegram.reply_message(self.chat_id, self.message_id, summary)
 
         publish_videos_watched() if is_youtube else publish_articles_summarized()
