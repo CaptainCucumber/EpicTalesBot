@@ -2,6 +2,21 @@
 
 
 
+## v1.5.7 (2024-02-16)
+
+### Performance
+
+* perf: Run STT model on cpu
+
+Need to scale as much as possible within the machine to reduce cost
+with growing number of requests. The plan it to run two services
+cpu/gpu at the same time. ([`d6e3fc8`](https://github.com/CaptainCucumber/EpicTalesBot/commit/d6e3fc8cce7ae37bc2e3a19e298af7343f079668))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`0ef78a4`](https://github.com/CaptainCucumber/EpicTalesBot/commit/0ef78a47b9e60e102a353d7b74b804ec38745c0e))
+
+
 ## v1.5.6 (2024-02-15)
 
 ### Fix
