@@ -2,6 +2,16 @@
 
 
 
+## v1.5.9 (2024-02-16)
+
+### Fix
+
+* fix: Clean up progress stickers if any
+
+In case the process was interrupted by an exception, clean up all
+left overs user might have in the chat. ([`1fbb394`](https://github.com/CaptainCucumber/EpicTalesBot/commit/1fbb3949fa80c2f9583ce9b8d3f753c0c7fa578a))
+
+
 ## v1.5.8 (2024-02-16)
 
 ### Fix
