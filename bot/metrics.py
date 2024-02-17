@@ -73,7 +73,7 @@ def publish_request_success_rate(count, is_success=True):
     )
 
 
-def publish_voice_message_processed(type, duration, processed_time):
+def publish_voice_message_processed(type, duration, processed_time, compute_time):
     context = get_tracking_context()
     cloudwatch.put_metric_data(
         Namespace=CLOUDWATCH_NAMESPACE,
@@ -98,6 +98,17 @@ def publish_voice_message_processed(type, duration, processed_time):
                 ],
                 "Timestamp": datetime.utcnow(),
                 "Value": processed_time,
+                "Unit": "Seconds",
+            },
+            {
+                "MetricName": "VoiceMessageComputeTime",
+                "Dimensions": [
+                    {"Name": "Type", "Value": type},
+                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "ChatType", "Value": context.chat_type},
+                ],
+                "Timestamp": datetime.utcnow(),
+                "Value": compute_time,
                 "Unit": "Seconds",
             },
         ],

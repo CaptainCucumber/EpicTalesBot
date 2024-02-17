@@ -1,6 +1,7 @@
 import io
 import json
 import logging
+import time
 
 import requests
 from config import Config
@@ -55,11 +56,13 @@ class GoogleSTT:
             model="default",
         )
 
+        start_time = time.time()
         # Transcribe the audio file
         response = self._client.recognize(config=config, audio=speech_audio)
+        end_time = time.time()
 
         publish_voice_message_processed(
-            "cloud", original_duration, audio.duration_seconds
+            "cloud", original_duration, audio.duration_seconds, end_time - start_time
         )
         return (
             " ".join(

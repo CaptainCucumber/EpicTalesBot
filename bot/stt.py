@@ -1,5 +1,6 @@
 import io
 import logging
+import time
 
 import openai
 import requests
@@ -57,13 +58,16 @@ class STT:
         audio.export(wav_audio_stream, format="wav")
         wav_audio_stream.seek(0)
 
+        start_time = time.time()
         # Transcribe using Whisper
         segments, info = self.model.transcribe(wav_audio_stream, beam_size=5)
+        end_time = time.time()
 
         publish_voice_message_processed(
             "local" if self.location == "gpu" else "cpu",
             original_duration,
             audio.duration_seconds,
+            end_time - start_time,
         )
 
         return "".join(segment.text for segment in segments), original_duration
