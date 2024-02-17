@@ -2,6 +2,29 @@
 
 
 
+## v1.5.10 (2024-02-17)
+
+### Chore
+
+* chore: Measure compute time for voice messages.
+
+It should provice user experience, waiting for a message to be
+processed per processing type. As well shows if bot can further scale
+on CPU ([`c1c69d0`](https://github.com/CaptainCucumber/EpicTalesBot/commit/c1c69d04d89e9243825ab356927759a25f92d8cd))
+
+### Fix
+
+* fix: Post results only all segments are processed
+
+Faster-whisper process audio in segments, meaning results will be
+available during aggregation of all segments. So publish metric only
+when all segments are compleated. ([`63fda5d`](https://github.com/CaptainCucumber/EpicTalesBot/commit/63fda5d81eeb262d3ec96ecf987d08e557dae79f))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`e32cbd9`](https://github.com/CaptainCucumber/EpicTalesBot/commit/e32cbd9e5f94485e69cc395e123348d1148e2fc6))
+
+
 ## v1.5.9 (2024-02-16)
 
 ### Fix
