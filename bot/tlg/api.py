@@ -10,9 +10,9 @@ logger = logging.getLogger(__name__)
 
 class TelegramAPI:
     def __init__(self, config: Config) -> int:
-        self.base_url = f"https://api.telegram.org/bot{config.get_telegram_token()}/"
+        self.base_url = f"https://api.telegram.org/bot{config.telegram_token}/"
         self.file_base_url = (
-            f"https://api.telegram.org/file/bot{config.get_telegram_token()}/"
+            f"https://api.telegram.org/file/bot{config.telegram_token}/"
         )
 
     def reply_message(self, chat_id: int, message_id: int, text: str) -> dict:

@@ -10,7 +10,7 @@ logger.propagate = False
 
 
 def setup_logging():
-    log_file = config.get_log_path() + "/records.log"
+    log_file = config.log_path + "/records.log"
     log_directory = os.path.dirname(log_file)
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)

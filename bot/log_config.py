@@ -15,7 +15,7 @@ def setup_logging():
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
     # Create a rotating file handler
-    log_file = config.get_log_path() + "/application.log"
+    log_file = config.log_path + "/application.log"
     log_directory = os.path.dirname(log_file)
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)

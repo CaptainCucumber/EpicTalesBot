@@ -6,9 +6,9 @@ from tracking import get_tracking_context
 
 cloudwatch = boto3.client(
     "cloudwatch",
-    region_name=config.get_aws_region(),
-    aws_access_key_id=config.get_aws_access_key_id(),
-    aws_secret_access_key=config.get_aws_secret_access_key(),
+    region_name=config.aws_region,
+    aws_access_key_id=config.aws_access_key_id,
+    aws_secret_access_key=config.aws_secret_access_key,
 )
 
 CLOUDWATCH_NAMESPACE = "EpicTalesBot-1.5.1"
@@ -22,7 +22,7 @@ def publish_articles_summarized(count=1):
             {
                 "MetricName": "ArticlesSummarized",
                 "Dimensions": [
-                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "Environment", "Value": config.environment},
                     {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
@@ -41,7 +41,7 @@ def publish_videos_watched(count=1):
             {
                 "MetricName": "VideosWatched",
                 "Dimensions": [
-                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "Environment", "Value": config.environment},
                     {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
@@ -62,7 +62,7 @@ def publish_request_success_rate(count, is_success=True):
                 "MetricName": metric_name,
                 "Dimensions": [
                     {"Name": "Type", "Value": "Success" if is_success else "Error"},
-                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "Environment", "Value": config.environment},
                     {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
@@ -82,7 +82,7 @@ def publish_voice_message_processed(type, duration, processed_time, compute_time
                 "MetricName": "VoiceMessageDuration",
                 "Dimensions": [
                     {"Name": "Type", "Value": type},
-                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "Environment", "Value": config.environment},
                     {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
@@ -93,7 +93,7 @@ def publish_voice_message_processed(type, duration, processed_time, compute_time
                 "MetricName": "VoiceMessageProccedTime",
                 "Dimensions": [
                     {"Name": "Type", "Value": type},
-                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "Environment", "Value": config.environment},
                     {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
@@ -104,7 +104,7 @@ def publish_voice_message_processed(type, duration, processed_time, compute_time
                 "MetricName": "VoiceMessageComputeTime",
                 "Dimensions": [
                     {"Name": "Type", "Value": type},
-                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "Environment", "Value": config.environment},
                     {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
@@ -124,7 +124,7 @@ def publish_start_command_used(count=1):
                 "MetricName": "Command",
                 "Dimensions": [
                     {"Name": "CommandName", "Value": "start"},
-                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "Environment", "Value": config.environment},
                     {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
@@ -144,7 +144,7 @@ def publish_version_command_used(count=1):
                 "MetricName": "Command",
                 "Dimensions": [
                     {"Name": "CommandName", "Value": "version"},
-                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "Environment", "Value": config.environment},
                     {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
@@ -164,7 +164,7 @@ def publish_unknown_command_used(count=1):
                 "MetricName": "Command",
                 "Dimensions": [
                     {"Name": "CommandName", "Value": "unknown"},
-                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "Environment", "Value": config.environment},
                     {"Name": "ChatType", "Value": context.chat_type},
                 ],
                 "Timestamp": datetime.utcnow(),
@@ -183,7 +183,7 @@ def publish_channel_not_supported_message(count=1):
                 "MetricName": "Warning",
                 "Dimensions": [
                     {"Name": "ChannelNotSupported", "Value": "SendMessage"},
-                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "Environment", "Value": config.environment},
                 ],
                 "Timestamp": datetime.utcnow(),
                 "Value": count,
@@ -200,7 +200,7 @@ def publish_process_started(count=1):
             {
                 "MetricName": "ProcessStarted",
                 "Dimensions": [
-                    {"Name": "Environment", "Value": config.get_environment()},
+                    {"Name": "Environment", "Value": config.environment},
                 ],
                 "Timestamp": datetime.utcnow(),
                 "Value": count,
