@@ -79,6 +79,10 @@ class MessageDispatcher:
         )
 
     @property
+    def is_group(self) -> bool:
+        return self.chat_type in ["supergroup", "group"]
+
+    @property
     def message_id(self) -> int:
         return self._update.message.message_id
 
@@ -197,8 +201,8 @@ class MessageDispatcher:
         if "voice" in message:
             return message
 
-        if "voice" in message.get("reply_to_message", {}):
-            return message.reply_to_message
+        # if "voice" in message.get("reply_to_message", {}):
+        #    return message.reply_to_message
 
         return {}
 
