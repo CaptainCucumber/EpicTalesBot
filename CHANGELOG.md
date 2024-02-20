@@ -2,6 +2,20 @@
 
 
 
+## v1.5.11 (2024-02-20)
+
+### Fix
+
+* fix: Do not reply to voice messages automatically
+
+This is a temporary fix to avoid transcribing voice messages when
+someone replies to a one. Due to a bug the bot automatically transcribes
+all voice messages in the group... and it looks like people like it.
+
+This is until the bot has settings page to allows to toggle auto
+transcribe ([`a27f15f`](https://github.com/CaptainCucumber/EpicTalesBot/commit/a27f15f951ad18253aae889273861070f3acf453))
+
+
 ## v1.5.10 (2024-02-17)
 
 ### Chore
