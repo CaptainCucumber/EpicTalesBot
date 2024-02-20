@@ -1,0 +1,18 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Create a DynamoDB table for ChatSettings'
+
+Resources:
+  ChatSettingsTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: ChatSettings
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      AttributeDefinitions:
+        - AttributeName: chat_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: chat_id
+          KeyType: HASH
