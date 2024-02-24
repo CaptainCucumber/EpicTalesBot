@@ -89,3 +89,59 @@ class TelegramAPI:
         file_path = json.loads(response.text)["result"]["file_path"]
         full_file_path = self.file_base_url + file_path
         return full_file_path
+
+    def send_message_with_inline_keyboard(
+        self, chat_id: int, text: str, keyboard: list
+    ) -> dict:
+        """Sends a message with an inline keyboard."""
+        method = "sendMessage"
+        url = self.base_url + method
+        reply_markup = {"inline_keyboard": keyboard}
+        data = {
+            "chat_id": chat_id,
+            "text": text,
+            "parse_mode": "HTML",
+            "reply_markup": json.dumps(reply_markup),
+        }
+        response = requests.post(url, data=data)
+        if not response.ok:
+            raise Exception(
+                f"Failed to send message with inline keyboard: {response.text}"
+            )
+
+        result = json.loads(response.text)["result"]
+        return result
+
+    def answer_callback_query(
+        self, callback_query_id: str, text: str = "", show_alert: bool = False
+    ) -> dict:
+        """Sends an answer to a callback query, optionally with an alert."""
+        method = "answerCallbackQuery"
+        url = self.base_url + method
+        data = {
+            "callback_query_id": callback_query_id,
+            "text": text,
+            "show_alert": show_alert,
+        }
+        response = requests.post(url, data=data)
+        if not response.ok:
+            raise Exception(f"Failed to answer callback query: {response.text}")
+
+        result = json.loads(response.text)
+        return result
+
+    def send_message(self, chat_id: int, text: str) -> dict:
+        """Sends a message to a chat in HTML parse mode."""
+        method = "sendMessage"
+        url = self.base_url + method
+        data = {
+            "chat_id": chat_id,
+            "text": text,
+            "parse_mode": "HTML",
+        }
+        response = requests.post(url, data=data)
+        if not response.ok:
+            raise Exception(f"Failed to send message: {response.text}")
+
+        result = json.loads(response.text)["result"]
+        return result

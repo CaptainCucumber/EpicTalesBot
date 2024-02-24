@@ -16,6 +16,7 @@ from metrics import (
     publish_videos_watched,
 )
 from models.message import Message
+from settings.chat_settings import ChatSettings
 from stt import STT
 from tlg.api import TelegramAPI
 from touch import Touch
@@ -96,7 +97,7 @@ class MessageDispatcher:
             or "youtube.com/shorts" in url
         )
 
-    def _handle_voice_message(self, message: dict) -> None:
+    def _handle_voice_message(self, message: Message) -> None:
 
         def split_and_format_string(input_string, max_length):
             parts = [
@@ -125,7 +126,7 @@ class MessageDispatcher:
             )
 
         for text in texts:
-            self._telegram.reply_message(self.chat_id, self.message_id, text)
+            self._telegram.reply_message(self.chat_id, message.message_id, text)
 
         if duration > self._stt._MAX_VOICE_AUDIO_LENGTH:
             limit_message = _("The translation is limited to the first 60 seconds.")
@@ -170,12 +171,17 @@ class MessageDispatcher:
         publish_videos_watched() if is_youtube else publish_articles_summarized()
         publish_request_success_rate(1, True)
 
-    def _handle_command(self, command: str) -> None:
+    def _handle_command(
+        self, chat_settings: ChatSettings, command: str, message: Message
+    ) -> None:
         logger.info(
             f"New command '{command}' from chat ID {self.chat_id} and user ID {self.user_id} ({self.username})"
         )
 
         if command == "/start":
+            if not chat_settings:
+                chat_settings.initialize()
+
             self._telegram.reply_message(
                 self.chat_id, self.message_id, _("Welcome message")
             )
@@ -185,6 +191,14 @@ class MessageDispatcher:
                 self.chat_id, self.message_id, f"<code>{__version__}</code>"
             )
             publish_version_command_used()
+
+        elif command == "/listen":
+            if "reply_to_message" in message and "voice" in message.reply_to_message:
+                self._handle_voice_message(message.reply_to_message)
+            else:
+                self._telegram.reply_message(
+                    self.chat_id, self.message_id, _("No voice message to transcribe")
+                )
         else:
             logger.info(
                 f"Unknown command '{command}' from user {self.user_id} ({self.username})"
@@ -201,13 +215,20 @@ class MessageDispatcher:
         if "voice" in message:
             return message
 
-        # if "voice" in message.get("reply_to_message", {}):
-        #    return message.reply_to_message
-
         return {}
+
+    def _send_new_settings_message(self) -> None:
+        self._telegram.send_message(self.chat_id, _("New settings in tact"))
+        self._touch.touch_entity(self.chat_id, "new_settings")
 
     def process_new_message(self) -> None:
         try:
+            if "message" not in self._update:
+                logger.error(
+                    "No message in update. Don't know how to process the update"
+                )
+                return
+
             message = self._update.message
             generate_tracking_container(
                 user_id=None if message.from_user.id is None else message.from_user.id,
@@ -215,32 +236,23 @@ class MessageDispatcher:
                 chat_type=message.chat.type,
             )
 
-            if not hasattr(self._update, "message"):
-                return
-
-            # Handle voice messages first
-            voice_message = self._get_voice_message(message)
-            if voice_message:
-                self._handle_voice_message(voice_message)
-                return
-
+            chat_settings = ChatSettings(self.chat_id)
             text = message.get("text", {})
             if text:
                 # Handle commands
                 command = self._get_command(message.text)
                 if command:
-                    self._handle_command(command)
+                    self._handle_command(chat_settings, command, message)
                     return
 
-                if self.chat_type in [
-                    "supergroup",
-                    "group",
-                ] and not self._is_bot_mentioned(self._botname, message):
-                    return
+            if not chat_settings:
+                self._send_new_settings_message()
+                chat_settings.initialize()
 
-                reply_to_message = message.get("reply_to_message", {})
-                text_message = reply_to_message if reply_to_message else message
-                self._handle_text_message(text_message)
+            # Autotranscibe is "on" see if there is a voice message
+            if "voice" in message and chat_settings.autotranscribe:
+                self._handle_voice_message(message)
+                return
 
             # TODO: if user adds the bot to a channel, sent the warning message
         except Exception as e:

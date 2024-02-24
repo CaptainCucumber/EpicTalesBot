@@ -7,25 +7,13 @@ class ChatSettingsRepository:
         self.table = DynamoDBClient().get_table(table_name)
 
     def get_chat_settings(self, chat_id):
-        try:
-            response = self.table.get_item(Key={"chat_id": chat_id})
-            return response.get("Item", {})
-        except ClientError as e:
-            print(e.response["Error"]["Message"])
-            return None
+        response = self.table.get_item(Key={"chat_id": chat_id})
+        return response.get("Item", {})
 
     def update_chat_settings(self, chat_id, settings):
-        try:
-            self.table.put_item(Item={"user_id": chat_id, **settings})
-            return True
-        except ClientError as e:
-            print(e.response["Error"]["Message"])
-            return False
+        self.table.put_item(Item={"chat_id": chat_id, **settings})
+        return True
 
     def delete_chat_settings(self, chat_id):
-        try:
-            self.table.delete_item(Key={"user_id": chat_id})
-            return True
-        except ClientError as e:
-            print(e.response["Error"]["Message"])
-            return False
+        self.table.delete_item(Key={"chat_id": chat_id})
+        return True
