@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import Union
+from typing import Optional, Union
 
 from __init__ import __version__
 from article_gpt import ArticleGPT
@@ -24,6 +24,33 @@ from tracking import generate_tracking_container
 from video_gpt import VideoGPT
 
 logger = logging.getLogger(__name__)
+
+
+@staticmethod
+def get_first_link_from_message(message: Message) -> Optional[str]:
+    if "text" not in message:
+        return None
+
+    url_pattern = r"https?://[^\s]+"
+    urls = re.findall(url_pattern, message.text)
+    if not urls:
+        return None
+
+    return urls[0]
+
+
+@staticmethod
+def get_video_link_from_message(message: Message) -> Optional[str]:
+    link = get_first_link_from_message(message)
+
+    if (
+        "youtube.com/watch" in link
+        or "youtu.be/" in link
+        or "youtube.com/shorts" in link
+    ):
+        return link
+
+    return None
 
 
 class MessageDispatcher:
@@ -135,31 +162,13 @@ class MessageDispatcher:
 
         publish_request_success_rate(1, True)
 
-    def _handle_text_message(self, message: dict) -> None:
-        logger.info(
-            f"New text message from chat ID {self.chat_id} and user ID {self.user_id} ({self.username})"
+    def _summarize_video(self, link: str, message: Message) -> None:
+        logger.info(f"Summarizing video: {link}")
+
+        self._progress_message = self._telegram.reply_with_sticker_safe(
+            self.chat_id, self.message_id, self.WATCHING_STICKER
         )
-        url_pattern = r"https?://[^\s]+"
-        urls = re.findall(url_pattern, message.text)
-
-        if not urls:
-            logger.warning(f"No URL found in message: {message.text}")
-            return
-
-        summary = None
-        is_youtube = self._is_youtube_url(urls[0])
-        if is_youtube:
-            logger.info(f"Summarizing video: {urls[0]}")
-            self._progress_message = self._telegram.reply_with_sticker_safe(
-                self.chat_id, self.message_id, self.WATCHING_STICKER
-            )
-            summary = self._video_gpt.summarize(urls[0])
-        else:
-            logger.info(f"Summarizing article: {urls[0]}")
-            self._progress_message = self._telegram.reply_with_sticker_safe(
-                self.chat_id, self.message_id, self.READING_STICKER
-            )
-            summary = self._article_gpt.summarize(urls[0])
+        summary = self._video_gpt.summarize(link)
 
         if "message_id" in self._progress_message:
             self._telegram.delete_message_safe(
@@ -168,7 +177,25 @@ class MessageDispatcher:
 
         self._telegram.reply_message(self.chat_id, self.message_id, summary)
 
-        publish_videos_watched() if is_youtube else publish_articles_summarized()
+        publish_videos_watched()
+        publish_request_success_rate(1, True)
+
+    def _summarize_article(self, link: str, message: Message) -> None:
+        logger.info(f"Summarizing article: {link}")
+
+        self._progress_message = self._telegram.reply_with_sticker_safe(
+            self.chat_id, self.message_id, self.READING_STICKER
+        )
+        summary = self._article_gpt.summarize(link)
+
+        if "message_id" in self._progress_message:
+            self._telegram.delete_message_safe(
+                self.chat_id, self._progress_message["message_id"]
+            )
+
+        self._telegram.reply_message(self.chat_id, self.message_id, summary)
+
+        publish_articles_summarized()
         publish_request_success_rate(1, True)
 
     def _handle_command(
@@ -186,11 +213,14 @@ class MessageDispatcher:
                 self.chat_id, self.message_id, _("Welcome message")
             )
             publish_start_command_used()
+            return
+
         elif command == "/version":
             self._telegram.reply_message(
                 self.chat_id, self.message_id, f"<code>{__version__}</code>"
             )
             publish_version_command_used()
+            return
 
         elif command == "/listen":
             if "reply_to_message" in message and "voice" in message.reply_to_message:
@@ -199,6 +229,52 @@ class MessageDispatcher:
                 self._telegram.reply_message(
                     self.chat_id, self.message_id, _("No voice message to transcribe")
                 )
+            return
+
+        elif command == "/read":
+            link = get_first_link_from_message(message)
+            if link:
+                self._summarize_article(link, message)
+                return
+
+            logger.info(
+                f"No URL found in message: {message.text}. See if reply exist and there is a link there."
+            )
+
+            link = get_first_link_from_message(message.get("reply_to_message", {}))
+            if link:
+                self._summarize_article(link, message.reply_to_message)
+                return
+
+            self._telegram.reply_message(
+                self.chat_id, self.message_id, _("No article to summarize")
+            )
+            return
+        elif command == "/watch":
+            link = get_video_link_from_message(message)
+            if link:
+                self._summarize_video(link, message)
+                return
+
+            link = get_video_link_from_message(message.get("reply_to_message", {}))
+            if link:
+                self._summarize_video(link, message.reply_to_message)
+                return
+
+            self._telegram.reply_message(
+                self.chat_id, self.message_id, _("No video to summarize")
+            )
+            return
+
+        elif command == "/autotranscribe":
+            chat_settings.autotranscribe = not chat_settings.autotranscribe
+            self._telegram.reply_message(
+                self.chat_id,
+                self.message_id,
+                _("Auto-transcribe enabled") + str(chat_settings.autotranscribe),
+            )
+            return
+
         else:
             logger.info(
                 f"Unknown command '{command}' from user {self.user_id} ({self.username})"
