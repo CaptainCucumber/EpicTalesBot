@@ -69,31 +69,63 @@ Resources:
           import boto3
           import os
           import logging
+          import re
 
           logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          ok = {
+                  'statusCode': 200,
+                  'body': json.dumps('Message sent to SQS queue')
+              }
 
           def lambda_handler(event, context):
               sqs = boto3.client('sqs')
 
               message_body = event['body']
               message = json.loads(message_body)
-              
+
               has_voice = (
                   'voice' in message.get("message", {}) or 
                   'voice' in message.get("message", {}).get("reply_to_message", {})
               )
+              if has_voice:
+                  queue_url = os.getenv('VOICE_QUEUE_URL')
+                  sqs.send_message(
+                      QueueUrl=queue_url,
+                      MessageBody=json.dumps(event['body'])
+                  )
+                  return ok
+                  
+              text = message.get("message", {}).get("text", "")
+              has_command = text.startswith('/')
+              if has_command:
+                  queue_url = os.getenv('MESSAGE_QUEUE_URL')
+                  sqs.send_message(
+                      QueueUrl=queue_url,
+                      MessageBody=json.dumps(event['body'])
+                  )
+                  return ok
               
-              queue_url = os.getenv('VOICE_QUEUE_URL') if has_voice else \
-                          os.getenv('MESSAGE_QUEUE_URL')
-              
-              sqs.send_message(
-                  QueueUrl=queue_url,
-                  MessageBody=json.dumps(event['body'])
+              url_pattern = r"https?://[^\s]+"
+              reply_to_message_text = message.get("message", {}) \
+                                            .get("reply_to_message", {}) \
+                                            .get("text", "")
+              has_link = (
+                  re.findall(url_pattern, text) or 
+                  re.findall(url_pattern, reply_to_message_text) or
+                  "callback_query" in message
               )
-              return {
-                  'statusCode': 200,
-                  'body': json.dumps('Message sent to SQS queue')
-              }
+              if has_link:
+                  queue_url = os.getenv('MESSAGE_QUEUE_URL')
+                  sqs.send_message(
+                      QueueUrl=queue_url,
+                      MessageBody=json.dumps(event['body'])
+                  )
+                  return ok
+
+              return ok
+
       Handler: index.lambda_handler
       Role: !GetAtt RouterFunctionExecutionRole.Arn
       Runtime: python3.10
