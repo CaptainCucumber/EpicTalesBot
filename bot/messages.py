@@ -19,7 +19,6 @@ from models.message import Message
 from settings.chat_settings import ChatSettings
 from stt import STT
 from tlg.api import TelegramAPI
-from touch import Touch
 from tracking import generate_tracking_container
 from video_gpt import VideoGPT
 
@@ -40,6 +39,9 @@ def get_first_link_from_message(message: Message) -> Optional[str]:
 
 def get_video_link_from_message(message: Message) -> Optional[str]:
     link = get_first_link_from_message(message)
+
+    if not link:
+        return None
 
     if (
         "youtube.com/watch" in link
@@ -77,30 +79,38 @@ class MessageDispatcher:
         self._article_gpt = article_gpt_instance
         self._stt = voice_transcriber
         self._update = update
+        self._message = self._update.message
 
         self._telegram = TelegramAPI(config)
 
-        self._touch = Touch("./touchdir")
-
         self._progress_message = None
+        generate_tracking_container(
+            user_id=(
+                None
+                if self._message.from_user.id is None
+                else self._message.from_user.id
+            ),
+            chat_id=self._message.chat.id,
+            chat_type=self._message.chat.type,
+        )
 
     @property
     def user_id(self) -> int:
-        return self._update.message.from_user.id
+        return self._message.from_user.id
 
     @property
     def chat_id(self) -> int:
-        return self._update.message.chat.id
+        return self._message.chat.id
 
     @property
     def chat_type(self) -> str:
-        return self._update.message.chat.type
+        return self._message.chat.type
 
     @property
     def username(self) -> str:
         return (
-            self._update.message.from_user.username
-            if "username" in self._update.message.from_user
+            self._message.from_user.username
+            if "username" in self._message.from_user
             else "XXX_NO_USERNAME"
         )
 
@@ -110,17 +120,7 @@ class MessageDispatcher:
 
     @property
     def message_id(self) -> int:
-        return self._update.message.message_id
-
-    def _is_bot_mentioned(self, botname: str, message: dict) -> bool:
-        return f"@{botname}" in message.text
-
-    def _is_youtube_url(self, url: str) -> bool:
-        return (
-            "youtube.com/watch" in url
-            or "youtu.be/" in url
-            or "youtube.com/shorts" in url
-        )
+        return self._message.message_id
 
     def _handle_voice_message(self, message: Message) -> None:
 
@@ -164,7 +164,7 @@ class MessageDispatcher:
         logger.info(f"Summarizing video: {link}")
 
         self._progress_message = self._telegram.reply_with_sticker_safe(
-            self.chat_id, self.message_id, self.WATCHING_STICKER
+            self.chat_id, message.message_id, self.WATCHING_STICKER
         )
         summary = self._video_gpt.summarize(link)
 
@@ -173,7 +173,7 @@ class MessageDispatcher:
                 self.chat_id, self._progress_message["message_id"]
             )
 
-        self._telegram.reply_message(self.chat_id, self.message_id, summary)
+        self._telegram.reply_message(self.chat_id, message.message_id, summary)
 
         publish_videos_watched()
         publish_request_success_rate(1, True)
@@ -182,7 +182,7 @@ class MessageDispatcher:
         logger.info(f"Summarizing article: {link}")
 
         self._progress_message = self._telegram.reply_with_sticker_safe(
-            self.chat_id, self.message_id, self.READING_STICKER
+            self.chat_id, message.message_id, self.READING_STICKER
         )
         summary = self._article_gpt.summarize(link)
 
@@ -191,7 +191,7 @@ class MessageDispatcher:
                 self.chat_id, self._progress_message["message_id"]
             )
 
-        self._telegram.reply_message(self.chat_id, self.message_id, summary)
+        self._telegram.reply_message(self.chat_id, message.message_id, summary)
 
         publish_articles_summarized()
         publish_request_success_rate(1, True)
@@ -266,11 +266,13 @@ class MessageDispatcher:
 
         elif command == "/autotranscribe":
             chat_settings.autotranscribe = not chat_settings.autotranscribe
-            self._telegram.reply_message(
-                self.chat_id,
-                self.message_id,
-                _("Auto-transcribe enabled") + str(chat_settings.autotranscribe),
+
+            message = (
+                _("Auto-transcribe enabled")
+                if chat_settings.autotranscribe
+                else _("Auto-transcribe disabled")
             )
+            self._telegram.reply_message(self.chat_id, self.message_id, message)
             return
 
         else:
@@ -293,30 +295,16 @@ class MessageDispatcher:
 
     def _send_new_settings_message(self) -> None:
         self._telegram.send_message(self.chat_id, _("New settings in tact"))
-        self._touch.touch_entity(self.chat_id, "new_settings")
 
     def process_new_message(self) -> None:
         try:
-            if "message" not in self._update:
-                logger.error(
-                    "No message in update. Don't know how to process the update"
-                )
-                return
-
-            message = self._update.message
-            generate_tracking_container(
-                user_id=None if message.from_user.id is None else message.from_user.id,
-                chat_id=message.chat.id,
-                chat_type=message.chat.type,
-            )
-
             chat_settings = ChatSettings(self.chat_id)
-            text = message.get("text", {})
+            text = self._message.get("text", {})
             if text:
                 # Handle commands
-                command = self._get_command(message.text)
+                command = self._get_command(self._message.text)
                 if command:
-                    self._handle_command(chat_settings, command, message)
+                    self._handle_command(chat_settings, command, self._message)
                     return
 
             if not chat_settings:
@@ -324,8 +312,8 @@ class MessageDispatcher:
                 chat_settings.initialize()
 
             # Autotranscibe is "on" see if there is a voice message
-            if "voice" in message and chat_settings.autotranscribe:
-                self._handle_voice_message(message)
+            if "voice" in self._message and chat_settings.autotranscribe:
+                self._handle_voice_message(self._message)
                 return
 
             # TODO: if user adds the bot to a channel, sent the warning message

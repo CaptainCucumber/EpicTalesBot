@@ -31,8 +31,8 @@ class TelegramAPI:
             raise Exception(f"Failed to send message: {response.text}")
 
         result = json.loads(response.text)["result"]
-        update_id = int(f"{result["chat"]["id"]}{result["message_id"]}")
-        self.record_repository.put_record(update_id, result) 
+        update_id = int(f"{result['chat']['id']}{result['message_id']}")
+        self.record_repository.put_record(update_id, result)
         return result
 
     def reply_with_sticker(self, chat_id: int, message_id: int, sticker: str) -> dict:

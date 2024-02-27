@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-03 18:45-0800\n"
+"POT-Creation-Date: 2024-02-27 11:37-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bot/article_gpt.py:19
+#: /home/niko/dev/EpicTalesBot/bot/article_gpt.py:20
 msgid "ARTICLE_SUMMARY_PROMPT"
 msgstr ""
 "Prepare a brief summary of the provided article, which can be in any "
@@ -46,54 +46,21 @@ msgstr ""
 "\n"
 "Here is the article for summary:"
 
-#: bot/article_gpt.py:49 bot/video_gpt.py:37
+#: /home/niko/dev/EpicTalesBot/bot/article_gpt.py:52
+#: /home/niko/dev/EpicTalesBot/bot/video_gpt.py:36
 msgid "Title"
 msgstr "Title"
 
-#: bot/article_gpt.py:50
+#: /home/niko/dev/EpicTalesBot/bot/article_gpt.py:53
 msgid "Text"
 msgstr "Text"
 
-#: bot/article_gpt.py:73 bot/article_gpt.py:92
+#: /home/niko/dev/EpicTalesBot/bot/article_gpt.py:76
+#: /home/niko/dev/EpicTalesBot/bot/article_gpt.py:93
 msgid "Sorry, I couldn't generate the article summary."
 msgstr "Sorry, I couldn't generate the article summary."
 
-#: bot/commands.py:30
-msgid "Something went completely wrong"
-msgstr ""
-"⚠️ Something went wrong. We have received the message and are already working "
-"on a fix."
-
-#: bot/commands.py:35 bot/messages.py:169
-msgid "Welcome message"
-msgstr ""
-"You can send me a link or a voice message and I will do all the rest of the "
-"work.\n"
-"\n"
-"Or add me to a group, reply to a voice message or a message with a link, and "
-"add my name <a href='tg://user?id=6871158416'>@EpicTalesBot</a> in the "
-"response.\n"
-"\n"
-"Commands:\n"
-"/start - shows this message\n"
-"/version - shows current bot version"
-
-#: bot/messages.py:123
-#, fuzzy
-msgid "The translation is limited to the first 60 seconds."
-msgstr "The translation is limited to the first 5 mins."
-
-#: bot/messages.py:215
-msgid "Channels are not currently supported"
-msgstr "🗣 <a href='https://t.me/EpicTalesBot'>EpicTalesBot</a> \n\n"
-"Currently, our bot supports interaction in private messages and group "
-"chats, but unfortunately, it does not yet work with Telegram channels. 🚫"
-"\n\n"
-"If you would like to see such a feature in the future, please let us know!"
-"\n\n"
-"Support @EpicTalesBot_Support | <a href='https://t.me/epictalesbot_news'>News</a>"
-
-#: bot/video_gpt.py:34
+#: /home/niko/dev/EpicTalesBot/bot/video_gpt.py:33
 msgid "VIDEO_SUMMARY_PROMPT"
 msgstr ""
 "Prepare a brief summary of the provided video, which can be in any language, "
@@ -121,22 +88,84 @@ msgstr ""
 "\n"
 "Here is the content of a YouTube video:"
 
-#: bot/video_gpt.py:38
+#: /home/niko/dev/EpicTalesBot/bot/video_gpt.py:37
 msgid "Subtitles"
 msgstr "Subtitles"
 
-#: bot/video_gpt.py:61
+#: /home/niko/dev/EpicTalesBot/bot/video_gpt.py:60
 msgid "Sorry, I couldn't generate the video summary."
 msgstr "Sorry, I couldn't generate the video summary."
 
-#: bot/video_gpt.py:126
+#: /home/niko/dev/EpicTalesBot/bot/video_gpt.py:124
 msgid "The video is not available for reviewing"
 msgstr ""
 "Sorry, I couldn't generate the video summary. The video is not available for "
 "reviewing"
 
-#: bot/video_gpt.py:131
+#: /home/niko/dev/EpicTalesBot/bot/video_gpt.py:129
 msgid "The subtitles are not available."
 msgstr ""
 "Sorry, I couldn't generate the video summary. The subtitles are not "
 "available."
+
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:154
+#, fuzzy
+msgid "The translation is limited to the first 60 seconds."
+msgstr "The translation is limited to the first 5 mins."
+
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:208
+msgid "Welcome message"
+msgstr ""
+"You can send me a link or a voice message and I will do all the rest of the "
+"work.\n"
+"\n"
+"Or add me to a group, reply to a voice message or a message with a link, and "
+"add my name <a href='tg://user?id=6871158416'>@EpicTalesBot</a> in the "
+"response.\n"
+"\n"
+"Commands:\n"
+"/start - shows this message\n"
+"/version - shows current bot version"
+
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:225
+msgid "No voice message to transcribe"
+msgstr ""
+
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:245
+msgid "No article to summarize"
+msgstr ""
+
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:260
+msgid "No video to summarize"
+msgstr ""
+
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:268
+msgid "Auto-transcribe enabled"
+msgstr ""
+
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:270
+msgid "Auto-transcribe disabled"
+msgstr ""
+
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:294
+msgid "New settings in tact"
+msgstr ""
+
+#~ msgid "Something went completely wrong"
+#~ msgstr ""
+#~ "⚠️ Something went wrong. We have received the message and are already "
+#~ "working on a fix."
+
+#~ msgid "Channels are not currently supported"
+#~ msgstr ""
+#~ "🗣 <a href='https://t.me/EpicTalesBot'>EpicTalesBot</a> \n"
+#~ "\n"
+#~ "Currently, our bot supports interaction in private messages and group "
+#~ "chats, but unfortunately, it does not yet work with Telegram channels. "
+#~ "🚫\n"
+#~ "\n"
+#~ "If you would like to see such a feature in the future, please let us "
+#~ "know!\n"
+#~ "\n"
+#~ "Support @EpicTalesBot_Support | <a href='https://t.me/"
+#~ "epictalesbot_news'>News</a>"
