@@ -1,11 +1,17 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Create a DynamoDB table for ChatSettings'
 
+Parameters:
+  Stage:
+    Type: String
+    Default: beta
+    Description: Deployment stage name
+
 Resources:
   ChatSettingsTable:
     Type: 'AWS::DynamoDB::Table'
     Properties:
-      TableName: ChatSettings
+      TableName: !Sub "${Stage}-ChatSettings"
       BillingMode: PROVISIONED
       ProvisionedThroughput:
         ReadCapacityUnits: 5
@@ -20,7 +26,7 @@ Resources:
   Records:
     Type: 'AWS::DynamoDB::Table'
     Properties:
-      TableName: Records
+      TableName: !Sub "${Stage}-Records"
       BillingMode: PROVISIONED
       ProvisionedThroughput:
         ReadCapacityUnits: 5

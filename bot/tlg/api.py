@@ -14,7 +14,7 @@ class TelegramAPI:
         self.file_base_url = (
             f"https://api.telegram.org/file/bot{config.telegram_token}/"
         )
-        self.record_repository = RecordRepository("Records")
+        self.record_repository = RecordRepository(config.environment + "-Records")
 
     def reply_message(self, chat_id: int, message_id: int, text: str) -> dict:
         """Replies to an existing message in a chat in HTML parse mode."""

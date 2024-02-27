@@ -1,10 +1,11 @@
+from config import config
 from settings.chat_settings_repository import ChatSettingsRepository
 
 
 class ChatSettings:
     def __init__(self, chat_id: int):
         self._chat_id = chat_id
-        self._repository = ChatSettingsRepository("ChatSettings")
+        self._repository = ChatSettingsRepository(config.environment + "-ChatSettings")
         self._settings = self._repository.get_chat_settings(self._chat_id)
 
     def __bool__(self):
