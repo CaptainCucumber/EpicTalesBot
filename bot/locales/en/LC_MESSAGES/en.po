@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-27 11:37-0800\n"
+"POT-Creation-Date: 2024-02-27 13:48-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,12 +108,12 @@ msgstr ""
 "Sorry, I couldn't generate the video summary. The subtitles are not "
 "available."
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:154
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:157
 #, fuzzy
 msgid "The translation is limited to the first 60 seconds."
 msgstr "The translation is limited to the first 5 mins."
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:208
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:211
 msgid "Welcome message"
 msgstr ""
 "You can send me a link or a voice message and I will do all the rest of the "
@@ -127,27 +127,27 @@ msgstr ""
 "/start - shows this message\n"
 "/version - shows current bot version"
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:225
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:228
 msgid "No voice message to transcribe"
 msgstr ""
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:245
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:248
 msgid "No article to summarize"
 msgstr ""
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:260
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:263
 msgid "No video to summarize"
 msgstr ""
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:268
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:271
 msgid "Auto-transcribe enabled"
 msgstr ""
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:270
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:273
 msgid "Auto-transcribe disabled"
 msgstr ""
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:294
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:301
 msgid "New settings in tact"
 msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-27 11:37-0800\n"
+"POT-Creation-Date: 2024-02-27 13:48-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -107,12 +107,12 @@ msgid "The subtitles are not available."
 msgstr ""
 "Извините, мне не удалось сгенерировать резюме видео. Субтитры недоступны."
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:154
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:157
 #, fuzzy
 msgid "The translation is limited to the first 60 seconds."
 msgstr "Перевод ограничен первыми 5ю минутами."
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:208
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:211
 msgid "Welcome message"
 msgstr ""
 "Вы можете отправить мне ссылку или голосовое сообщение, и я выполню всю "
@@ -123,34 +123,34 @@ msgstr ""
 "/listen - переводит голосовые сообщения\n"
 "/read - читает статьи\n"
 "/watch - просматривает видео\n"
-"/autotranscribe. Эта команда включает или выключает автоматический перевод "
+"/autotranscribe - включает или выключает автоматический перевод голосовых сообщений "
 "сообщений\n"
 "/version - показывает текущую версию бота"
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:225
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:228
 msgid "No voice message to transcribe"
-msgstr "Нет голосового сообщения для перевода."
+msgstr "<i>Нет голосового сообщения для перевода.</i> 🛑"
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:245
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:248
 msgid "No article to summarize"
-msgstr "Нет статьи для анализа."
+msgstr "<i>Нет статьи для анализа.</i> 🛑"
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:260
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:263
 msgid "No video to summarize"
-msgstr "Нет видео для просмотра."
+msgstr "<i>Нет видео для просмотра.</i> 🛑"
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:268
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:271
 msgid "Auto-transcribe enabled"
-msgstr "Авто перевод включен"
+msgstr "<i>Авто перевод <b>включен</b></i> ✅"
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:270
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:273
 msgid "Auto-transcribe disabled"
-msgstr "Авто перевод выключен"
+msgstr "<i>Авто перевод <b>выключен</b></i> ❌"
 
-#: /home/niko/dev/EpicTalesBot/bot/messages.py:294
+#: /home/niko/dev/EpicTalesBot/bot/messages.py:301
 msgid "New settings in tact"
 msgstr ""
-"⚠️Внимание! Мы обновили функционал нашего бота. Теперь вместо упоминаний, у "
+"⚠️ Внимание! Мы обновили функционал нашего бота. Теперь вместо упоминаний, у "
 "бота есть четыре команды:\n"
 "\n"
 "/listen - переводит голосовые сообщения\n"
