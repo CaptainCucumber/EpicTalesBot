@@ -26,7 +26,6 @@ from video_gpt import VideoGPT
 logger = logging.getLogger(__name__)
 
 
-@staticmethod
 def get_first_link_from_message(message: Message) -> Optional[str]:
     if "text" not in message:
         return None
@@ -39,7 +38,6 @@ def get_first_link_from_message(message: Message) -> Optional[str]:
     return urls[0]
 
 
-@staticmethod
 def get_video_link_from_message(message: Message) -> Optional[str]:
     link = get_first_link_from_message(message)
 
