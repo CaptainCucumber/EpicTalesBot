@@ -2,6 +2,17 @@
 
 
 
+## v2.0.1 (2024-02-27)
+
+### Fix
+
+* fix: Message wording and highlights ([`4d2669d`](https://github.com/CaptainCucumber/EpicTalesBot/commit/4d2669d649aeaa0f50f43fe7d1b6c781f7f74c69))
+
+* fix: Tables name have stages
+
+Add a stage name since we deploy multiple stages to one account. ([`4501bf0`](https://github.com/CaptainCucumber/EpicTalesBot/commit/4501bf054785fb9ac2d810bd14d4f3b8a8609d72))
+
+
 ## v2.0.0 (2024-02-27)
 
 ### Breaking
