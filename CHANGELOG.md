@@ -2,6 +2,69 @@
 
 
 
+## v1.6.0 (2024-02-27)
+
+### Chore
+
+* chore: Don&#39;t need static methods outside of class. ([`6c14047`](https://github.com/CaptainCucumber/EpicTalesBot/commit/6c140479fbaed06d89ab0430c227389105380a84))
+
+* chore: Push record to cloud table.
+
+It&#39;s getting harder to support a single file, so let&#39;s push the data
+to a table. ([`75b8439`](https://github.com/CaptainCucumber/EpicTalesBot/commit/75b84390cd27190fa7ca0bfa2d0a62dd669e2dbc))
+
+* chore: Another iteration on the way to commands
+
+Basic logic to store settings if doesn&#39;t exist and react to auto. ([`c5a9843`](https://github.com/CaptainCucumber/EpicTalesBot/commit/c5a98437818de2d17c8ea09e6ac32ea0ddb4a859))
+
+### Ci
+
+* ci: Shell script to regenerate gettext strings
+
+Automate manual tasks, collect all strings,
+merge new strings for all locales. ([`0d0f183`](https://github.com/CaptainCucumber/EpicTalesBot/commit/0d0f1837845c915550f42c2aae4d92cb68780794))
+
+* ci: Storage for chat settings.
+
+Update deployment script to deploy different stacks. Storage uses
+different stack to avoid potential distruption of queue stack. Of course
+they all must be deployed as a single CF stack. ([`caeb105`](https://github.com/CaptainCucumber/EpicTalesBot/commit/caeb105f20f5d061aae6d139ef4cf401336e77c6))
+
+### Feature
+
+* feat: Use commands to do operations.
+
+Migrate completely to commands rather than mentions. ([`66d3144`](https://github.com/CaptainCucumber/EpicTalesBot/commit/66d3144cbf53b13667e05740921c2c797e34df4a))
+
+* feat: Chat settings.
+
+First interation. ([`76979cb`](https://github.com/CaptainCucumber/EpicTalesBot/commit/76979cb33dc5ba8675c522f6d347fc5712b530a5))
+
+### Fix
+
+* fix: Handle direct bot commands.
+
+A command might be directed to the bot in a group with @botname at the
+end. Handle the case. ([`9260cae`](https://github.com/CaptainCucumber/EpicTalesBot/commit/9260caee844b9d6644494b9ea8f510b992e7791b))
+
+* fix: Multiple fixes
+
+- Reply to original link rather than a command.
+- Records incorrect attribute address
+- Remove references to touch
+- Auto transcribe on/off messages ([`f4b6d37`](https://github.com/CaptainCucumber/EpicTalesBot/commit/f4b6d3772f69b7bca55125d9c2fa4e6e87ba272b))
+
+### Refactor
+
+* refactor: Properties instead of functions
+
+Use properties instead of functions in Config. ([`d6a6589`](https://github.com/CaptainCucumber/EpicTalesBot/commit/d6a65892fa18378303f21d57f64834d0b563ce3e))
+
+### Unknown
+
+* Merge branch &#39;settings&#39; ([`ee75a59`](https://github.com/CaptainCucumber/EpicTalesBot/commit/ee75a599f2640b567bc9783930922e60265bf89b))
+
+
 ## v1.5.11 (2024-02-20)
 
 ### Fix
