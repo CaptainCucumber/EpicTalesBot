@@ -12,7 +12,22 @@ Resources:
         WriteCapacityUnits: 5
       AttributeDefinitions:
         - AttributeName: chat_id
-          AttributeType: S
+          AttributeType: N
       KeySchema:
         - AttributeName: chat_id
+          KeyType: HASH
+
+  Records:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: Records
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      AttributeDefinitions:
+        - AttributeName: update_id
+          AttributeType: N
+      KeySchema:
+        - AttributeName: update_id
           KeyType: HASH

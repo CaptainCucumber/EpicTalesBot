@@ -1,5 +1,4 @@
 from aws.dynamodbclient import DynamoDBClient
-from botocore.exceptions import ClientError
 
 
 class ChatSettingsRepository:

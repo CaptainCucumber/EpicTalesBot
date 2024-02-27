@@ -3,7 +3,7 @@ import logging
 
 import requests
 from config import Config
-from tlg.record import record_message
+from tlg.record import RecordRepository
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +14,7 @@ class TelegramAPI:
         self.file_base_url = (
             f"https://api.telegram.org/file/bot{config.telegram_token}/"
         )
+        self.record_repository = RecordRepository("Records")
 
     def reply_message(self, chat_id: int, message_id: int, text: str) -> dict:
         """Replies to an existing message in a chat in HTML parse mode."""
@@ -30,7 +31,8 @@ class TelegramAPI:
             raise Exception(f"Failed to send message: {response.text}")
 
         result = json.loads(response.text)["result"]
-        record_message(result)
+        update_id = int(f"{result["chat"]["id"]}{result["message_id"]}")
+        self.record_repository.put_record(update_id, result) 
         return result
 
     def reply_with_sticker(self, chat_id: int, message_id: int, sticker: str) -> dict:
