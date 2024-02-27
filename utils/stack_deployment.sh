@@ -8,6 +8,7 @@ set -e
 
 # Initialize variables
 TEMPLATE_FILE=""
+BASE_STACK_NAME=""
 STAGE=""
 REGION="us-west-2"
 DEPLOYMENT_ID=$(date +%s)  # Unique timestamp as deployment ID
@@ -16,7 +17,7 @@ CAPABILITIES="CAPABILITY_IAM CAPABILITY_NAMED_IAM"
 
 # Function to show usage
 function show_usage {
-    echo "Usage: $0 --template <CloudFormation template file> --stage <stage>"
+    echo "Usage: $0 --template <CloudFormation template file> --stack-name <base stack name> --stage <stage> [--region <AWS region>]"
     exit 1
 }
 
@@ -24,23 +25,25 @@ function show_usage {
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --template) TEMPLATE_FILE="$2"; shift ;;
+        --stack-name) BASE_STACK_NAME="$2"; shift ;;
         --stage) STAGE="$2"; shift ;;
+        --region) REGION="$2"; shift ;;
         *) echo "Unknown parameter passed: $1"; show_usage ;;
     esac
     shift
 done
 
 # Check required parameters
-if [ -z "$TEMPLATE_FILE" ] || [ -z "$STAGE" ]; then
-    echo "Error: Template and stage are required."
+if [ -z "$TEMPLATE_FILE" ] || [ -z "$BASE_STACK_NAME" ] || [ -z "$STAGE" ]; then
+    echo "Error: Template, base stack name, and stage are required."
     show_usage
 fi
 
-# Incorporate stage into stack name
-STACK_NAME="TelegramMessagingQueue-${STAGE}"
+# Construct the full stack name with stage
+STACK_NAME="${BASE_STACK_NAME}-${STAGE}"
 
 function create_or_update_stack {
-    echo "Deploying stack $STACK_NAME using template $TEMPLATE_FILE for stage $STAGE..."
+    echo "Deploying stack $STACK_NAME using template $TEMPLATE_FILE in region $REGION for stage $STAGE..."
     aws cloudformation deploy \
         --template-file $TEMPLATE_FILE \
         --stack-name $STACK_NAME \

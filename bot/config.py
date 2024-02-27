@@ -11,28 +11,36 @@ class Config:
                 cls._instance.config = toml.load(file)
         return cls._instance
 
-    def get_telegram_token(self):
+    @property
+    def telegram_token(self):
         return self.config["telegram"]["bot_token"]
 
-    def get_open_ai_key(self):
+    @property
+    def open_ai_key(self):
         return self.config["openai"]["api_key"]
 
-    def get_log_path(self):
+    @property
+    def log_path(self):
         return self.config["epictalesbot"].get("logs_path", "/var/log/epictales")
 
-    def get_google_cloud_creds_file(self):
+    @property
+    def google_cloud_creds_file(self):
         return self.config["google"]["cloud"]["credentials_file"]
 
-    def get_environment(self):
+    @property
+    def environment(self):
         return self.config["epictalesbot"].get("environment", "prod")
 
-    def get_aws_region(self):
+    @property
+    def aws_region(self):
         return self.config["aws"]["region"]
 
-    def get_aws_access_key_id(self):
+    @property
+    def aws_access_key_id(self):
         return self.config["aws"]["credentials"]["aws_access_key_id"]
 
-    def get_aws_secret_access_key(self):
+    @property
+    def aws_secret_access_key(self):
         return self.config["aws"]["credentials"]["aws_secret_access_key"]
 
 

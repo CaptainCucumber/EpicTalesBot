@@ -29,7 +29,7 @@ class VideoGPT:
     ]
 
     def __init__(self, config: Config) -> None:
-        openai.api_key = config.get_open_ai_key()
+        openai.api_key = config.open_ai_key
         self._prompt_content = _("VIDEO_SUMMARY_PROMPT")
 
     def _gpt_it(self, title: str, subtitles: str) -> str:

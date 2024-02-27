@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class ArticleGPT:
 
     def __init__(self, config: Config) -> None:
-        openai.api_key = config.get_open_ai_key()
+        openai.api_key = config.open_ai_key
         self._prompt_content = _("ARTICLE_SUMMARY_PROMPT")
 
         playwright = sync_playwright().start()

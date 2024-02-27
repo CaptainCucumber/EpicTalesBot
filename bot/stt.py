@@ -17,7 +17,7 @@ class STT:
     _MAX_VOICE_AUDIO_LENGTH = 5 * 60
 
     def __init__(self, config: Config, location: str) -> None:
-        openai.api_key = config.get_open_ai_key()
+        openai.api_key = config.open_ai_key
         self.location = location
 
         model_cache_dir = "/var/cache/epictales/faster-whisper/" + location

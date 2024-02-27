@@ -23,9 +23,9 @@ logger = logging.getLogger(__name__)
 # AWS stuff
 sqs_client = boto3.client(
     "sqs",
-    region_name=config.get_aws_region(),
-    aws_access_key_id=config.get_aws_access_key_id(),
-    aws_secret_access_key=config.get_aws_secret_access_key(),
+    region_name=config.aws_region,
+    aws_access_key_id=config.aws_access_key_id,
+    aws_secret_access_key=config.aws_secret_access_key,
 )
 
 # Command line arguments parsing
@@ -88,7 +88,7 @@ def pull_messages(sqs_queue_url) -> None:
     global shutdown_flag
 
     logger.info(f"Start pulling messages from: {sqs_queue_url}")
-    botname = get_bot_username(config.get_telegram_token())
+    botname = get_bot_username(config.telegram_token)
 
     while not shutdown_flag:
         try:

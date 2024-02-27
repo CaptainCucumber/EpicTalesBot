@@ -19,7 +19,7 @@ class GoogleSTT:
     _MAX_VOICE_AUDIO_LENGTH = 5 * 60
 
     def __init__(self, config: Config) -> None:
-        with open(config.get_google_cloud_creds_file(), "r") as file:
+        with open(config.google_cloud_creds_file, "r") as file:
             credentials_json = json.loads(file.read())
             credentials = service_account.Credentials.from_service_account_info(
                 credentials_json
