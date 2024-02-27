@@ -2,6 +2,22 @@
 
 
 
+## v2.0.0 (2024-02-27)
+
+### Breaking
+
+* feat!: trigger major version bump ([`d73bac0`](https://github.com/CaptainCucumber/EpicTalesBot/commit/d73bac069b0cacffe4f9bb10543d3ab3c0ca5c62))
+
+### Unknown
+
+* break: Update router to handle bot commands
+
+This is final transition step to bot commands, instead of @. The router
+still reacts to the links, just to trigger update message. When a link
+is received bot prints warning message and suggest to use commands. This
+functionality must be removed later. ([`15d4e09`](https://github.com/CaptainCucumber/EpicTalesBot/commit/15d4e097d6724f5f70420431f5a182711a31ef5b))
+
+
 ## v1.6.0 (2024-02-27)
 
 ### Chore
