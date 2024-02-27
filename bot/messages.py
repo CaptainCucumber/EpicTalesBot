@@ -285,7 +285,11 @@ class MessageDispatcher:
         if not message_text.startswith("/"):
             return None
 
-        return message_text.split()[0]
+        command = message_text.split()[0]
+        if command.endswith(self._botname):
+            return command.split("@")[0]
+
+        return command
 
     def _get_voice_message(self, message: dict) -> bool:
         if "voice" in message:
