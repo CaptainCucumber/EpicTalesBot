@@ -2,6 +2,17 @@
 
 
 
+## v2.0.3 (2024-02-28)
+
+### Fix
+
+* fix: Turn of auto transcribe by default. ([`0630268`](https://github.com/CaptainCucumber/EpicTalesBot/commit/063026880ce04d8742af0997ff4065a9b2b24cf9))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`2740212`](https://github.com/CaptainCucumber/EpicTalesBot/commit/2740212d643d5c16163f170daa192b4aee8d4630))
+
+
 ## v2.0.2 (2024-02-28)
 
 ### Fix
