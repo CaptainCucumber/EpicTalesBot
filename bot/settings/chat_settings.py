@@ -15,7 +15,7 @@ class ChatSettings:
         if self._settings:
             raise Exception("Settings already initialized")
 
-        self._settings = {"autotranscribe": False}
+        self._settings = {"autotranscribe": True}
         self._repository.update_chat_settings(self._chat_id, self._settings)
 
     @property
