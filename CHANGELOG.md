@@ -2,6 +2,21 @@
 
 
 
+## v2.0.2 (2024-02-28)
+
+### Fix
+
+* fix: Initialize settings if start with command
+
+There are cases when user starts with a command without reading first
+initial message. For example, user saw the message in group and entered
+ command in private chat. ([`df03a23`](https://github.com/CaptainCucumber/EpicTalesBot/commit/df03a233945bbaa2a0c58a2fdaf6b9294a51c22e))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`7cd0d4f`](https://github.com/CaptainCucumber/EpicTalesBot/commit/7cd0d4f4490f94ed7d860de6fc6679ee09363c25))
+
+
 ## v2.0.1 (2024-02-27)
 
 ### Fix
