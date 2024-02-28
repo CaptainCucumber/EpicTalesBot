@@ -265,6 +265,9 @@ class MessageDispatcher:
             return
 
         elif command == "/autotranscribe":
+            if not chat_settings:
+                chat_settings.initialize()
+
             chat_settings.autotranscribe = not chat_settings.autotranscribe
 
             message = (
@@ -308,6 +311,10 @@ class MessageDispatcher:
                 # Handle commands
                 command = self._get_command(self._message.text)
                 if command:
+                    if not chat_settings:
+                        self._send_new_settings_message()
+                        chat_settings.initialize()
+
                     self._handle_command(chat_settings, command, self._message)
                     return
 
