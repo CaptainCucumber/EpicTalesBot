@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from aws.dynamodbclient import DynamoDBClient
 
 
@@ -10,7 +12,13 @@ class ChatSettingsRepository:
         return response.get("Item", {})
 
     def update_chat_settings(self, chat_id, settings):
-        self.table.put_item(Item={"chat_id": chat_id, **settings})
+        current_datetime = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+        updated_settings = {
+            "chat_id": chat_id,
+            "last_updated": current_datetime,
+            **settings,
+        }
+        self.table.put_item(Item=updated_settings)
         return True
 
     def delete_chat_settings(self, chat_id):
