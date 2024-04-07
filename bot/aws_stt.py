@@ -56,6 +56,7 @@ class AWSTranscribe:
             },
         )
 
+        start_time = time.time()
         while True:
             status = self._transcribe_client.get_transcription_job(
                 TranscriptionJobName=job_name
@@ -75,6 +76,6 @@ class AWSTranscribe:
 
         end_time = time.time()
         publish_voice_message_processed(
-            "aws", original_duration, audio.duration_seconds, end_time - time.time()
+            "aws", original_duration, audio.duration_seconds, end_time - start_time
         )
         return transcript_text, original_duration
