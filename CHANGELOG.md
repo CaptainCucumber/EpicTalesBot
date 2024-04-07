@@ -2,6 +2,19 @@
 
 
 
+## v2.1.2 (2024-04-07)
+
+### Performance
+
+* perf: Categorize files
+
+Help to debug the issue. Categorize the files per chat. ([`f72d398`](https://github.com/CaptainCucumber/EpicTalesBot/commit/f72d3985bec8a1ab8bf9b195383d6d7ba42fc4a5))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`76e8f18`](https://github.com/CaptainCucumber/EpicTalesBot/commit/76e8f181e73894b8efdc8f09355bf4c41b1b811a))
+
+
 ## v2.1.1 (2024-04-07)
 
 ### Ci
