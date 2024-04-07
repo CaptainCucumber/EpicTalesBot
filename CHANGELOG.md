@@ -2,6 +2,23 @@
 
 
 
+## v2.1.1 (2024-04-07)
+
+### Ci
+
+* ci: New target to AWS processes ([`ba94247`](https://github.com/CaptainCucumber/EpicTalesBot/commit/ba9424757627f2ace18a7fe085f7c14f824f8245))
+
+### Fix
+
+* fix: Invalid time delta
+
+Fix the metric time delta ([`3e70a15`](https://github.com/CaptainCucumber/EpicTalesBot/commit/3e70a15cb9d423e75579c75243f3a7fc023f94d8))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`36ee32a`](https://github.com/CaptainCucumber/EpicTalesBot/commit/36ee32ab4d7307a04cf3c7a4f82f0300f343f3a5))
+
+
 ## v2.1.0 (2024-04-07)
 
 ### Chore
