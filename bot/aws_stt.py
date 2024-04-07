@@ -8,6 +8,7 @@ import requests
 from config import Config
 from metrics import publish_voice_message_processed
 from pydub import AudioSegment
+from tracking import get_tracking_context
 
 logger = logging.getLogger(__name__)
 
@@ -21,12 +22,17 @@ class AWSTranscribe:
         )
         self._s3_client = boto3.client("s3", region_name=config.aws_region)
         self._bucket_name = config.aws_audio_transcribe_bucket_name
+        self._config = config
 
     def _upload_audio_to_s3(self, audio_bytes: bytes, file_name: str) -> str:
+        context = get_tracking_context()
+
+        full_object_path = f"{self._config.environment}/{context.chat_id}/{context.user_id}/{file_name}"
         self._s3_client.put_object(
-            Body=audio_bytes, Bucket=self._bucket_name, Key=file_name
+            Body=audio_bytes, Bucket=self._bucket_name, Key=full_object_path
         )
-        return f"s3://{self._bucket_name}/{file_name}"
+
+        return f"s3://{self._bucket_name}/{full_object_path}"
 
     def _download_audio(self, voice_file_url: str) -> bytes:
         response = requests.get(voice_file_url)
