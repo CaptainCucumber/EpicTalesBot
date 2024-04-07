@@ -2,6 +2,26 @@
 
 
 
+## v2.1.0 (2024-04-07)
+
+### Chore
+
+* chore: Last updated attribute in settings
+
+For data mining ([`87c82ee`](https://github.com/CaptainCucumber/EpicTalesBot/commit/87c82ee27abe3084dc8909e88b7f8566447c8466))
+
+### Feature
+
+* feat: Add AWS Transcript support
+
+Since Google Cloud doesn&#39;t want to support non-profit projects with
+minimal infra use, let&#39;s move to AWS instead. ([`9b722ae`](https://github.com/CaptainCucumber/EpicTalesBot/commit/9b722ae11f1137f43f9904f4f72fa4a31425e448))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/CaptainCucumber/EpicTalesBot ([`fa25145`](https://github.com/CaptainCucumber/EpicTalesBot/commit/fa25145af48c6bbb88f19f933d3b0a1469264069))
+
+
 ## v2.0.3 (2024-02-28)
 
 ### Fix
@@ -589,7 +609,7 @@ them. ([`23d3277`](https://github.com/CaptainCucumber/EpicTalesBot/commit/23d327
 * doc: Documentation for new commands. ([`91ad2ca`](https://github.com/CaptainCucumber/EpicTalesBot/commit/91ad2cad0b13ee911b2c72206ab4fdc7a84daf1d))
 
 
-## v1.1.0 (2024-01-30)
+## v1.1.0 (2024-01-29)
 
 ### Build
 
@@ -714,7 +734,7 @@ Trying to find the config file. ([`c2885df`](https://github.com/CaptainCucumber/
 Bump the version based on semantic-release ([`9a39a5e`](https://github.com/CaptainCucumber/EpicTalesBot/commit/9a39a5e0d54303312556f1785a9796f4d37afc8f))
 
 
-## v1.0.0 (2024-01-24)
+## v1.0.0 (2024-01-23)
 
 ### Unknown
 
