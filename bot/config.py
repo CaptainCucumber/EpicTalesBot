@@ -43,5 +43,9 @@ class Config:
     def aws_secret_access_key(self):
         return self.config["aws"]["credentials"]["aws_secret_access_key"]
 
+    @property
+    def aws_audio_transcribe_bucket_name(self):
+        return self.config["aws"]["audio_transcribe_bucket_name"]
+
 
 config = Config(".epictalesbot.toml")

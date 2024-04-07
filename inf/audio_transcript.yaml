@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: S3 Bucket with Lifecycle Policy to Transition to Glacier
+
+Parameters:
+  Stage:
+    Type: String
+    Default: beta
+    Description: Deployment stage name
+    AllowedPattern: '[a-z0-9]+'
+    ConstraintDescription: Must be a lowercase letter or number, no special characters.
+
+Resources:
+  AudioFilesBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub 'epictalesbot-audio-files'
+      LifecycleConfiguration:
+        Rules:
+          - Id: MoveToGlacier
+            Status: Enabled
+            Prefix: ''  # Apply to all files in the bucket
+            Transitions:
+              - TransitionInDays: 1  # Minimum transition time to Glacier is 1 day.
+                StorageClass: GLACIER
+            ExpirationInDays: 365  # Optional: specify expiration, e.g., delete after one year.
+
+Outputs:
+  BucketName:
+    Description: Name of the S3 bucket to store audio files
+    Value: !Ref AudioFilesBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-${Stage}-AudioFilesBucket'

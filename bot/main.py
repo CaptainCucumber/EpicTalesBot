@@ -8,6 +8,7 @@ import traceback
 import boto3
 import requests
 from article_gpt import ArticleGPT
+from aws_stt import AWSTranscribe
 from config import config
 from google_stt import GoogleSTT
 from log_config import setup_logging
@@ -33,7 +34,7 @@ parser = argparse.ArgumentParser(description="EpicTales bot")
 parser.add_argument(
     "--processing-voice",
     type=str,
-    choices=["cpu", "gpu", "cloud"],
+    choices=["cpu", "gpu", "cloud", "cloud-aws"],
     default="gpu",
     help="Set where voice messages should be processed: on local CPU, local GPU, or Cloud.",
 )
@@ -66,6 +67,8 @@ elif args.processing_voice == "gpu":
     stt_instance = STT(config, "gpu")
 elif args.processing_voice == "cloud":
     stt_instance = GoogleSTT(config)
+elif args.processing_voice == "cloud-aws":
+    stt_instance = AWSTranscribe(config)
 else:
     raise Exception(f"Unknown location for the model: {args.processing_voice}")
 
