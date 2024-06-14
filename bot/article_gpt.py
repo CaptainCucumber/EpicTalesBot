@@ -60,7 +60,7 @@ class ArticleGPT:
                         "content": f"{title_name}: {title}\n{text_name}: {text}",
                     },
                 ],
-                model="gpt-4-1106-preview",
+                model="gpt-4o",
                 temperature=0.2,
                 top_p=0.9,
                 frequency_penalty=0.5,

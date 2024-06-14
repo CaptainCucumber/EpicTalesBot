@@ -47,6 +47,7 @@ def get_video_link_from_message(message: Message) -> Optional[str]:
         "youtube.com/watch" in link
         or "youtu.be/" in link
         or "youtube.com/shorts" in link
+        or "youtube.com/live" in link
     ):
         return link
 
