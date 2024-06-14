@@ -2,6 +2,15 @@
 
 
 
+## v2.2.0 (2024-06-14)
+
+### Feature
+
+* feat: Support live YouTube streams.
+
+As well bumps GPT version to a new 4o model to safe on cost. ([`eb77795`](https://github.com/CaptainCucumber/EpicTalesBot/commit/eb77795fddb4e1ea2bdc81ae28e8594e76354a09))
+
+
 ## v2.1.2 (2024-04-07)
 
 ### Performance
